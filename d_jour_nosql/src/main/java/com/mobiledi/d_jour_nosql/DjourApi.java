@@ -31,7 +31,7 @@ public class DjourApi {
 	public List<DBObject> getDataFromDb() {
 		return djour.getData();
 		}
-	
+	*/
 	
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -46,7 +46,7 @@ public class DjourApi {
 			return "{\"status\":\"FAIL\"}";
 		}
 	}
-	*/
+	
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)

@@ -40,14 +40,14 @@ public class DjourService {
 
 
 
-	/* saves the record into the db 
+	/* saves the record into the db */
 
 	public void persistAppUser(JsonNode add) throws MongoException {
 		collections=connectToDB(HOST, PORT, APP_USER_COLLECTION_NAME, DATABASE);
 		collections.insert((DBObject) JSON.parse(add.toString()));
 		closeConnection();
 	}
-	*/
+	
 	public void persistPortalData(JsonNode add) throws MongoException {
 		collections=connectToDB(HOST, PORT, PORTAL_USER_COLLECTION_NAME, DATABASE);
 		collections.insert((DBObject) JSON.parse(add.toString()));
