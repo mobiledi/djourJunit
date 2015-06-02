@@ -35,8 +35,6 @@ public class DjourService {
 	}
 
 	public static String sayHello(String name){
-		
-
 		return "D'jour says Hello to " + name + "!";	
 }
 
@@ -49,12 +47,12 @@ public class DjourService {
 		collections.insert((DBObject) JSON.parse(add.toString()));
 		closeConnection();
 	}
-	
+	*/
 	public void persistPortalData(JsonNode add) throws MongoException {
 		collections=connectToDB(HOST, PORT, PORTAL_USER_COLLECTION_NAME, DATABASE);
 		collections.insert((DBObject) JSON.parse(add.toString()));
 		closeConnection();
-	}*/
+	}
 /*	public List<DBObject> getData() {
 		collections = connectToDB( HOST, PORT, COLLECTION_NAME, DATABASE);
 		DBCursor cursor=collections.find();
@@ -79,7 +77,7 @@ public class DjourService {
 		DB db = CLIENT.getDB(dbname);	
 		return db.getCollection(collectionName);
 
-	}
+	}*/
 	public DBCollection connectToDB(String host, int port,
 			String collectionName, String dbname) {
 		try {
@@ -102,7 +100,7 @@ public class DjourService {
 			System.out.println("Connection Closed..");
 		}
 	}
-	*/
+	
 	
 
 }
