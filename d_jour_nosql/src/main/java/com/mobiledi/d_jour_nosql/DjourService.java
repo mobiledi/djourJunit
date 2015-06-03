@@ -15,6 +15,7 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoException;
+import com.mongodb.QueryBuilder;
 import com.mongodb.util.JSON;
 
 @Stateless
@@ -35,7 +36,7 @@ public class DjourService {
 	}
 
 	public static String sayHello(String name){
-		return "D'jour says Hello to " + name + "!";	
+		return "D\'jour says Hello to " + name + "!";	
 }
 
 
@@ -100,7 +101,35 @@ public class DjourService {
 			System.out.println("Connection Closed..");
 		}
 	}
+
+	public boolean isUserRegisteredinportal(String username, String password) {
+		collections=connectToDB(HOST, PORT, PORTAL_USER_COLLECTION_NAME, DATABASE);
+		
+		DBObject getUser= QueryBuilder.start("username").is(username).and("password").is(password).get();
+		DBCursor cursor=collections.find(getUser);
+		System.out.println("Request to authenticate " + username +" returned: "+cursor.count());
+		if(cursor.count()>0)	
+		{		closeConnection();
+			return true;
+	}else{
+			closeConnection();
+			return false;}
+	}
 	
+	
+	public boolean isUserRegisteredinApp(String username, String password) {
+		collections=connectToDB(HOST, PORT, APP_USER_COLLECTION_NAME, DATABASE);
+		
+		DBObject getUser= QueryBuilder.start("username").is(username).and("password").is(password).get();
+		DBCursor cursor=collections.find(getUser);
+		System.out.println("Request to authenticate " + username +" returned: "+cursor.count());
+		if(cursor.count()>0)	
+		{		closeConnection();
+			return true;
+	}else{
+			closeConnection();
+			return false;}
+	}
 	
 
 }

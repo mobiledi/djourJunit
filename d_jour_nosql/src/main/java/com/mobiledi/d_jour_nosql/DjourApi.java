@@ -32,7 +32,7 @@ public class DjourApi {
 		return djour.getData();
 		}
 	*/
-	
+	/*App users registration*/
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
@@ -47,6 +47,8 @@ public class DjourApi {
 		}
 	}
 	
+	/*Portal users registration*/
+	
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
@@ -60,5 +62,23 @@ public class DjourApi {
 			return "{\"status\":\"FAIL\"}";
 		}
 	}
+	
+	/*Portal users authentication*/
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/portalauthenticate/{username}/{password}")
+	public String authenticatePortalUser(@PathParam("username") String username,@PathParam("password") String password) {		
+		boolean registered=djour.isUserRegisteredinportal(username,password);
+		return "{\"authenticated\": \""+registered+ "\"}";	
+		}
+	
+	/*App users authentication*/
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/appauthenticate/{username}/{password}")
+	public String authenticateAppUser(@PathParam("username") String username,@PathParam("password") String password) {		
+		boolean registered=djour.isUserRegisteredinApp(username,password);
+		return "{\"authenticated\": \""+registered+ "\"}";	
+		}
 	
 }
