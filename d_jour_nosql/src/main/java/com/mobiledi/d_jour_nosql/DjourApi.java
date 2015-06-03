@@ -17,6 +17,9 @@ public class DjourApi {
 	@EJB
 	DjourService djour;
 	
+	@EJB
+	DjourPortalService portaldjour;
+	
 	
 	@GET
 	//@Produces(MediaType.)
@@ -24,6 +27,15 @@ public class DjourApi {
 	@Path("/sayhello/{name}")
 	public String hello(@PathParam("name") String name) {
 		return DjourService.sayHello(name + "new data");
+	}
+	
+	@GET
+	//@Produces(MediaType.)
+	@Produces(MediaType.TEXT_PLAIN)
+	@Path("/postgres/{name}")
+	public  String postgreshello(@PathParam("name") String name) {
+		 
+		 return ("STATUS" + portaldjour.getRows());
 	}
 	/*@GET
 	@Produces(MediaType.APPLICATION_JSON)
@@ -69,7 +81,8 @@ public class DjourApi {
 	@Path("/portalauthenticate/{username}/{password}")
 	public String authenticatePortalUser(@PathParam("username") String username,@PathParam("password") String password) {		
 		boolean registered=djour.isUserRegisteredinportal(username,password);
-		return "{\"authenticated\": \""+registered+ "\"}";	
+		  
+		  return "{\"authenticated\": \""+registered+ "\"}";	
 		}
 	
 	/*App users authentication*/
