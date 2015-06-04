@@ -39,19 +39,15 @@ public class DjourPortalService {
 	                System.out.print(rs.getString(1));
 	                System.out.print(": ");
 	                System.out.println(rs.getString(2));
-	                //System.out.println(rs.toString());
 	            }
+	            rs.close();
+	            connection.close();
 		
 				
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
- 
-		
-		
-		
-		
+ 	
 		return toreturn;
 	}  
 

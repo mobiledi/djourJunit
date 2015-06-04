@@ -30,9 +30,7 @@ public class DjourService {
 	private DBCollection collections;
 	
 	public DjourService() {
-		System.out.println("Opeining Client..");	
-			//collections = connectToDB( HOST, PORT, COLLECTION_NAME, DATABASE);
-			
+		System.out.println("Opeining Client..");				
 	}
 
 	public static String sayHello(String name){
@@ -64,21 +62,8 @@ public class DjourService {
 		return toreturn;
 	}
 
-@Override
-	protected void finalize() throws Throwable {
-		// TODO Auto-generated method stub
-		super.finalize();
-		//closeConnection();
-	}
-
 */	
 
-/*	public DBCollection connectToDB( String host, int port,
-		String collectionName, String dbname) {
-		DB db = CLIENT.getDB(dbname);	
-		return db.getCollection(collectionName);
-
-	}*/
 	public DBCollection connectToDB(String host, int port,
 			String collectionName, String dbname) {
 		try {
