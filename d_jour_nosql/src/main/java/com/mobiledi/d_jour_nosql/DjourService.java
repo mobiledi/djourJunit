@@ -22,7 +22,6 @@ import com.mongodb.util.JSON;
 //@Singleton
 public class DjourService {
 	private static final String APP_USER_COLLECTION_NAME = "AppUsers";
-	private static final String PORTAL_USER_COLLECTION_NAME = "PortalUsers";
 	private static final String DATABASE = "djour_db";
 	private static final String HOST = "localhost";
 	private static final int PORT = 27017;
@@ -30,15 +29,11 @@ public class DjourService {
 	private DBCollection collections;
 	
 	public DjourService() {
-		System.out.println("Opeining Client..");				
 	}
 
 	public static String sayHello(String name){
-		return "D\'jour says Hello to " + name + "!";	
+		return "D\'jour says Hello to " + name + " !";	
 }
-
-
-
 	/* saves the record into the db */
 
 	public void persistAppUser(JsonNode add) throws MongoException {
@@ -47,11 +42,6 @@ public class DjourService {
 		closeConnection();
 	}
 	
-	public void persistPortalData(JsonNode add) throws MongoException {
-		collections=connectToDB(HOST, PORT, PORTAL_USER_COLLECTION_NAME, DATABASE);
-		collections.insert((DBObject) JSON.parse(add.toString()));
-		closeConnection();
-	}
 /*	public List<DBObject> getData() {
 		collections = connectToDB( HOST, PORT, COLLECTION_NAME, DATABASE);
 		DBCursor cursor=collections.find();
@@ -78,29 +68,6 @@ public class DjourService {
 		}
 
 	}
-
-	private void closeConnection() {
-		System.out.println("Closing Client..");
-		if (DjourService.CLIENT != null) {
-			DjourService.CLIENT.close();
-			System.out.println("Connection Closed..");
-		}
-	}
-
-	public boolean isUserRegisteredinportal(String username, String password) {
-		collections=connectToDB(HOST, PORT, PORTAL_USER_COLLECTION_NAME, DATABASE);
-		
-		DBObject getUser= QueryBuilder.start("username").is(username).and("password").is(password).get();
-		DBCursor cursor=collections.find(getUser);
-		System.out.println("Request to authenticate " + username +" returned: "+cursor.count());
-		if(cursor.count()>0)	
-		{		closeConnection();
-			return true;
-	}else{
-			closeConnection();
-			return false;}
-	}
-	
 	
 	public boolean isUserRegisteredinApp(String username, String password) {
 		collections=connectToDB(HOST, PORT, APP_USER_COLLECTION_NAME, DATABASE);
@@ -115,6 +82,16 @@ public class DjourService {
 			closeConnection();
 			return false;}
 	}
+
+	private void closeConnection() {
+		System.out.println("Closing Client..");
+		if (DjourService.CLIENT != null) {
+			DjourService.CLIENT.close();
+			System.out.println("Connection Closed..");
+		}
+	}
+	
+	
 	
 
 }

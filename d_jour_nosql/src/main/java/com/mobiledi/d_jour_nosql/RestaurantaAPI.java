@@ -2,7 +2,9 @@ package com.mobiledi.d_jour_nosql;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -27,27 +29,33 @@ public class RestaurantaAPI {
 		return DjourService.sayHello(" "+name + " sent from datas");
 	}
 	
-/*	@POST
+	
+	
+	/*Portal users registration*/
+	
+	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path("/insert")
-	public ObjectNode registerAppUser(JSON toInsert) {
-		ObjectNode obj= new ObjectNode(JsonNodeFactory .instance);
+	@Path("/registerportaluser")
+	public String registerPortalUser(JsonNode toInsert) {
 		try {
-			
-			
-			obj.put("status","ok");
-			obj.put("Result", 1);
-			
-					
-			return obj;
+			portaldjour.persistPortalData(toInsert);					
+			return "{\"status\":\"OK\"}";
 		} catch (Exception e) {
 			e.printStackTrace();
-			obj.put("status","Failed");
-			obj.put("Result", 0);
-			return obj;
+			return "{\"status\":\"FAIL\"}";
 		}
-	}*/
+	}
+	
+	/*Portal users authentication*/
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/portalauthenticate/{username}/{password}")
+	public String authenticatePortalUser(@PathParam("username") String username,@PathParam("password") String password) {		
+		boolean registered=portaldjour.isUserRegisteredinportal(username,password);
+		  
+		  return "{\"authenticated\": \""+registered+ "\"}";	
+		}
 	
 	
 	@GET

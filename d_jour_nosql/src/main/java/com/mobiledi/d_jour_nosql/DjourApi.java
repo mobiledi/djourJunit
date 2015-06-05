@@ -16,27 +16,13 @@ import org.codehaus.jackson.JsonNode;
 public class DjourApi {
 	@EJB
 	DjourService djour;
-	
-	@EJB
-	DjourPortalService portaldjour;
-	
-	
 	@GET
-	//@Produces(MediaType.)
 	@Produces({"application/javascript"})
 	@Path("/sayhello/{name}")
 	public String hello(@PathParam("name") String name) {
 		return DjourService.sayHello(name + "new data");
 	}
-	
-	@GET
-	//@Produces(MediaType.)
-	@Produces(MediaType.TEXT_PLAIN)
-	@Path("/postgres/{name}")
-	public  String postgreshello(@PathParam("name") String name) {
-		 
-		 return ("STATUS" + portaldjour.getRows());
-	}
+
 	/*@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/get")
@@ -58,32 +44,6 @@ public class DjourApi {
 			return "{\"status\":\"FAIL\"}";
 		}
 	}
-	
-	/*Portal users registration*/
-	
-	@POST
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	@Path("/registerportaluser")
-	public String registerPortalUser(JsonNode toInsert) {
-		try {
-			djour.persistPortalData(toInsert);					
-			return "{\"status\":\"OK\"}";
-		} catch (Exception e) {
-			e.printStackTrace();
-			return "{\"status\":\"FAIL\"}";
-		}
-	}
-	
-	/*Portal users authentication*/
-	@GET
-	@Produces(MediaType.APPLICATION_JSON)
-	@Path("/portalauthenticate/{username}/{password}")
-	public String authenticatePortalUser(@PathParam("username") String username,@PathParam("password") String password) {		
-		boolean registered=djour.isUserRegisteredinportal(username,password);
-		  
-		  return "{\"authenticated\": \""+registered+ "\"}";	
-		}
 	
 	/*App users authentication*/
 	@GET
