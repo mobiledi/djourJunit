@@ -129,50 +129,9 @@ public class DjourPortalService {
 						.println("GENERATED INSERT QUERY: " + stmt.toString());
 				stmt.executeUpdate();	
 				ResultSet rs=stmt.getGeneratedKeys();
-				while (rs.next()) { 
-
-				//ADDRESS TABLE IDs
-				
-				String address_line1=toInsert.get(COLUMN_ADD1).asText();
-				String address_line2=toInsert.get(COLUMN_ADD2).asText();
-				String city=toInsert.get(COLUMN_CITY).asText();
-				String state=toInsert.get(COLUMN_STATE).asText();
-				int zip=toInsert.get(COLUMN_ZIP).asInt();
-				long lat=toInsert.get(COLUMN_LAT).getLongValue();
-				long longit=toInsert.get(COLUMN_LONG).getLongValue();
-				
-				StringBuilder addressBuilder = new StringBuilder();
-				
-				addressBuilder.append("INSERT INTO ");
-				addressBuilder.append(TABLE_RESTAURANT_ADDRESS);
-				addressBuilder.append("(" + COLUMN_MASTER_ID + ",");
-				addressBuilder.append(COLUMN_ADD1 + ",");
-				addressBuilder.append(COLUMN_ADD2 + ",");
-				addressBuilder.append(COLUMN_CITY + ",");
-				addressBuilder.append(COLUMN_STATE + ",");
-				addressBuilder.append(COLUMN_ZIP + ",");
-				addressBuilder.append(COLUMN_LAT + ",");
-				addressBuilder.append(COLUMN_LONG + ",");
-				addressBuilder.append(COLUMN_ACTIVE + ",");
-				addressBuilder.append(COLUMN_CREATED + ") ");
-				addressBuilder.append("VALUES (?,?,?,?,?,?,?,?,?,?)");
-				PreparedStatement addstmt = connection
-						.prepareStatement(addressBuilder.toString(),Statement.RETURN_GENERATED_KEYS);
-				addstmt.setInt(1, rs.getInt("id"));
-				addstmt.setString(2, address_line1);
-				addstmt.setString(3, address_line2);
-				addstmt.setString(4, city);
-				addstmt.setString(5, state);
-				addstmt.setInt(6, zip);
-				addstmt.setDouble(7, lat);
-				addstmt.setDouble(8, longit);
-				addstmt.setInt(9, 1);
-				addstmt.setDate(10,  new Date(new java.util.Date().getTime()));
-				System.out.println("GENERATED ADDRESS INSERT STRING: "
-						+ addressBuilder.toString());
-				addstmt.executeUpdate();
-				addstmt.close();
-				
+				if (rs.next()) { 
+					//ADD ADDRESS ROW 
+				persistProfileData(toInsert,rs);
 				}
 				rs.close();
 				stmt.close();
@@ -189,6 +148,62 @@ public class DjourPortalService {
 
 		}
 
+	}
+	
+	public void persistProfileData(JsonNode toInsert,ResultSet rs){
+		
+		//ADDRESS TABLE IDs
+		
+		String address_line1=toInsert.get(COLUMN_ADD1).asText();
+		String address_line2=toInsert.get(COLUMN_ADD2).asText();
+		String city=toInsert.get(COLUMN_CITY).asText();
+		String state=toInsert.get(COLUMN_STATE).asText();
+		int zip=toInsert.get(COLUMN_ZIP).asInt();
+		//long lat=toInsert.get(COLUMN_LAT).getLongValue();
+		//long longit=toInsert.get(COLUMN_LONG).getLongValue();
+		
+		StringBuilder addressBuilder = new StringBuilder();
+		
+		addressBuilder.append("INSERT INTO ");
+		addressBuilder.append(TABLE_RESTAURANT_ADDRESS);
+		addressBuilder.append("(" + COLUMN_MASTER_ID + ",");
+		addressBuilder.append(COLUMN_ADD1 + ",");
+		addressBuilder.append(COLUMN_ADD2 + ",");
+		addressBuilder.append(COLUMN_CITY + ",");
+		addressBuilder.append(COLUMN_STATE + ",");
+		addressBuilder.append(COLUMN_ZIP + ",");
+		addressBuilder.append(COLUMN_LAT + ",");
+		addressBuilder.append(COLUMN_LONG + ",");
+		addressBuilder.append(COLUMN_ACTIVE + ",");
+		addressBuilder.append(COLUMN_CREATED + ") ");
+		addressBuilder.append("VALUES (?,?,?,?,?,?,?,?,?,?)");
+		//addressBuilder.append("VALUES (?,?,?,?,?,?,?,?)");
+		
+		try {
+			PreparedStatement addstmt = connection
+					.prepareStatement(addressBuilder.toString(),Statement.RETURN_GENERATED_KEYS);
+			addstmt.setInt(1, rs.getInt("id"));
+			addstmt.setString(2, address_line1);
+			addstmt.setString(3, address_line2);
+			addstmt.setString(4, city);
+			addstmt.setString(5, state);
+			addstmt.setInt(6, zip);
+			//TODO: GET CO-ORDINATES
+			addstmt.setDouble(7, 0);
+			addstmt.setDouble(8, 0);
+			addstmt.setInt(9, 1);
+			addstmt.setDate(10,  new Date(new java.util.Date().getTime()));
+			System.out.println("GENERATED ADDRESS INSERT STRING: "
+					+ addressBuilder.toString());
+			addstmt.executeUpdate();
+			addstmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return;
+		
+		
 	}
 
 	private void disconnectFromDB() {
@@ -283,7 +298,6 @@ public class DjourPortalService {
 	}
 
 	public boolean isUserRegisteredinportal(String username, String password) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
