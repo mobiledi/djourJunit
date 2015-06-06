@@ -93,4 +93,19 @@ public class RestaurantaAPI {
 		return obj;
 }
 	
+	
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/getlatlong")
+	public String getLatLong(JsonNode toInsert) {
+		try {
+			portaldjour.getCo_ordinates(toInsert.get("address").getTextValue());					
+			return "{\"status\":\"OK\"}";
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "{\"status\":\"FAIL\"}";
+		}
+	}
+	
 }

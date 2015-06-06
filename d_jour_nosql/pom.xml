@@ -97,6 +97,17 @@
 	<artifactId>sqlbuilder</artifactId>
 	<version>2.1.0</version>
 </dependency>
+ <dependency>
+    <groupId>com.google.code.geocoder-java</groupId>
+    <artifactId>geocoder-java</artifactId>
+    <version>0.16</version>
+  </dependency>
+  <dependency>
+	<groupId>com.google.code.gson</groupId>
+	<artifactId>gson</artifactId>
+	<version>2.3.1</version>
+</dependency>
+  
 
 	</dependencies>
 	<build>

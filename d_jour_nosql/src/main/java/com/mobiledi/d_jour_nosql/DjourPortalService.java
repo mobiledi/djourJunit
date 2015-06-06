@@ -1,5 +1,6 @@
 package com.mobiledi.d_jour_nosql;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.DriverManager;
@@ -7,11 +8,20 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
 import java.util.Random;
 
 import javax.ejb.Stateless;
 
 import org.codehaus.jackson.JsonNode;
+
+import com.google.code.geocoder.Geocoder;
+import com.google.code.geocoder.GeocoderRequestBuilder;
+import com.google.code.geocoder.model.GeocodeResponse;
+import com.google.code.geocoder.model.GeocoderRequest;
+import com.google.code.geocoder.model.GeocoderResult;
+import com.google.code.geocoder.model.LatLng;
+
 
 @Stateless
 public class DjourPortalService {
@@ -287,6 +297,33 @@ public class DjourPortalService {
 	 * return toreturn; }
 	 */
 
+	public LatLng getCo_ordinates(String address ){
+		System.out.println("STARTING GC");
+		
+		
+		final Geocoder geocoder = new Geocoder();
+		try {
+			GeocoderRequest geocoderRequest = new GeocoderRequestBuilder().setAddress(address).setLanguage("en").getGeocoderRequest();
+			GeocodeResponse geocoderResponse = geocoder.geocode(geocoderRequest);
+		    List<GeocoderResult> results=geocoderResponse.getResults();
+		System.out.print("REsult size "+results.size());
+			for(GeocoderResult result:results){
+				LatLng latLong=result.getGeometry().getLocation();
+				return latLong;
+				//System.out.println("Lat: "+ latLong.getLat() + " Long"+ latLong.getLng() );
+				
+			}
+			
+					
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return null;
+		
+	}
+	
 	static final String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 	static Random rnd = new Random();
 
@@ -298,7 +335,11 @@ public class DjourPortalService {
 	}
 
 	public boolean isUserRegisteredinportal(String username, String password) {
+		
 		return false;
 	}
+	
+	
+	
 
 }
