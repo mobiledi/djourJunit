@@ -39,7 +39,7 @@ public class RestaurantaAPI {
 	@Path("/registerportaluser")
 	public String registerPortalUser(JsonNode toInsert) {
 		try {
-			portaldjour.persistPortalData(toInsert);					
+			portaldjour.persistSignUpData(toInsert);					
 			return "{\"status\":\"OK\"}";
 		} catch (Exception e) {
 			e.printStackTrace();
