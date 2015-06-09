@@ -30,6 +30,10 @@ public class DjourPortalService {
 	final static String DB_PASSWORD = "";
 	final static String DB_IP = "127.0.0.1:5432";
 	final static String URL = "jdbc:postgresql://" + DB_IP + "/" + DATABASE;
+	final static int INSERT_ONLY=1;
+	final static int UPDATE_ONLY=2;
+	
+	
 
 
 	Connection connection = null;
@@ -74,7 +78,6 @@ public class DjourPortalService {
 			masterBuilder.append("(" + Constants.COLUMN_NAME + ",");
 			masterBuilder.append(Constants.COLUMN_TITLE + ",");
 			masterBuilder.append(Constants.COLUMN_EMAIL + ",");
-			masterBuilder.append(Constants.COLUMN_WEBSITE + ",");
 			masterBuilder.append(Constants.COLUMN_PHONE + ",");
 			masterBuilder.append(Constants.COLUMN_PASSWORD + ") ");
 			masterBuilder.append("VALUES (?,?,?,?,?,?)");
@@ -99,7 +102,7 @@ public class DjourPortalService {
 				ResultSet rs=stmt.getGeneratedKeys();
 				if (rs.next()) { 
 					//ADD ADDRESS ROW 
-				persistAddressData(toInsert,rs);
+				persistAddressData(toInsert,rs,INSERT_ONLY,0);
 				}
 				rs.close();
 				stmt.close();
@@ -118,7 +121,72 @@ public class DjourPortalService {
 
 	}
 	
-	public void persistAddressData(JsonNode toInsert,ResultSet rs){
+	public void updateSignUpData(JsonNode toUpdate,int id) {
+
+		/* EXTRACT VALUES */
+
+		if (connectToDB()) {
+			String name = toUpdate.get(Constants.COLUMN_NAME).asText();
+			String title = toUpdate.get(Constants.COLUMN_TITLE).asText();
+			String email = toUpdate.get(Constants.COLUMN_EMAIL).asText();
+			String phone = toUpdate.get(Constants.COLUMN_PHONE).asText();
+			String website = toUpdate.get(Constants.COLUMN_WEBSITE).asText();
+			//String password = toUpdate.get(Constants.COLUMN_PASSWORD).asText();
+
+			StringBuilder masterBuilder = new StringBuilder();
+			masterBuilder.append("UPDATE ");
+			masterBuilder.append(Constants.TABLE_RESTAURANT_MASTER);
+			masterBuilder.append(" SET (" + Constants.COLUMN_NAME + ",");
+			masterBuilder.append(Constants.COLUMN_TITLE + ",");
+			masterBuilder.append(Constants.COLUMN_EMAIL + ",");
+			masterBuilder.append(Constants.COLUMN_WEBSITE + ",");
+			//masterBuilder.append(Constants.COLUMN_PHONE + ",");
+			masterBuilder.append(Constants.COLUMN_PHONE + ") ");
+			//masterBuilder.append("VALUES (?,?,?,?,?,?)");
+			masterBuilder.append("= (?,?,?,?,?) WHERE id=?" );
+			System.out.println("GENERATED MASTER INSERT STRING: "
+					+ masterBuilder.toString());
+
+			try {
+				//System.out.println(name + title + email + website + phone
+				//		+ password);
+				PreparedStatement stmt = connection
+						.prepareStatement(masterBuilder.toString(),Statement.RETURN_GENERATED_KEYS);
+				stmt.setString(1, name);
+				stmt.setString(2, title);
+				stmt.setString(3, email);
+				stmt.setString(4, website);
+				stmt.setString(5, phone);
+				stmt.setInt(6, id);	
+				System.out
+						.println("GENERATED INSERT QUERY: " + stmt.toString());
+				stmt.executeUpdate();	
+				ResultSet rs=stmt.getGeneratedKeys();
+				if (rs.next()) { 
+					//ADD ADDRESS ROW 
+				persistAddressData(toUpdate,null,UPDATE_ONLY,id);
+				}
+				rs.close();
+				stmt.close();
+				}
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
+
+			disconnectFromDB();
+
+		} else {
+
+			System.out.println("Cannot connect to POSTGRES db");
+
+		}
+
+	}
+	
+	
+	
+	
+	public void persistAddressData(JsonNode toInsert,ResultSet rs,int OPERATION,int id){
 		
 		//ADDRESS TABLE IDs
 		String name=toInsert.get(Constants.COLUMN_NAME).asText();
@@ -150,7 +218,10 @@ public class DjourPortalService {
 		try {
 			PreparedStatement addstmt = connection
 					.prepareStatement(addressBuilder.toString(),Statement.RETURN_GENERATED_KEYS);
+			if(OPERATION==INSERT_ONLY)
 			addstmt.setInt(1, rs.getInt("id"));
+			else if(OPERATION==UPDATE_ONLY)
+			addstmt.setInt(1, id);	
 			addstmt.setString(2, address_line1);
 			addstmt.setString(3, address_line2);
 			addstmt.setString(4, city);
@@ -173,7 +244,7 @@ public class DjourPortalService {
 		
 	}
 	
-	public void persistProfileData(JsonNode toInsert,ResultSet rs){
+	public void persistProfileHoursData(JsonNode toInsert,ResultSet rs){
 		int wd_o_h=toInsert.get(Constants.COLUMN_WEEKDAY_OPENING_HOUR).asInt();
 		int wd_o_m=toInsert.get(Constants.COLUMN_WEEKDAY_OPENING_MINUTES).asInt();
 		int we_o_h=toInsert.get(Constants.COLUMN_WEEKEND_OPENING_HOUR).asInt();
