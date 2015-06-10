@@ -9,13 +9,16 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.ResponseBuilder;
 
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.JsonNodeFactory;
 import org.codehaus.jackson.node.ObjectNode;
+import org.jboss.resteasy.specimpl.ResponseBuilderImpl;
 
-@Path("/feed")
+@Path("/api/portal")
 @Stateless
 public class RestaurantaAPI {
 	@EJB
@@ -36,8 +39,46 @@ public class RestaurantaAPI {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path("/registerportaluser")
+	@Path("/registeruser")
+	public Response registerPortalUser(JsonNode toInsert) {
+		System.out.println("Register request from:" + toInsert.get(Constants.COLUMN_EMAIL));
+		ResponseBuilder rs = new ResponseBuilderImpl();	
+		try {
+			if(portaldjour.persistSignUpData(toInsert))
+			rs.status(Response.Status.CREATED);
+		} catch (Exception e) {
+			e.printStackTrace();
+			rs.status(Response.Status.CONFLICT);
+		}
+		return rs.build();
+	}
+	
+	
+	/*Portal users authentication*/
+	@POST
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Path("/authenticate")
+	public String authenticatePortalUser(JsonNode toauthenticate) {		
+		boolean registered=portaldjour.isUserRegisteredinportal(toauthenticate);
+		
+		ObjectNode obj= new ObjectNode(JsonNodeFactory.instance);
+		obj.put("authenticated", registered);	
+		return obj.toString();
+		  //return '{"authenticated"}'
+		 // return "{\"authenticated\": \""+"true"+ "\"}";	
+		}
+	
+	
+	/*Portal users registration*/
+	
+	/*@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/registeruser")
 	public String registerPortalUser(JsonNode toInsert) {
+		System.out.println("Register request from:" + toInsert.get(Constants.COLUMN_EMAIL));
+		
 		try {
 			portaldjour.persistSignUpData(toInsert);					
 			return "{\"status\":\"OK\"}";
@@ -45,18 +86,7 @@ public class RestaurantaAPI {
 			e.printStackTrace();
 			return "{\"status\":\"FAIL\"}";
 		}
-	}
-	
-	/*Portal users authentication*/
-	@GET
-	@Produces(MediaType.APPLICATION_JSON)
-	@Path("/portalauthenticate/{username}/{password}")
-	public String authenticatePortalUser(@PathParam("username") String username,@PathParam("password") String password) {		
-		boolean registered=portaldjour.isUserRegisteredinportal(username,password);
-		  
-		  return "{\"authenticated\": \""+registered+ "\"}";	
-		}
-	
+	}*/
 	
 	@GET
 	@Produces(MediaType.TEXT_PLAIN)
@@ -92,7 +122,21 @@ public class RestaurantaAPI {
 		}
 		return obj;
 }
+/*Portal update registration*/
 	
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/updateuser")
+	public String updatePortalUser(JsonNode toInsert) {
+		try {
+			portaldjour.updateSignUpData(toInsert);
+			return "{\"status\":\"OK\"}";
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "{\"status\":\"FAIL\"}";
+		}
+	}
 	
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)

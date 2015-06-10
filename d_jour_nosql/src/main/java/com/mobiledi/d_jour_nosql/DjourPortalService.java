@@ -60,10 +60,10 @@ public class DjourPortalService {
 
 	}
 
-	public void persistSignUpData(JsonNode toInsert) {
+	public boolean persistSignUpData(JsonNode toInsert) {
 
 		/* EXTRACT VALUES */
-
+boolean success=false;
 		if (connectToDB()) {
 			String name = toInsert.get(Constants.COLUMN_NAME).asText();
 			String title = toInsert.get(Constants.COLUMN_TITLE).asText();
@@ -78,6 +78,7 @@ public class DjourPortalService {
 			masterBuilder.append("(" + Constants.COLUMN_NAME + ",");
 			masterBuilder.append(Constants.COLUMN_TITLE + ",");
 			masterBuilder.append(Constants.COLUMN_EMAIL + ",");
+			masterBuilder.append(Constants.COLUMN_WEBSITE + ",");
 			masterBuilder.append(Constants.COLUMN_PHONE + ",");
 			masterBuilder.append(Constants.COLUMN_PASSWORD + ") ");
 			masterBuilder.append("VALUES (?,?,?,?,?,?)");
@@ -112,20 +113,23 @@ public class DjourPortalService {
 			}
 
 			disconnectFromDB();
-
+			success=true;
 		} else {
 
 			System.out.println("Cannot connect to POSTGRES db");
 
 		}
-
+return success;
 	}
 	
-	public void updateSignUpData(JsonNode toUpdate,int id) {
+	public void updateSignUpData(JsonNode toUpdate) {
 
 		/* EXTRACT VALUES */
 
 		if (connectToDB()) {
+			
+			int masterid= getMasterId(toUpdate);
+			
 			String name = toUpdate.get(Constants.COLUMN_NAME).asText();
 			String title = toUpdate.get(Constants.COLUMN_TITLE).asText();
 			String email = toUpdate.get(Constants.COLUMN_EMAIL).asText();
@@ -143,8 +147,8 @@ public class DjourPortalService {
 			//masterBuilder.append(Constants.COLUMN_PHONE + ",");
 			masterBuilder.append(Constants.COLUMN_PHONE + ") ");
 			//masterBuilder.append("VALUES (?,?,?,?,?,?)");
-			masterBuilder.append("= (?,?,?,?,?) WHERE id=?" );
-			System.out.println("GENERATED MASTER INSERT STRING: "
+			masterBuilder.append("= (?,?,?,?,?) "+Constants.COLUMN_EMAIL + "=?" );
+			System.out.println("GENERATED MASTER UPDATE STRING: "
 					+ masterBuilder.toString());
 
 			try {
@@ -157,14 +161,15 @@ public class DjourPortalService {
 				stmt.setString(3, email);
 				stmt.setString(4, website);
 				stmt.setString(5, phone);
-				stmt.setInt(6, id);	
+				stmt.setString(6, email);	
 				System.out
 						.println("GENERATED INSERT QUERY: " + stmt.toString());
 				stmt.executeUpdate();	
 				ResultSet rs=stmt.getGeneratedKeys();
 				if (rs.next()) { 
-					//ADD ADDRESS ROW 
-				persistAddressData(toUpdate,null,UPDATE_ONLY,id);
+					//ADD ADDRESS and hours ROW 
+				persistAddressData(toUpdate,null,UPDATE_ONLY,masterid);
+				persistProfileHoursData(toUpdate, masterid);
 				}
 				rs.close();
 				stmt.close();
@@ -244,7 +249,7 @@ public class DjourPortalService {
 		
 	}
 	
-	public void persistProfileHoursData(JsonNode toInsert,ResultSet rs){
+	public void persistProfileHoursData(JsonNode toInsert,int masterid){
 		int wd_o_h=toInsert.get(Constants.COLUMN_WEEKDAY_OPENING_HOUR).asInt();
 		int wd_o_m=toInsert.get(Constants.COLUMN_WEEKDAY_OPENING_MINUTES).asInt();
 		int we_o_h=toInsert.get(Constants.COLUMN_WEEKEND_OPENING_HOUR).asInt();
@@ -275,7 +280,7 @@ public class DjourPortalService {
 			PreparedStatement hourstmt = connection
 					.prepareStatement(hoursBuilder.toString(),Statement.RETURN_GENERATED_KEYS);
 			
-			hourstmt.setInt(1, rs.getInt("id"));
+			hourstmt.setInt(1,masterid);
 			hourstmt.setInt(2, wd_o_h);
 			hourstmt.setInt(3, wd_o_m);
 			hourstmt.setInt(4, wd_c_h);
@@ -286,7 +291,7 @@ public class DjourPortalService {
 			hourstmt.setInt(9, we_c_m);
 			hourstmt.setInt(10, 1);
 			hourstmt.setDate(11,  new Date(new java.util.Date().getTime()));
-			System.out.println("GENERATED ADDRESS INSERT STRING: "
+			System.out.println("GENERATED HOURS INSERT STRING: "
 					+ hourstmt.toString());
 			hourstmt.executeUpdate();
 			hourstmt.close();	
@@ -302,6 +307,68 @@ public class DjourPortalService {
 		
 		
 		
+	}
+	/*Check if a user is registered in the db*/
+public boolean isUserRegisteredinportal(JsonNode toAuthenticate) {
+		
+		boolean toreturn=false;
+		String username = toAuthenticate.get(Constants.COLUMN_EMAIL).asText();
+		String password = toAuthenticate.get(Constants.COLUMN_PASSWORD).asText();
+		
+		StringBuilder masterID = new StringBuilder();
+		masterID.append("SELECT * FROM");
+		masterID.append(Constants.TABLE_RESTAURANT_MASTER);
+		masterID.append(" WHERE" + Constants.COLUMN_EMAIL + "=? AND " +Constants.COLUMN_PASSWORD + "=?");
+		try {
+			PreparedStatement masterid = connection
+					.prepareStatement(masterID.toString(),Statement.RETURN_GENERATED_KEYS);
+			masterid.setString(1, username);
+			masterid.setString(2, password);
+			
+			ResultSet results=masterid.executeQuery();
+			while (results.next()) {
+				toreturn=true;
+				System.out.println("USER "+username +" is registered");
+			}
+			results.close();
+			
+		}
+		catch(SQLException e){
+			
+			e.printStackTrace();
+		}
+		
+		
+		return toreturn;
+
+	}
+	
+	private int  getMasterId(JsonNode toFind){
+		int toreturn=0;
+		String email = toFind.get(Constants.COLUMN_EMAIL).asText();
+		StringBuilder masterID = new StringBuilder();
+		masterID.append("SELECT * FROM");
+		masterID.append(Constants.TABLE_RESTAURANT_MASTER);
+		masterID.append(" WHERE" + Constants.COLUMN_EMAIL + "=?");
+		try {
+			PreparedStatement masterid = connection
+					.prepareStatement(masterID.toString(),Statement.RETURN_GENERATED_KEYS);
+			masterid.setString(1, email);
+			ResultSet results=masterid.executeQuery();
+			while (results.next()) {
+				toreturn=results.getInt(1);
+				System.out.println("Got master id: " + toreturn);
+			}
+			results.close();
+			
+		}
+		catch(SQLException e){
+			
+			e.printStackTrace();
+		}
+		
+		
+		return toreturn;
 	}
 
 	private void disconnectFromDB() {
@@ -422,10 +489,6 @@ public class DjourPortalService {
 		return sb.toString();
 	}
 
-	public boolean isUserRegisteredinportal(String username, String password) {
-		
-		return false;
-	}
 	
 	
 	
