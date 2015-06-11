@@ -124,11 +124,11 @@ return success;
 	
 	public void updateSignUpData(JsonNode toUpdate) {
 
-		/* EXTRACT VALUES */
+	
 
 		if (connectToDB()) {
 			
-			int masterid= getMasterId(toUpdate);
+			int masterid= getMasterId(toUpdate.get("username").asText());
 			
 			String name = toUpdate.get(Constants.COLUMN_NAME).asText();
 			String title = toUpdate.get(Constants.COLUMN_TITLE).asText();
@@ -147,7 +147,7 @@ return success;
 			//masterBuilder.append(Constants.COLUMN_PHONE + ",");
 			masterBuilder.append(Constants.COLUMN_PHONE + ") ");
 			//masterBuilder.append("VALUES (?,?,?,?,?,?)");
-			masterBuilder.append("= (?,?,?,?,?) "+Constants.COLUMN_EMAIL + "=?" );
+			masterBuilder.append("= (?,?,?,?,?) WHERE "+Constants.COLUMN_MASTER_ID + "=" + masterid);
 			System.out.println("GENERATED MASTER UPDATE STRING: "
 					+ masterBuilder.toString());
 
@@ -155,23 +155,23 @@ return success;
 				//System.out.println(name + title + email + website + phone
 				//		+ password);
 				PreparedStatement stmt = connection
-						.prepareStatement(masterBuilder.toString(),Statement.RETURN_GENERATED_KEYS);
+						.prepareStatement(masterBuilder.toString());
 				stmt.setString(1, name);
 				stmt.setString(2, title);
 				stmt.setString(3, email);
 				stmt.setString(4, website);
 				stmt.setString(5, phone);
-				stmt.setString(6, email);	
+				//stmt.setString(6, email);	
 				System.out
-						.println("GENERATED INSERT QUERY: " + stmt.toString());
+						.println("GENERATED UPDATE QUERY: " + stmt.toString());
 				stmt.executeUpdate();	
-				ResultSet rs=stmt.getGeneratedKeys();
-				if (rs.next()) { 
+				//ResultSet rs=stmt.getGeneratedKeys();
+				//if (rs.next()) { 
 					//ADD ADDRESS and hours ROW 
 				persistAddressData(toUpdate,null,UPDATE_ONLY,masterid);
 				persistProfileHoursData(toUpdate, masterid);
-				}
-				rs.close();
+				//}
+				//rs.close();
 				stmt.close();
 				}
 			catch (SQLException e) {
@@ -192,7 +192,7 @@ return success;
 	
 	
 	public void persistAddressData(JsonNode toInsert,ResultSet rs,int OPERATION,int id){
-		
+		//TODO set other address inactive
 		//ADDRESS TABLE IDs
 		String name=toInsert.get(Constants.COLUMN_NAME).asText();
 		String address_line1=toInsert.get(Constants.COLUMN_ADD1).asText();
@@ -208,7 +208,7 @@ return success;
 		
 		addressBuilder.append("INSERT INTO ");
 		addressBuilder.append(Constants.TABLE_RESTAURANT_ADDRESS);
-		addressBuilder.append("(" + Constants.COLUMN_MASTER_ID + ",");
+		addressBuilder.append("(" + Constants.COLUMN_MASTER_ID_ADDRESS + ",");
 		addressBuilder.append(Constants.COLUMN_ADD1 + ",");
 		addressBuilder.append(Constants.COLUMN_ADD2 + ",");
 		addressBuilder.append(Constants.COLUMN_CITY + ",");
@@ -250,6 +250,8 @@ return success;
 	}
 	
 	public void persistProfileHoursData(JsonNode toInsert,int masterid){
+		//TODO set other hours inactive
+		
 		int wd_o_h=toInsert.get(Constants.COLUMN_WEEKDAY_OPENING_HOUR).asInt();
 		int wd_o_m=toInsert.get(Constants.COLUMN_WEEKDAY_OPENING_MINUTES).asInt();
 		int we_o_h=toInsert.get(Constants.COLUMN_WEEKEND_OPENING_HOUR).asInt();
@@ -310,20 +312,19 @@ return success;
 	}
 	/*Check if a user is registered in the db*/
 public boolean isUserRegisteredinportal(JsonNode toAuthenticate) {
-		
+	if (connectToDB()) {	
 		boolean toreturn=false;
-		String username = toAuthenticate.get(Constants.COLUMN_EMAIL).asText();
-		String password = toAuthenticate.get(Constants.COLUMN_PASSWORD).asText();
+		String username = toAuthenticate.get(Constants.USERNAME).asText();
+		String password = toAuthenticate.get(Constants.PASSWORD).asText();
 		
 		StringBuilder masterID = new StringBuilder();
-		masterID.append("SELECT * FROM");
+		masterID.append("SELECT * FROM ");
 		masterID.append(Constants.TABLE_RESTAURANT_MASTER);
-		masterID.append(" WHERE" + Constants.COLUMN_EMAIL + "=? AND " +Constants.COLUMN_PASSWORD + "=?");
+		masterID.append(" WHERE " + Constants.COLUMN_EMAIL + "= '"+ username +"' AND " +Constants.COLUMN_PASSWORD + "='"+ password+"'");
+		System.out.println("GENERATED SELECT QUERY: " + masterID.toString());
 		try {
 			PreparedStatement masterid = connection
-					.prepareStatement(masterID.toString(),Statement.RETURN_GENERATED_KEYS);
-			masterid.setString(1, username);
-			masterid.setString(2, password);
+					.prepareStatement(masterID.toString());
 			
 			ResultSet results=masterid.executeQuery();
 			while (results.next()) {
@@ -338,26 +339,34 @@ public boolean isUserRegisteredinportal(JsonNode toAuthenticate) {
 			e.printStackTrace();
 		}
 		
-		
+		disconnectFromDB();
 		return toreturn;
-
 	}
 	
-	private int  getMasterId(JsonNode toFind){
+	else 
+		return false;
+	}
+	
+	private int  getMasterId(String key){
 		int toreturn=0;
-		String email = toFind.get(Constants.COLUMN_EMAIL).asText();
+		//String email = toFind.get(Constants.COLUMN_EMAIL).asText();
+		String email = key;
+		
 		StringBuilder masterID = new StringBuilder();
-		masterID.append("SELECT * FROM");
+		masterID.append("SELECT * FROM ");
 		masterID.append(Constants.TABLE_RESTAURANT_MASTER);
-		masterID.append(" WHERE" + Constants.COLUMN_EMAIL + "=?");
+		masterID.append(" WHERE " + Constants.COLUMN_EMAIL + "= '" +email+ "'");
+		System.out.println("GET MASTER ID QUERY:" + masterID.toString());
 		try {
 			PreparedStatement masterid = connection
-					.prepareStatement(masterID.toString(),Statement.RETURN_GENERATED_KEYS);
-			masterid.setString(1, email);
+					.prepareStatement(masterID.toString());
+			//masterid.setString(1, email);
 			ResultSet results=masterid.executeQuery();
+
 			while (results.next()) {
-				toreturn=results.getInt(1);
+				toreturn=results.getInt("id");
 				System.out.println("Got master id: " + toreturn);
+			break;
 			}
 			results.close();
 			

@@ -2,9 +2,15 @@ package com.mobiledi.d_jour_nosql;
 
 public final class Constants {
 	
+	final static String USERNAME = "username";
+	final static String PASSWORD = "password";
+	
+	
+	
 
 	/* MASTER TABLE details */
 	final static String TABLE_RESTAURANT_MASTER = "restaurant_master";
+	final static String COLUMN_MASTER_ID="id";
 	final static String COLUMN_NAME = "name";
 	final static String COLUMN_TITLE = "title";
 	final static String COLUMN_EMAIL = "email";
@@ -15,7 +21,7 @@ public final class Constants {
 	
 	/* ADDRESS TABLE details */
 	final static String TABLE_RESTAURANT_ADDRESS = "restaurant_address";	
-	final static String COLUMN_MASTER_ID = "fk_restaurant_master_id";
+	final static String COLUMN_MASTER_ID_ADDRESS = "fk_restaurant_master_id";
 	final static String COLUMN_ADD1 = "address_line1";
 	final static String COLUMN_ADD2 = "address_line2";
 	final static String COLUMN_CITY = "city";

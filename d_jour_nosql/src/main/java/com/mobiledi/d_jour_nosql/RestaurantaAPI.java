@@ -26,13 +26,21 @@ public class RestaurantaAPI {
 	
 	
 	@GET
+	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.TEXT_PLAIN)
 	@Path("/datahello/{name}")
 	public String hello(@PathParam("name") String name) {
 		return DjourService.sayHello(" "+name + " sent from datas");
 	}
 	
-	
+	@POST
+	@Produces(MediaType.TEXT_PLAIN)
+	@Path("/getprofile")
+	public String getProfile(JsonNode toget) {
+		
+		String user=toget.get("username").asText();
+		return DjourService.sayHello(" "+user + " sent from datas");
+	}
 	
 	/*Portal users registration*/
 	
@@ -59,12 +67,23 @@ public class RestaurantaAPI {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Path("/authenticate")
-	public String authenticatePortalUser(JsonNode toauthenticate) {		
+	public Response authenticatePortalUser(JsonNode toauthenticate) {	
+		System.out.println("Login Request String: " + toauthenticate.toString());
+		System.out.println("Login Request from: " + toauthenticate.get("username"));
+		
 		boolean registered=portaldjour.isUserRegisteredinportal(toauthenticate);
 		
-		ObjectNode obj= new ObjectNode(JsonNodeFactory.instance);
-		obj.put("authenticated", registered);	
-		return obj.toString();
+		ResponseBuilder rs = new ResponseBuilderImpl();	
+		
+		if(registered)
+			rs.status(Response.Status.ACCEPTED);
+		
+		else
+			rs.status(Response.Status.UNAUTHORIZED);
+		return rs.build();
+		//ObjectNode obj= new ObjectNode(JsonNodeFactory.instance);
+		//obj.put("authenticated", registered);	
+		
 		  //return '{"authenticated"}'
 		 // return "{\"authenticated\": \""+"true"+ "\"}";	
 		}
@@ -130,6 +149,7 @@ public class RestaurantaAPI {
 	@Path("/updateuser")
 	public String updatePortalUser(JsonNode toInsert) {
 		try {
+			System.out.println("Request string:" + toInsert.toString());
 			portaldjour.updateSignUpData(toInsert);
 			return "{\"status\":\"OK\"}";
 		} catch (Exception e) {
