@@ -36,10 +36,10 @@ public class RestaurantaAPI {
 	@POST
 	@Produces(MediaType.TEXT_PLAIN)
 	@Path("/getprofile")
-	public String getProfile(JsonNode toget) {
+	public JsonNode getProfile(JsonNode toget) {
 		
-		String user=toget.get("username").asText();
-		return DjourService.sayHello(" "+user + " sent from datas");
+		//String user=toget.get("username").asText();
+		return portaldjour.getUserDetails(toget);//(" "+user + " sent from datas");
 	}
 	
 	/*Portal users registration*/

@@ -1,6 +1,7 @@
 package com.mobiledi.d_jour_nosql;
 
 import com.mobiledi.d_jour_nosql.Constants;
+
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.DriverManager;
@@ -8,16 +9,23 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
+
 import javax.ejb.Stateless;
+
 import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.node.JsonNodeFactory;
+import org.codehaus.jackson.node.ObjectNode;
+
 import com.google.code.geocoder.Geocoder;
 import com.google.code.geocoder.GeocoderRequestBuilder;
 import com.google.code.geocoder.model.GeocodeResponse;
 import com.google.code.geocoder.model.GeocoderRequest;
 import com.google.code.geocoder.model.GeocoderResult;
 import com.google.code.geocoder.model.LatLng;
+import com.google.gson.JsonParser;
 
 
 @Stateless
@@ -122,6 +130,28 @@ boolean success=false;
 return success;
 	}
 	
+	public JsonNode getUserDetails(JsonNode toGet){
+		
+		if (connectToDB()) {
+		int id= getMasterId(toGet.get("username").asText());
+		
+		ObjectNode toreturn= new ObjectNode(JsonNodeFactory.instance);
+		ObjectNode masterInfos= getMasterInfo(id);
+		ObjectNode addressInfos= getAddressInfo(id);
+		toreturn.putAll(masterInfos);
+		toreturn.putAll(addressInfos);
+		
+		disconnectFromDB();
+		return toreturn;
+
+		} else {
+
+			System.out.println("Cannot connect to POSTGRES db");
+			return null;
+		}
+
+	}
+	
 	public void updateSignUpData(JsonNode toUpdate) {
 
 	
@@ -187,9 +217,6 @@ return success;
 		}
 
 	}
-	
-	
-	
 	
 	public void persistAddressData(JsonNode toInsert,ResultSet rs,int OPERATION,int id){
 		//TODO set other address inactive
@@ -311,7 +338,7 @@ return success;
 		
 	}
 	/*Check if a user is registered in the db*/
-public boolean isUserRegisteredinportal(JsonNode toAuthenticate) {
+	public boolean isUserRegisteredinportal(JsonNode toAuthenticate) {
 	if (connectToDB()) {	
 		boolean toreturn=false;
 		String username = toAuthenticate.get(Constants.USERNAME).asText();
@@ -380,6 +407,91 @@ public boolean isUserRegisteredinportal(JsonNode toAuthenticate) {
 		return toreturn;
 	}
 
+	private ObjectNode getMasterInfo(int id){
+		ObjectNode toreturn= new ObjectNode(JsonNodeFactory.instance);
+		StringBuilder masterID = new StringBuilder();
+		masterID.append("SELECT * FROM ");
+		masterID.append(Constants.TABLE_RESTAURANT_MASTER);
+		masterID.append(" WHERE " + Constants.COLUMN_MASTER_ID + "= " +id+ "");
+		System.out.println("GET MASTER INFO ID QUERY:" + masterID.toString());
+		try {
+			PreparedStatement masterid = connection
+					.prepareStatement(masterID.toString());
+			//masterid.setString(1, email);
+			ResultSet results=masterid.executeQuery();
+
+			while (results.next()) {
+				String name = results.getString(Constants.COLUMN_NAME);
+				String title = results.getString(Constants.COLUMN_TITLE);
+				String email = results.getString(Constants.COLUMN_EMAIL);
+				String phone = results.getString(Constants.COLUMN_PHONE);
+				String website = results.getString(Constants.COLUMN_WEBSITE);
+				
+				
+				toreturn.put("name", name);
+				toreturn.put("title", title);
+				toreturn.put("email", email);
+				toreturn.put("phone", phone);
+				toreturn.put("website", website);
+				break;
+			}
+			results.close();
+			
+		}
+		catch(SQLException e){
+			
+			e.printStackTrace();
+		}
+		
+		
+		return toreturn;
+		
+		
+	}
+	
+	
+	private ObjectNode getAddressInfo(int id){
+		ObjectNode toreturn= new ObjectNode(JsonNodeFactory.instance);
+		StringBuilder masterID = new StringBuilder();
+		masterID.append("SELECT * FROM ");
+		masterID.append(Constants.TABLE_RESTAURANT_ADDRESS);
+		masterID.append(" WHERE " + Constants.COLUMN_MASTER_ID_ADDRESS + "= " +id+ "");
+		System.out.println("GET ADDRESS INFO ID QUERY:" + masterID.toString());
+		try {
+			PreparedStatement masterid = connection
+					.prepareStatement(masterID.toString());
+			//masterid.setString(1, email);
+			ResultSet results=masterid.executeQuery();
+
+			while (results.next()) {
+				String address_line1=results.getString(Constants.COLUMN_ADD1);
+				String address_line2=results.getString(Constants.COLUMN_ADD2);
+				String city=results.getString(Constants.COLUMN_CITY);
+				String state=results.getString(Constants.COLUMN_STATE);
+				int zip=results.getInt(Constants.COLUMN_ZIP);
+				
+				toreturn.put(Constants.COLUMN_ADD1, address_line1);
+				toreturn.put(Constants.COLUMN_ADD2, address_line2);
+				toreturn.put(Constants.COLUMN_CITY, city);
+				toreturn.put(Constants.COLUMN_STATE, state);
+				toreturn.put(Constants.COLUMN_ZIP, zip);
+				break;
+			}
+			results.close();
+			
+		}
+		catch(SQLException e){
+			
+			e.printStackTrace();
+		}
+		
+		
+		return toreturn;
+		
+		
+	}
+	
+	
 	private void disconnectFromDB() {
 		if (connection != null) {
 			try {
