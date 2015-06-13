@@ -50,7 +50,7 @@ public class DjourPortalService {
 
 	Connection connection = null;
 
-	private boolean connectToDB() {
+	public boolean connectToDB() {
 		try {
 			connection = DriverManager.getConnection(URL, DB_USERNAME,
 					DB_PASSWORD);
@@ -76,6 +76,8 @@ public class DjourPortalService {
 
 		/* EXTRACT VALUES */
 boolean success=false;
+boolean addressSuccess=false;
+
 		if (connectToDB()) {
 			String name = toInsert.get(Constants.COLUMN_NAME).asText();
 			String title = toInsert.get(Constants.COLUMN_TITLE).asText();
@@ -111,11 +113,12 @@ boolean success=false;
 				stmt.setString(6, password);
 				System.out
 						.println("GENERATED INSERT QUERY: " + stmt.toString());
-				stmt.executeUpdate();	
+				stmt.executeUpdate();
+				success=true;
 				ResultSet rs=stmt.getGeneratedKeys();
 				if (rs.next()) { 
 					//ADD ADDRESS ROW 
-				persistAddressData(toInsert,rs,INSERT_ONLY,0);
+						addressSuccess=persistAddressData(toInsert,rs,INSERT_ONLY,0);
 				}
 				rs.close();
 				stmt.close();
@@ -125,13 +128,13 @@ boolean success=false;
 			}
 
 			disconnectFromDB();
-			success=true;
+			
 		} else {
 
 			System.out.println("Cannot connect to POSTGRES db");
 
 		}
-return success;
+		return (success&&addressSuccess);
 	}
 	
 	public JsonNode getUserDetails(JsonNode toGet){
@@ -222,8 +225,9 @@ return success;
 
 	}
 	
-	public void persistAddressData(JsonNode toInsert,ResultSet rs,int OPERATION,int id){
+	public boolean persistAddressData(JsonNode toInsert,ResultSet rs,int OPERATION,int id){
 		//TODO set other address inactive
+		boolean success=false;
 		//ADDRESS TABLE IDs
 		String name=toInsert.get(Constants.COLUMN_NAME).asText();
 		String address_line1=toInsert.get(Constants.COLUMN_ADD1).asText();
@@ -271,18 +275,20 @@ return success;
 					+ addressBuilder.toString());
 			addstmt.executeUpdate();
 			addstmt.close();
+			success=true;
+			
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		
-		return;
+		return success;
 		
 		
 	}
 	
-	public void persistProfileHoursData(JsonNode toInsert,int masterid){
+	public boolean persistProfileHoursData(JsonNode toInsert,int masterid){
 		//TODO set other hours inactive
-		
+		boolean success=false;
 		int wd_o_h=toInsert.get(Constants.COLUMN_WEEKDAY_OPENING_HOUR).asInt();
 		int wd_o_m=toInsert.get(Constants.COLUMN_WEEKDAY_OPENING_MINUTES).asInt();
 		int we_o_h=toInsert.get(Constants.COLUMN_WEEKEND_OPENING_HOUR).asInt();
@@ -327,6 +333,7 @@ return success;
 			System.out.println("GENERATED HOURS INSERT STRING: "
 					+ hourstmt.toString());
 			hourstmt.executeUpdate();
+			success=true;
 			hourstmt.close();	
 		}
 		
@@ -337,6 +344,7 @@ return success;
 			e.printStackTrace();
 			
 		}
+		return success;
 		
 		
 		
