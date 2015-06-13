@@ -44,10 +44,6 @@ public class DjourPortalService {
 	final static String URL = "jdbc:postgresql://" + DB_IP + "/" + DATABASE;
 	final static int INSERT_ONLY=1;
 	final static int UPDATE_ONLY=2;
-	
-	
-
-
 	Connection connection = null;
 
 	public boolean connectToDB() {
@@ -146,9 +142,11 @@ boolean addressSuccess=false;
 		ObjectNode masterInfos= getMasterInfo(id);
 		ObjectNode addressInfos= getAddressInfo(id);
 		ObjectNode hoursInfos= getHoursInfo(id);
+		ObjectNode typesInfos=getTypesInfo(id);
 		toreturn.putAll(masterInfos);
 		toreturn.putAll(addressInfos);
 		toreturn.putAll(hoursInfos);
+		toreturn.putAll(typesInfos);
 		
 		disconnectFromDB();
 		return toreturn;
@@ -165,7 +163,7 @@ boolean addressSuccess=false;
 		boolean success=false;
 		boolean addressSuccess=false;
 		boolean hoursSuccess=false;
-	
+		boolean typesSuccess=false;
 
 		if (connectToDB()) {
 			
@@ -212,6 +210,7 @@ boolean addressSuccess=false;
 					//ADD ADDRESS and hours ROW 
 				addressSuccess=persistAddressData(toUpdate,null,UPDATE_ONLY,masterid);
 				hoursSuccess=persistProfileHoursData(toUpdate, masterid);
+				typesSuccess=persistTypeData(toUpdate, masterid);
 				//}
 				//rs.close();
 				stmt.close();
@@ -227,13 +226,13 @@ boolean addressSuccess=false;
 			System.out.println("Cannot connect to POSTGRES db");
 
 		}
-		return (success&&addressSuccess&&hoursSuccess);
+		return (success&&addressSuccess&&hoursSuccess&&typesSuccess);
 
 	}
 	
 	public boolean persistAddressData(JsonNode toInsert,ResultSet rs,int OPERATION,int id){
 		//TODO set other address inactive
-		boolean success=false;
+		boolean success=true;
 		//ADDRESS TABLE IDs
 		String name=toInsert.get(Constants.COLUMN_NAME).asText();
 		String address_line1=toInsert.get(Constants.COLUMN_ADD1).asText();
@@ -279,13 +278,14 @@ boolean addressSuccess=false;
 			addstmt.setDate(10,  new Date(new java.util.Date().getTime()));
 			System.out.println("GENERATED ADDRESS INSERT STRING: "
 					+ addressBuilder.toString());
-			success=(addstmt.executeUpdate()>0?true:false);
+			success=success&&(addstmt.executeUpdate()>0?true:false);
 			
 			addstmt.close();
 			
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
+			success=false;
 		}
 		
 		return success;
@@ -356,6 +356,48 @@ boolean addressSuccess=false;
 		
 		
 	}
+	
+	public boolean persistTypeData(JsonNode toInsert,int masterid){
+System.out.println("In TYPE PERSISTING");		
+boolean success=false;
+		boolean types[]= new boolean[4];
+		 types[0]=toInsert.get(Constants.ORGANIC).asBoolean();
+		 types[1]=toInsert.get(Constants.GLUTEN_FREE).asBoolean();
+		 types[2]=toInsert.get(Constants.VEG).asBoolean();
+		 types[3]=toInsert.get(Constants.VEGAN).asBoolean();
+		 
+		 for(int i=0;i<types.length;i++){
+			 System.out.println("In TYPE LOOP");
+			if(types[i]){
+				StringBuilder typeBuilder= new StringBuilder();
+				typeBuilder.append("INSERT INTO ");
+				typeBuilder.append(Constants.TABLE_RESTAURANT_TAGS);
+				typeBuilder.append("(" + Constants.COLUMN_MASTER_ID_TAGS + " , ");
+				typeBuilder.append(Constants.COLUMN_PROFILE_TAGS + ") ");
+				typeBuilder.append("VALUES (?,?)");
+				
+				try {
+					PreparedStatement addstmt = connection
+							.prepareStatement(typeBuilder.toString());
+					System.out.println("Saving type data" + addstmt.toString());
+					addstmt.setInt(1, masterid);
+					addstmt.setInt(2, i+1);
+					System.out.println("Saving type data" + addstmt.toString());
+					success=(addstmt.executeUpdate()>0?true:false);
+					System.out.println("EXECUTED TYPE INSERT");
+					}
+				catch(SQLException e){
+					e.printStackTrace();
+					
+				}
+				
+			} 
+			 
+		 }
+		return success;
+	}
+	
+	
 	/*Check if a user is registered in the db*/
 	public boolean isUserRegisteredinportal(JsonNode toAuthenticate) {
 	if (connectToDB()) {	
@@ -557,6 +599,51 @@ boolean addressSuccess=false;
 		return toreturn;
 		
 		
+	}
+
+	private ObjectNode getTypesInfo(int id){
+		ObjectNode toreturn= new ObjectNode(JsonNodeFactory.instance);
+		boolean types[]= new boolean[4];
+		 types[0]=false;
+		 types[1]=false;
+		 types[2]=false;
+		 types[3]=false;
+		for(int i=0;i<types.length;i++){
+		
+		StringBuilder masterID = new StringBuilder();
+		masterID.append("SELECT * FROM ");
+		masterID.append(Constants.TABLE_RESTAURANT_TAGS);
+		masterID.append(" WHERE " + Constants.COLUMN_MASTER_ID_TAGS + "= " +id);
+		masterID.append(" AND " + Constants.COLUMN_PROFILE_TAGS + "= "+ i+1);
+		System.out.println("GET TYPES INFO QUERY:" + masterID.toString());
+		try {
+			PreparedStatement masterid = connection
+					.prepareStatement(masterID.toString());
+			ResultSet results=masterid.executeQuery();
+
+			while (results.next()) {
+				types[i]=true;
+			}
+			
+		}
+		catch(SQLException e){
+			e.printStackTrace();
+			
+		}
+		
+		}
+		
+		toreturn.put(Constants.ORGANIC, types[0]);
+		toreturn.put(Constants.GLUTEN_FREE, types[1]);
+		toreturn.put(Constants.VEG, types[2]);
+		toreturn.put(Constants.VEGAN, types[3]);
+		
+		
+		return toreturn;
+		
+	
+	
+	
 	}
 
 	private void disconnectFromDB() {

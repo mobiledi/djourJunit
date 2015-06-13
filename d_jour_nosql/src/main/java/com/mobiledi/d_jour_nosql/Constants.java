@@ -59,6 +59,11 @@ public final class Constants {
 	final static String COLUMN_MASTER_ID_TAGS = "fk_restaurant_id";
 	final static String COLUMN_PROFILE_TAGS = "fk_profile_tags_id";
 	
+	final static String ORGANIC = "org";
+	final static String GLUTEN_FREE = "gf";
+	final static String VEG = "veg";
+	final static String VEGAN = "vgn";
+	
 	/* RESTAURANT FEED ITEMS*/
 	final static String TABLE_RESTAURANT_FEED_ITEMS = "restaurant_feed_items";
 	final static String COLUMN_ID_FEED = "id";
