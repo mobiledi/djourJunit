@@ -18,6 +18,7 @@ import javax.ejb.Stateless;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.node.JsonNodeFactory;
 import org.codehaus.jackson.node.ObjectNode;
+import org.codehaus.jackson.util.JsonParserDelegate;
 
 import com.google.code.geocoder.Geocoder;
 import com.google.code.geocoder.GeocoderRequestBuilder;
@@ -25,6 +26,9 @@ import com.google.code.geocoder.model.GeocodeResponse;
 import com.google.code.geocoder.model.GeocoderRequest;
 import com.google.code.geocoder.model.GeocoderResult;
 import com.google.code.geocoder.model.LatLng;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 
@@ -608,6 +612,19 @@ return success;
 		for (int i = 0; i < len; i++)
 			sb.append(AB.charAt(rnd.nextInt(AB.length())));
 		return sb.toString();
+	}
+
+	public String formatter(String toget) {
+		
+		String newString="";
+		String my_new_str = toget.replaceAll("\\\\", " ");
+		
+		ObjectNode obj= new ObjectNode(JsonNodeFactory.instance);
+	
+		obj.with(my_new_str);
+		
+		//System.out.println(my_new_str);
+		return obj.toString();
 	}
 
 	
