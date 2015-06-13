@@ -22,6 +22,16 @@ public class JunitTest extends TestCase {
 	private static final String CITY = "Highlands Ranch";
 	private static final String STATE = "CO";
 	private static final int ZIP = 80129;
+//HOURS TABLE
+	private static final int WDOH = 8;
+	private static final int WEOH = 8;
+	private static final int WDOM = 30;
+	private static final int WEOM = 00;
+	private static final int WDCH = 20;
+	private static final int WECH = 22;
+	private static final int WDCM = 30;
+	private static final int WECM = 00;
+	
 	
 	DjourPortalService djour;
 	
@@ -83,6 +93,38 @@ public void testGetUserDetails(){
 	
 	
 	
-}*/
+}
+	public void testProfile(){
+		ObjectNode testInput= new ObjectNode(JsonNodeFactory.instance);
+		
+		testInput.put("username", EMAIL);
+		testInput.put("name", NAME);
+		testInput.put("title", TITLE);
+		testInput.put("email", EMAIL);
+		testInput.put("phone", PHONE);
+		testInput.put("website", WEBSITE);
+		testInput.put("password", USER_PASSWORD);
+		testInput.put("address_line1", ADD_1);
+		testInput.put("address_line2", ADD_2);
+		testInput.put("city", CITY);
+		testInput.put("state", STATE);
+		testInput.put("zip", ZIP);
+		testInput.put("weekday_opening_hour", WDOH);
+		testInput.put("weekend_opening_hour", WEOH);
+		
+		testInput.put("weekday_opening_minutes", WDOM);
+		testInput.put("weekend_opening_minutes", WEOM);
+		
+		testInput.put("weekday_closing_hour", WDCH);
+		testInput.put("weekend_closing_hour", WECH);
+		
+		testInput.put("weekday_closing_minutes", WDCM);
+		testInput.put("weekend_closing_minutes", WECM);
+		assertEquals("Update not successful", true, djour.updateSignUpData(testInput));
+		
+		
+		
+	}
+*/
 
 }

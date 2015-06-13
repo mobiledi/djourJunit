@@ -42,15 +42,6 @@ public class RestaurantaAPI {
 		return portaldjour.getUserDetails(toget);//(" "+user + " sent from datas");
 	}
 	
-	@POST
-	@Produces(MediaType.APPLICATION_JSON)
-	@Consumes(MediaType.TEXT_PLAIN)
-	@Path("/formatjson")
-	public String formatJson(String toget) {
-		
-		//String user=toget.get("username").asText();
-		return portaldjour.formatter(toget);//(" "+user + " sent from datas");
-	}
 	
 	
 	

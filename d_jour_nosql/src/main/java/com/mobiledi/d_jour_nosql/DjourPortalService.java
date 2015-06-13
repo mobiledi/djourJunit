@@ -145,8 +145,10 @@ boolean addressSuccess=false;
 		ObjectNode toreturn= new ObjectNode(JsonNodeFactory.instance);
 		ObjectNode masterInfos= getMasterInfo(id);
 		ObjectNode addressInfos= getAddressInfo(id);
+		ObjectNode hoursInfos= getHoursInfo(id);
 		toreturn.putAll(masterInfos);
 		toreturn.putAll(addressInfos);
+		toreturn.putAll(hoursInfos);
 		
 		disconnectFromDB();
 		return toreturn;
@@ -159,8 +161,10 @@ boolean addressSuccess=false;
 
 	}
 	
-	public void updateSignUpData(JsonNode toUpdate) {
-
+	public boolean updateSignUpData(JsonNode toUpdate) {
+		boolean success=false;
+		boolean addressSuccess=false;
+		boolean hoursSuccess=false;
 	
 
 		if (connectToDB()) {
@@ -201,12 +205,13 @@ boolean addressSuccess=false;
 				//stmt.setString(6, email);	
 				System.out
 						.println("GENERATED UPDATE QUERY: " + stmt.toString());
-				stmt.executeUpdate();	
+				success=(stmt.executeUpdate()>0?true:false);
+				
 				//ResultSet rs=stmt.getGeneratedKeys();
 				//if (rs.next()) { 
 					//ADD ADDRESS and hours ROW 
-				persistAddressData(toUpdate,null,UPDATE_ONLY,masterid);
-				persistProfileHoursData(toUpdate, masterid);
+				addressSuccess=persistAddressData(toUpdate,null,UPDATE_ONLY,masterid);
+				hoursSuccess=persistProfileHoursData(toUpdate, masterid);
 				//}
 				//rs.close();
 				stmt.close();
@@ -222,6 +227,7 @@ boolean addressSuccess=false;
 			System.out.println("Cannot connect to POSTGRES db");
 
 		}
+		return (success&&addressSuccess&&hoursSuccess);
 
 	}
 	
@@ -273,9 +279,10 @@ boolean addressSuccess=false;
 			addstmt.setDate(10,  new Date(new java.util.Date().getTime()));
 			System.out.println("GENERATED ADDRESS INSERT STRING: "
 					+ addressBuilder.toString());
-			addstmt.executeUpdate();
+			success=(addstmt.executeUpdate()>0?true:false);
+			
 			addstmt.close();
-			success=true;
+			
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -332,8 +339,8 @@ boolean addressSuccess=false;
 			hourstmt.setDate(11,  new Date(new java.util.Date().getTime()));
 			System.out.println("GENERATED HOURS INSERT STRING: "
 					+ hourstmt.toString());
-			hourstmt.executeUpdate();
-			success=true;
+			success=(hourstmt.executeUpdate()>0?true:false);
+			//success=true;
 			hourstmt.close();	
 		}
 		
@@ -460,8 +467,7 @@ boolean addressSuccess=false;
 		
 		
 	}
-	
-	
+
 	private ObjectNode getAddressInfo(int id){
 		ObjectNode toreturn= new ObjectNode(JsonNodeFactory.instance);
 		StringBuilder masterID = new StringBuilder();
@@ -503,7 +509,56 @@ boolean addressSuccess=false;
 		
 	}
 	
-	
+	private ObjectNode getHoursInfo(int id){
+		ObjectNode toreturn= new ObjectNode(JsonNodeFactory.instance);
+		StringBuilder masterID = new StringBuilder();
+		masterID.append("SELECT * FROM ");
+		masterID.append(Constants.TABLE_RESTAURANT_HOURS);
+		masterID.append(" WHERE " + Constants.COLUMN_MASTER_ID_HOURS+ "= " +id+ "");
+		System.out.println("GET HOURS INFO ID QUERY:" + masterID.toString());
+		try {
+			PreparedStatement masterid = connection
+					.prepareStatement(masterID.toString());
+			//masterid.setString(1, email);
+			ResultSet results=masterid.executeQuery();
+
+			while (results.next()) {			
+				int WDOH = results.getInt(Constants.COLUMN_WEEKDAY_OPENING_HOUR);
+				int WEOH = results.getInt(Constants.COLUMN_WEEKEND_OPENING_HOUR);
+				int WDOM = results.getInt(Constants.COLUMN_WEEKDAY_OPENING_MINUTES);
+				int WEOM = results.getInt(Constants.COLUMN_WEEKEND_OPENING_MINUTES);
+				int WDCH = results.getInt(Constants.COLUMN_WEEKDAY_CLOSING_HOUR);
+				int WECH = results.getInt(Constants.COLUMN_WEEKEND_CLOSING_HOUR);
+				int WDCM = results.getInt(Constants.COLUMN_WEEKDAY_CLOSING_MINUTES);
+				int WECM = results.getInt(Constants.COLUMN_WEEKEND_CLOSING_MINUTES);
+				
+				toreturn.put("weekday_opening_hour", WDOH);
+				toreturn.put("weekend_opening_hour", WEOH);
+				
+				toreturn.put("weekday_opening_minutes", WDOM);
+				toreturn.put("weekend_opening_minutes", WEOM);
+				
+				toreturn.put("weekday_closing_hour", WDCH);
+				toreturn.put("weekend_closing_hour", WECH);
+				
+				toreturn.put("weekday_closing_minutes", WDCM);
+				toreturn.put("weekend_closing_minutes", WECM);
+				break;
+			}
+			results.close();
+			
+		}
+		catch(SQLException e){
+			
+			e.printStackTrace();
+		}
+		
+		
+		return toreturn;
+		
+		
+	}
+
 	private void disconnectFromDB() {
 		if (connection != null) {
 			try {
@@ -612,28 +667,17 @@ boolean addressSuccess=false;
 		
 	}
 	
-	static final String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-	static Random rnd = new Random();
+	
 
-	String randomString(int len) {
+	private String randomString(int len) {
+		final String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+		Random rnd = new Random();
 		StringBuilder sb = new StringBuilder(len);
 		for (int i = 0; i < len; i++)
 			sb.append(AB.charAt(rnd.nextInt(AB.length())));
 		return sb.toString();
 	}
 
-	public String formatter(String toget) {
-		
-		String newString="";
-		String my_new_str = toget.replaceAll("\\\\", " ");
-		
-		ObjectNode obj= new ObjectNode(JsonNodeFactory.instance);
-	
-		obj.with(my_new_str);
-		
-		//System.out.println(my_new_str);
-		return obj.toString();
-	}
 
 	
 	
