@@ -234,6 +234,9 @@ boolean addressSuccess=false;
 		//TODO set other address inactive
 		boolean success=true;
 		//ADDRESS TABLE IDs
+		if(OPERATION==INSERT_ONLY||setActiveFlagOff(Constants.TABLE_RESTAURANT_ADDRESS, id))
+		{
+		
 		String name=toInsert.get(Constants.COLUMN_NAME).asText();
 		String address_line1=toInsert.get(Constants.COLUMN_ADD1).asText();
 		String address_line2=toInsert.get(Constants.COLUMN_ADD2).asText();
@@ -254,11 +257,11 @@ boolean addressSuccess=false;
 		addressBuilder.append(Constants.COLUMN_CITY + ",");
 		addressBuilder.append(Constants.COLUMN_STATE + ",");
 		addressBuilder.append(Constants.COLUMN_ZIP + ",");
-		addressBuilder.append(Constants.COLUMN_LAT + ",");
-		addressBuilder.append(Constants.COLUMN_LONG + ",");
+		addressBuilder.append(Constants.COLUMN_LAT_LNG + ",");
+		//addressBuilder.append(Constants.COLUMN_LONG + ",");
 		addressBuilder.append(Constants.COLUMN_ACTIVE + ",");
 		addressBuilder.append(Constants.COLUMN_CREATED + ") ");
-		addressBuilder.append("VALUES (?,?,?,?,?,?,?,?,?,?)");
+		addressBuilder.append("VALUES (?,?,?,?,?,?,ST_MakePoint(?, ?),?,?)");
 	
 		try {
 			PreparedStatement addstmt = connection
@@ -272,8 +275,9 @@ boolean addressSuccess=false;
 			addstmt.setString(4, city);
 			addstmt.setString(5, state);
 			addstmt.setInt(6, zip);
-			addstmt.setDouble(7, geos.getLat().doubleValue());
-			addstmt.setDouble(8, geos.getLng().doubleValue());
+			
+			addstmt.setFloat(7, geos.getLat().floatValue());
+			addstmt.setFloat(8, geos.getLng().floatValue());
 			addstmt.setInt(9, 1);
 			addstmt.setDate(10,  new Date(new java.util.Date().getTime()));
 			System.out.println("GENERATED ADDRESS INSERT STRING: "
@@ -289,13 +293,16 @@ boolean addressSuccess=false;
 		}
 		
 		return success;
-		
+		}
+		return false;
 		
 	}
 	
 	public boolean persistProfileHoursData(JsonNode toInsert,int masterid){
 		//TODO set other hours inactive
 		boolean success=false;
+		setActiveFlagOff(Constants.TABLE_RESTAURANT_HOURS, masterid);
+		
 		int wd_o_h=toInsert.get(Constants.COLUMN_WEEKDAY_OPENING_HOUR).asInt();
 		int wd_o_m=toInsert.get(Constants.COLUMN_WEEKDAY_OPENING_MINUTES).asInt();
 		int we_o_h=toInsert.get(Constants.COLUMN_WEEKEND_OPENING_HOUR).asInt();
@@ -358,8 +365,8 @@ boolean addressSuccess=false;
 	}
 	
 	public boolean persistTypeData(JsonNode toInsert,int masterid){
-System.out.println("In TYPE PERSISTING");		
-boolean success=false;
+		
+        boolean success=false;
 		boolean types[]= new boolean[4];
 		 types[0]=toInsert.get(Constants.ORGANIC).asBoolean();
 		 types[1]=toInsert.get(Constants.GLUTEN_FREE).asBoolean();
@@ -367,7 +374,6 @@ boolean success=false;
 		 types[3]=toInsert.get(Constants.VEGAN).asBoolean();
 		 
 		 for(int i=0;i<types.length;i++){
-			 System.out.println("In TYPE LOOP");
 			if(types[i]){
 				StringBuilder typeBuilder= new StringBuilder();
 				typeBuilder.append("INSERT INTO ");
@@ -379,12 +385,10 @@ boolean success=false;
 				try {
 					PreparedStatement addstmt = connection
 							.prepareStatement(typeBuilder.toString());
-					System.out.println("Saving type data" + addstmt.toString());
 					addstmt.setInt(1, masterid);
 					addstmt.setInt(2, i+1);
-					System.out.println("Saving type data" + addstmt.toString());
+					System.out.println("INSERT TYPE QUERY:" + addstmt.toString());
 					success=(addstmt.executeUpdate()>0?true:false);
-					System.out.println("EXECUTED TYPE INSERT");
 					}
 				catch(SQLException e){
 					e.printStackTrace();
@@ -515,7 +519,8 @@ boolean success=false;
 		StringBuilder masterID = new StringBuilder();
 		masterID.append("SELECT * FROM ");
 		masterID.append(Constants.TABLE_RESTAURANT_ADDRESS);
-		masterID.append(" WHERE " + Constants.COLUMN_MASTER_ID_ADDRESS + "= " +id+ "");
+		masterID.append(" WHERE " + Constants.COLUMN_MASTER_ID_ADDRESS + "= " +id);
+		masterID.append(" AND "+Constants.COLUMN_ACTIVE_HOURS+ " =1" );
 		System.out.println("GET ADDRESS INFO ID QUERY:" + masterID.toString());
 		try {
 			PreparedStatement masterid = connection
@@ -556,7 +561,8 @@ boolean success=false;
 		StringBuilder masterID = new StringBuilder();
 		masterID.append("SELECT * FROM ");
 		masterID.append(Constants.TABLE_RESTAURANT_HOURS);
-		masterID.append(" WHERE " + Constants.COLUMN_MASTER_ID_HOURS+ "= " +id+ "");
+		masterID.append(" WHERE " + Constants.COLUMN_MASTER_ID_HOURS+ "= " +id);
+		masterID.append(" AND "+Constants.COLUMN_ACTIVE_HOURS+ " =1 " );
 		System.out.println("GET HOURS INFO ID QUERY:" + masterID.toString());
 		try {
 			PreparedStatement masterid = connection
@@ -608,13 +614,16 @@ boolean success=false;
 		 types[1]=false;
 		 types[2]=false;
 		 types[3]=false;
+		 String type_name[]={Constants.ORGANIC,Constants.GLUTEN_FREE,Constants.VEG,Constants.VEGAN};
+		 
+		 
 		for(int i=0;i<types.length;i++){
 		
 		StringBuilder masterID = new StringBuilder();
 		masterID.append("SELECT * FROM ");
 		masterID.append(Constants.TABLE_RESTAURANT_TAGS);
 		masterID.append(" WHERE " + Constants.COLUMN_MASTER_ID_TAGS + "= " +id);
-		masterID.append(" AND " + Constants.COLUMN_PROFILE_TAGS + "= "+ i+1);
+		masterID.append(" AND " + Constants.COLUMN_PROFILE_TAGS + "= "+ (i+1));
 		System.out.println("GET TYPES INFO QUERY:" + masterID.toString());
 		try {
 			PreparedStatement masterid = connection
@@ -623,7 +632,10 @@ boolean success=false;
 
 			while (results.next()) {
 				types[i]=true;
+				
 			}
+			
+			//toreturn.put(type_name[i],types[i]);
 			
 		}
 		catch(SQLException e){
@@ -633,10 +645,20 @@ boolean success=false;
 		
 		}
 		
-		toreturn.put(Constants.ORGANIC, types[0]);
+		for(int i=0;i<4;i++){
+			if(types[i]){
+				toreturn.put(Constants.ORGANIC, types[0]);
+				toreturn.put(Constants.GLUTEN_FREE, types[1]);
+				toreturn.put(Constants.VEG, types[2]);
+				toreturn.put(Constants.VEGAN, types[3]);
+				break;
+			}		
+		}
+		
+	/*	toreturn.put(Constants.ORGANIC, types[0]);
 		toreturn.put(Constants.GLUTEN_FREE, types[1]);
 		toreturn.put(Constants.VEG, types[2]);
-		toreturn.put(Constants.VEGAN, types[3]);
+		toreturn.put(Constants.VEGAN, types[3]);*/
 		
 		
 		return toreturn;
@@ -646,6 +668,34 @@ boolean success=false;
 	
 	}
 
+	private boolean setActiveFlagOff(String Table_Name,int id){
+		boolean success=false;
+		
+		StringBuilder updateQuery = new StringBuilder();
+		updateQuery.append("UPDATE ");
+		updateQuery.append(Table_Name);
+		updateQuery.append(" SET " + Constants.COLUMN_ACTIVE+" = 0");
+		updateQuery.append("WHERE "+Constants.COLUMN_MASTER_ID_ADDRESS + "=" + id);
+		System.out.println("GENERATED ACTIVE UPDATE STRING: "
+				+ updateQuery.toString());
+
+		try {
+			PreparedStatement stmt = connection
+					.prepareStatement(updateQuery.toString());
+			//stmt.setString(6, email);	
+			System.out
+					.println("GENERATED UPDATE QUERY: " + stmt.toString());
+			success=(stmt.executeUpdate()>0?true:false);
+			stmt.close();
+			}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+	
+		return success;	
+		
+	}
+	
 	private void disconnectFromDB() {
 		if (connection != null) {
 			try {

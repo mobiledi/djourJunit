@@ -27,8 +27,8 @@ public final class Constants {
 	final static String COLUMN_CITY = "city";
 	final static String COLUMN_STATE = "state";
 	final static String COLUMN_ZIP = "zip";
-	final static String COLUMN_LAT = "lat";
-	final static String COLUMN_LONG = "long";
+	final static String COLUMN_LAT_LNG = "lat_lng";
+	//final static String COLUMN_LONG = "long";
 	final static String COLUMN_ACTIVE="active_flag";
 	final static String COLUMN_CREATED="create_date";
 	
