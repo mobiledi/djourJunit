@@ -279,7 +279,7 @@ boolean addressSuccess=false;
 			addstmt.setFloat(7, geos.getLat().floatValue());
 			addstmt.setFloat(8, geos.getLng().floatValue());
 			addstmt.setInt(9, 1);
-			addstmt.setDate(10,  new Date(new java.util.Date().getTime()));
+			addstmt.setDate(10, new java.sql.Date(new java.util.Date().getTime()));
 			System.out.println("GENERATED ADDRESS INSERT STRING: "
 					+ addressBuilder.toString());
 			success=success&&(addstmt.executeUpdate()>0?true:false);

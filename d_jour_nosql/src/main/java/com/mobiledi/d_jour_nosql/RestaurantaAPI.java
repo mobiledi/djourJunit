@@ -5,6 +5,7 @@ import javax.ejb.Stateless;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -37,10 +38,11 @@ public class RestaurantaAPI {
 	@Produces(MediaType.TEXT_PLAIN)
 	@Path("/getprofile")
 	public JsonNode getProfile(JsonNode toget) {
-		
+		JsonNode toreturn=portaldjour.getUserDetails(toget);
+		System.out.println("Get Profile returns:" + toreturn);
 		//String user=toget.get("username").asText();
-		return portaldjour.getUserDetails(toget);//(" "+user + " sent from datas");
-	}
+		return toreturn;
+		}
 	
 	
 	
@@ -152,7 +154,7 @@ public class RestaurantaAPI {
 	@Path("/updateuser")
 	public String updatePortalUser(JsonNode toInsert) {
 		try {
-			System.out.println("Request string:" + toInsert.toString());
+			//System.out.println("Request string:" + toInsert.toString());
 			portaldjour.updateSignUpData(toInsert);
 			return "{\"status\":\"OK\"}";
 		} catch (Exception e) {
@@ -160,6 +162,25 @@ public class RestaurantaAPI {
 			return "{\"status\":\"FAIL\"}";
 		}
 	}
+	
+	
+/*Portal New update registration*/
+	
+	@PUT
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/updatenewuser")
+	public String updateNewPortalUser(JsonNode toInsert) {
+		try {
+			//System.out.println("Request string:" + toInsert.toString());
+			portaldjour.updateSignUpData(toInsert);
+			return "{\"status\":\"OK\"}";
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "{\"status\":\"FAIL\"}";
+		}
+	}
+	
 	
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
