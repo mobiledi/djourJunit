@@ -30,6 +30,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.healthmarketscience.sqlbuilder.dbspec.Column;
 
 
 @Stateless
@@ -158,6 +159,9 @@ boolean addressSuccess=false;
 		}
 
 	}
+	
+	
+	
 	
 	public boolean updateSignUpData(JsonNode toUpdate) {
 		boolean success=false;
@@ -517,11 +521,24 @@ boolean addressSuccess=false;
 	private ObjectNode getAddressInfo(int id){
 		ObjectNode toreturn= new ObjectNode(JsonNodeFactory.instance);
 		StringBuilder masterID = new StringBuilder();
-		masterID.append("SELECT * FROM ");
+		masterID.append("SELECT ");
+		masterID.append(Constants.COLUMN_ADD1 + ",");
+		masterID.append(Constants.COLUMN_ADD2 + ",");
+		masterID.append(Constants.COLUMN_CITY + ",");
+		masterID.append(Constants.COLUMN_STATE + ",");
+		masterID.append(Constants.COLUMN_ZIP + ",");
+		masterID.append("ST_X("+Constants.COLUMN_LAT_LNG+"::geometry) AS lat,");
+		masterID.append("ST_Y("+Constants.COLUMN_LAT_LNG+"::geometry) AS long");
+		//masterID.append(ST_Y(geogcolumn::geometry));
+		
+		masterID.append(" FROM ");
+		
+		
+		
 		masterID.append(Constants.TABLE_RESTAURANT_ADDRESS);
 		masterID.append(" WHERE " + Constants.COLUMN_MASTER_ID_ADDRESS + "= " +id);
 		masterID.append(" AND "+Constants.COLUMN_ACTIVE_HOURS+ " =1" );
-		System.out.println("GET ADDRESS INFO ID QUERY:" + masterID.toString());
+		System.out.println("GET ADDRESS WITH LAT LONG INFO ID QUERY:" + masterID.toString());
 		try {
 			PreparedStatement masterid = connection
 					.prepareStatement(masterID.toString());
@@ -534,12 +551,17 @@ boolean addressSuccess=false;
 				String city=results.getString(Constants.COLUMN_CITY);
 				String state=results.getString(Constants.COLUMN_STATE);
 				int zip=results.getInt(Constants.COLUMN_ZIP);
+				float lat=results.getFloat("lat");
+				float lng=results.getFloat("long");
+			
 				
 				toreturn.put(Constants.COLUMN_ADD1, address_line1);
 				toreturn.put(Constants.COLUMN_ADD2, address_line2);
 				toreturn.put(Constants.COLUMN_CITY, city);
 				toreturn.put(Constants.COLUMN_STATE, state);
 				toreturn.put(Constants.COLUMN_ZIP, zip);
+				toreturn.put("lat", lat);
+				toreturn.put("long", lng);
 				break;
 			}
 			results.close();

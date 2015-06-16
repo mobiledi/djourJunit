@@ -9,7 +9,7 @@ import com.mobiledi.d_jour_nosql.DjourPortalService;
 import junit.framework.TestCase;
 
 public class JunitTest extends TestCase {
-	private static final String USER_USERNAME = "earl@oldblinkinglight.com";//"cp@gmail.com";
+	private static final String USER_USERNAME = "cp@gmail.com";
 	private static final String USER_PASSWORD = "login123";
 	
 	private static final String NAME = "Old Blinking Light";
