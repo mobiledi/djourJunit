@@ -7,6 +7,8 @@ import javax.ejb.Stateless;
 
 import org.apache.commons.logging.Log;
 import org.codehaus.jackson.JsonNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.mongodb.DB;
 import com.mongodb.DBAddress;
@@ -22,14 +24,15 @@ import com.mongodb.util.JSON;
 //@Singleton
 public class DjourService {
 	private static final String APP_USER_COLLECTION_NAME = "AppUsers";
-	private static final String DATABASE = "djour_db";
+	private static final String DATABASE = "djour_app_db";
 	private static final String HOST = "localhost";
 	private static final int PORT = 27017;
 	private static MongoClient CLIENT; 
 	private DBCollection collections;
+	static Logger logger=LoggerFactory.getLogger(DjourService.class);
 	
 	public DjourService() {
-	}
+		}
 
 	public static String sayHello(String name){
 		return "D\'jour says Hello to " + name + " !";	
@@ -60,7 +63,7 @@ public class DjourService {
 			//if(CLIENT==null)
 			CLIENT = new MongoClient(host, port);
 			DB db = CLIENT.getDB(dbname);
-			System.out.println("Client open now..");
+			logger.info("Client open now..");
 			return db.getCollection(collectionName);
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
@@ -74,7 +77,7 @@ public class DjourService {
 		
 		DBObject getUser= QueryBuilder.start("username").is(username).and("password").is(password).get();
 		DBCursor cursor=collections.find(getUser);
-		System.out.println("Request to authenticate " + username +" returned: "+cursor.count());
+		logger.info("Request to authenticate " + username +" returned: "+cursor.count());
 		if(cursor.count()>0)	
 		{		closeConnection();
 			return true;
@@ -84,12 +87,14 @@ public class DjourService {
 	}
 
 	private void closeConnection() {
-		System.out.println("Closing Client..");
+		logger.debug("Closing Client..");
 		if (DjourService.CLIENT != null) {
 			DjourService.CLIENT.close();
-			System.out.println("Connection Closed..");
+			logger.debug("Connection Closed..");
 		}
 	}
+
+
 	
 	
 	

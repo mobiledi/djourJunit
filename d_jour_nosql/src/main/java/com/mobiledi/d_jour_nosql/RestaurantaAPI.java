@@ -196,4 +196,15 @@ public class RestaurantaAPI {
 		}
 	}
 	
+	//DB test query
+	
+	@GET
+	@Produces(MediaType.TEXT_PLAIN)
+	@Path("/gettypes")
+	public JsonNode getTypes() {
+		JsonNode obj= portaldjour.getAllTypes();
+		return obj;
+	}
+	
+	
 }

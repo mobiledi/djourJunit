@@ -9,7 +9,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
@@ -18,7 +17,8 @@ import javax.ejb.Stateless;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.node.JsonNodeFactory;
 import org.codehaus.jackson.node.ObjectNode;
-import org.codehaus.jackson.util.JsonParserDelegate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.code.geocoder.Geocoder;
 import com.google.code.geocoder.GeocoderRequestBuilder;
@@ -26,11 +26,7 @@ import com.google.code.geocoder.model.GeocodeResponse;
 import com.google.code.geocoder.model.GeocoderRequest;
 import com.google.code.geocoder.model.GeocoderResult;
 import com.google.code.geocoder.model.LatLng;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.healthmarketscience.sqlbuilder.dbspec.Column;
 
 
 @Stateless
@@ -38,14 +34,24 @@ public class DjourPortalService {
 
 	/* DB details */
 
-	final static String DATABASE = "djour";
+/*	final static String DATABASE = "djour";
 	final static String DB_USERNAME = "praks";
 	final static String DB_PASSWORD = "";
-	final static String DB_IP = "127.0.0.1:5432";
+	final static String DB_IP = "127.0.0.1:5432";*/
+	
+	//QA INSTANCE
+	// jdbc:postgresql://djourqadb.cf7cvypppwg2.us-west-1.rds.amazonaws.com:5432/djour
+	final static String DATABASE = "djour";
+	final static String DB_USERNAME = "djour_portal";
+	final static String DB_PASSWORD = "dj0ur";
+	final static String DB_IP = "djourqadb.cf7cvypppwg2.us-west-1.rds.amazonaws.com:5432";
+	
+	
 	final static String URL = "jdbc:postgresql://" + DB_IP + "/" + DATABASE;
 	final static int INSERT_ONLY=1;
 	final static int UPDATE_ONLY=2;
 	Connection connection = null;
+	static Logger logger=LoggerFactory.getLogger(DjourPortalService.class);
 
 	public boolean connectToDB() {
 		try {
@@ -53,12 +59,12 @@ public class DjourPortalService {
 					DB_PASSWORD);
 
 			if (connection == null) {
-				System.out.println("FAILED TO CONNECT TO POSTGRES");
+				logger.debug("FAILED TO CONNECT TO POSTGRES");
 				return false;
 			}
 
 			else {
-				System.out.println("Connected to POSTGRES db "
+				logger.debug("Connected to POSTGRES db "
 						+ connection.toString());
 				return true;
 			}
@@ -94,11 +100,11 @@ boolean addressSuccess=false;
 			masterBuilder.append(Constants.COLUMN_PASSWORD + ") ");
 			masterBuilder.append("VALUES (?,?,?,?,?,?)");
 
-			System.out.println("GENERATED MASTER INSERT STRING: "
+			logger.debug("GENERATED MASTER INSERT STRING: "
 					+ masterBuilder.toString());
 
 			try {
-				System.out.println(name + title + email + website + phone
+				logger.debug(name + title + email + website + phone
 						+ password);
 				PreparedStatement stmt = connection
 						.prepareStatement(masterBuilder.toString(),Statement.RETURN_GENERATED_KEYS);
@@ -128,7 +134,7 @@ boolean addressSuccess=false;
 			
 		} else {
 
-			System.out.println("Cannot connect to POSTGRES db");
+			logger.error("Cannot connect to POSTGRES db");
 
 		}
 		return (success&&addressSuccess);
@@ -154,7 +160,7 @@ boolean addressSuccess=false;
 
 		} else {
 
-			System.out.println("Cannot connect to POSTGRES db");
+			logger.error("Cannot connect to POSTGRES db");
 			return null;
 		}
 
@@ -191,11 +197,11 @@ boolean addressSuccess=false;
 			masterBuilder.append(Constants.COLUMN_PHONE + ") ");
 			//masterBuilder.append("VALUES (?,?,?,?,?,?)");
 			masterBuilder.append("= (?,?,?,?,?) WHERE "+Constants.COLUMN_MASTER_ID + "=" + masterid);
-			System.out.println("GENERATED MASTER UPDATE STRING: "
+			logger.debug("GENERATED MASTER UPDATE STRING: "
 					+ masterBuilder.toString());
 
 			try {
-				//System.out.println(name + title + email + website + phone
+				//logger.debug(name + title + email + website + phone
 				//		+ password);
 				PreparedStatement stmt = connection
 						.prepareStatement(masterBuilder.toString());
@@ -205,8 +211,7 @@ boolean addressSuccess=false;
 				stmt.setString(4, website);
 				stmt.setString(5, phone);
 				//stmt.setString(6, email);	
-				System.out
-						.println("GENERATED UPDATE QUERY: " + stmt.toString());
+				logger.debug("GENERATED UPDATE QUERY: " + stmt.toString());
 				success=(stmt.executeUpdate()>0?true:false);
 				
 				//ResultSet rs=stmt.getGeneratedKeys();
@@ -227,7 +232,7 @@ boolean addressSuccess=false;
 
 		} else {
 
-			System.out.println("Cannot connect to POSTGRES db");
+			logger.error("Cannot connect to POSTGRES db");
 
 		}
 		return (success&&addressSuccess&&hoursSuccess&&typesSuccess);
@@ -284,7 +289,7 @@ boolean addressSuccess=false;
 			addstmt.setFloat(8, geos.getLng().floatValue());
 			addstmt.setInt(9, 1);
 			addstmt.setDate(10, new java.sql.Date(new java.util.Date().getTime()));
-			System.out.println("GENERATED ADDRESS INSERT STRING: "
+			logger.debug("GENERATED ADDRESS INSERT STRING: "
 					+ addressBuilder.toString());
 			success=success&&(addstmt.executeUpdate()>0?true:false);
 			
@@ -348,7 +353,7 @@ boolean addressSuccess=false;
 			hourstmt.setInt(9, we_c_m);
 			hourstmt.setInt(10, 1);
 			hourstmt.setDate(11,  new Date(new java.util.Date().getTime()));
-			System.out.println("GENERATED HOURS INSERT STRING: "
+			logger.debug("GENERATED HOURS INSERT STRING: "
 					+ hourstmt.toString());
 			success=(hourstmt.executeUpdate()>0?true:false);
 			//success=true;
@@ -391,7 +396,7 @@ boolean addressSuccess=false;
 							.prepareStatement(typeBuilder.toString());
 					addstmt.setInt(1, masterid);
 					addstmt.setInt(2, i+1);
-					System.out.println("INSERT TYPE QUERY:" + addstmt.toString());
+					logger.debug("INSERT TYPE QUERY:" + addstmt.toString());
 					success=(addstmt.executeUpdate()>0?true:false);
 					}
 				catch(SQLException e){
@@ -417,7 +422,7 @@ boolean addressSuccess=false;
 		masterID.append("SELECT * FROM ");
 		masterID.append(Constants.TABLE_RESTAURANT_MASTER);
 		masterID.append(" WHERE " + Constants.COLUMN_EMAIL + "= '"+ username +"' AND " +Constants.COLUMN_PASSWORD + "='"+ password+"'");
-		System.out.println("GENERATED SELECT QUERY: " + masterID.toString());
+		logger.debug("GENERATED SELECT QUERY: " + masterID.toString());
 		try {
 			PreparedStatement masterid = connection
 					.prepareStatement(masterID.toString());
@@ -425,7 +430,7 @@ boolean addressSuccess=false;
 			ResultSet results=masterid.executeQuery();
 			while (results.next()) {
 				toreturn=true;
-				System.out.println("USER "+username +" is registered");
+				logger.debug("USER "+username +" is registered");
 			}
 			results.close();
 			
@@ -452,7 +457,7 @@ boolean addressSuccess=false;
 		masterID.append("SELECT * FROM ");
 		masterID.append(Constants.TABLE_RESTAURANT_MASTER);
 		masterID.append(" WHERE " + Constants.COLUMN_EMAIL + "= '" +email+ "'");
-		System.out.println("GET MASTER ID QUERY:" + masterID.toString());
+		logger.debug("GET MASTER ID QUERY:" + masterID.toString());
 		try {
 			PreparedStatement masterid = connection
 					.prepareStatement(masterID.toString());
@@ -461,7 +466,7 @@ boolean addressSuccess=false;
 
 			while (results.next()) {
 				toreturn=results.getInt("id");
-				System.out.println("Got master id: " + toreturn);
+				logger.debug("Got master id: " + toreturn);
 			break;
 			}
 			results.close();
@@ -482,7 +487,7 @@ boolean addressSuccess=false;
 		masterID.append("SELECT * FROM ");
 		masterID.append(Constants.TABLE_RESTAURANT_MASTER);
 		masterID.append(" WHERE " + Constants.COLUMN_MASTER_ID + "= " +id+ "");
-		System.out.println("GET MASTER INFO ID QUERY:" + masterID.toString());
+		logger.debug("GET MASTER INFO ID QUERY:" + masterID.toString());
 		try {
 			PreparedStatement masterid = connection
 					.prepareStatement(masterID.toString());
@@ -538,7 +543,7 @@ boolean addressSuccess=false;
 		masterID.append(Constants.TABLE_RESTAURANT_ADDRESS);
 		masterID.append(" WHERE " + Constants.COLUMN_MASTER_ID_ADDRESS + "= " +id);
 		masterID.append(" AND "+Constants.COLUMN_ACTIVE_HOURS+ " =1" );
-		System.out.println("GET ADDRESS WITH LAT LONG INFO ID QUERY:" + masterID.toString());
+		logger.debug("GET ADDRESS WITH LAT LONG INFO ID QUERY:" + masterID.toString());
 		try {
 			PreparedStatement masterid = connection
 					.prepareStatement(masterID.toString());
@@ -585,7 +590,7 @@ boolean addressSuccess=false;
 		masterID.append(Constants.TABLE_RESTAURANT_HOURS);
 		masterID.append(" WHERE " + Constants.COLUMN_MASTER_ID_HOURS+ "= " +id);
 		masterID.append(" AND "+Constants.COLUMN_ACTIVE_HOURS+ " =1 " );
-		System.out.println("GET HOURS INFO ID QUERY:" + masterID.toString());
+		logger.debug("GET HOURS INFO ID QUERY:" + masterID.toString());
 		try {
 			PreparedStatement masterid = connection
 					.prepareStatement(masterID.toString());
@@ -646,7 +651,7 @@ boolean addressSuccess=false;
 		masterID.append(Constants.TABLE_RESTAURANT_TAGS);
 		masterID.append(" WHERE " + Constants.COLUMN_MASTER_ID_TAGS + "= " +id);
 		masterID.append(" AND " + Constants.COLUMN_PROFILE_TAGS + "= "+ (i+1));
-		System.out.println("GET TYPES INFO QUERY:" + masterID.toString());
+		logger.debug("GET TYPES INFO QUERY:" + masterID.toString());
 		try {
 			PreparedStatement masterid = connection
 					.prepareStatement(masterID.toString());
@@ -698,15 +703,14 @@ boolean addressSuccess=false;
 		updateQuery.append(Table_Name);
 		updateQuery.append(" SET " + Constants.COLUMN_ACTIVE+" = 0");
 		updateQuery.append("WHERE "+Constants.COLUMN_MASTER_ID_ADDRESS + "=" + id);
-		System.out.println("GENERATED ACTIVE UPDATE STRING: "
+		logger.debug("GENERATED ACTIVE UPDATE STRING: "
 				+ updateQuery.toString());
 
 		try {
 			PreparedStatement stmt = connection
 					.prepareStatement(updateQuery.toString());
 			//stmt.setString(6, email);	
-			System.out
-					.println("GENERATED UPDATE QUERY: " + stmt.toString());
+			logger.debug("GENERATED UPDATE QUERY: " + stmt.toString());
 			success=(stmt.executeUpdate()>0?true:false);
 			stmt.close();
 			}
@@ -762,13 +766,13 @@ boolean addressSuccess=false;
 	 * "jdbc:postgresql://127.0.0.1:5432/djour", "praks", "");
 	 * 
 	 * if(connection==null){
-	 * System.out.println("FAILED TO CONNECT TO POSTGRES"); return
+	 * logger.debug("FAILED TO CONNECT TO POSTGRES"); return
 	 * "FAILED TO CONNECT TO POSTGRES";
 	 * 
 	 * 
 	 * } else {
 	 * 
-	 * System.out.println("SUCCESS  CONNECTED TO POSTGRES @ " +
+	 * logger.debug("SUCCESS  CONNECTED TO POSTGRES @ " +
 	 * connection.toString()); toreturn ="SUCCESS  CONNECTED TO POSTGRES @ " +
 	 * connection.toString(); }
 	 * 
@@ -790,7 +794,7 @@ boolean addressSuccess=false;
 	 * ResultSet rs = pst.executeQuery();
 	 * 
 	 * while (rs.next()) { System.out.print(rs.getString(1));
-	 * System.out.print(": "); System.out.println(rs.getString(2)); }
+	 * System.out.print(": "); logger.debug(rs.getString(2)); }
 	 * rs.close(); connection.close();
 	 * 
 	 * 
@@ -800,7 +804,7 @@ boolean addressSuccess=false;
 	 */
 
 	public LatLng getCo_ordinates(String address ){
-		System.out.println("STARTING GC");
+		logger.debug("STARTING GC");
 		
 		
 		final Geocoder geocoder = new Geocoder();
@@ -808,10 +812,10 @@ boolean addressSuccess=false;
 			GeocoderRequest geocoderRequest = new GeocoderRequestBuilder().setAddress(address).setLanguage("en").getGeocoderRequest();
 			GeocodeResponse geocoderResponse = geocoder.geocode(geocoderRequest);
 		    List<GeocoderResult> results=geocoderResponse.getResults();
-		System.out.print("REsult size "+results.size());
+		    logger.debug("REsult size "+results.size());
 			for(GeocoderResult result:results){
 				LatLng latLong=result.getGeometry().getLocation();
-				System.out.println("Lat: "+ latLong.getLat() + " Long"+ latLong.getLng() );
+				logger.debug("Lat: "+ latLong.getLat() + " Long"+ latLong.getLng() );
 				
 				return latLong;
 				
@@ -837,8 +841,45 @@ boolean addressSuccess=false;
 		return sb.toString();
 	}
 
+	public JsonNode getAllTypes() {
+		logger.debug("Testing DB Connection....Getting type info");
+		ObjectNode toreturn= new ObjectNode(JsonNodeFactory.instance);
+		//JsonObject toreturn= new JsonObject();;
+		if(connectToDB()){
+			StringBuilder queryString = new StringBuilder();
+			queryString.append("SELECT * FROM ");
+			queryString.append(Constants.TABLE_PROFILE_TAGS);
+			logger.debug("GET PROFILES INFO QUERY:" + queryString.toString());
+			try {
+				PreparedStatement query = connection
+						.prepareStatement(queryString.toString());
+				//masterid.setString(1, email);
+				ResultSet results=query.executeQuery();
+				while (results.next()) {
+					String name = results.getString(Constants.COLUMN_TAG_KEY);
+					String title = results.getString(Constants.COLUMN_TAG_VALUE);
+					toreturn.put(name, title);
+		
+				}
+			
+				results.close();
+				
+			}
+			catch(SQLException e){
+				e.printStackTrace();
+			}		
+		
+		
+	}
+		else{
+			
+			logger.error("Not Conncted to db to fetch profile tags");
+			
+		}
+		System.out.println("Returning:"+toreturn.toString());
+		return toreturn;
 
-	
+	}
 	
 	
 
