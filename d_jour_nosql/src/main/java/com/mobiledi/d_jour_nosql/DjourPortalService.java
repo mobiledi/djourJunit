@@ -32,11 +32,11 @@ public class DjourPortalService {
 
 	/* DB details */
 
-	/*
-	 * final static String DATABASE = "djour"; final static String DB_USERNAME =
-	 * "praks"; final static String DB_PASSWORD = ""; final static String DB_IP
-	 * = "127.0.0.1:5432";
-	 */
+	
+	/*  final static String DATABASE = "djour"; final static String DB_USERNAME =
+	  "praks"; final static String DB_PASSWORD = ""; final static String DB_IP
+	  = "127.0.0.1:5432";*/
+	 
 
 	// QA INSTANCE
 	// jdbc:postgresql://djourqadb.cf7cvypppwg2.us-west-1.rds.amazonaws.com:5432/djour
@@ -62,7 +62,7 @@ public class DjourPortalService {
 			}
 
 			else {
-				logger.info("Connected to POSTGRES db " + connection.toString());
+				logger.info("Connected to POSTGRES db ");
 				return true;
 			}
 

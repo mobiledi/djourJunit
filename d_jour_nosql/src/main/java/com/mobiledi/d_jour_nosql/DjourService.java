@@ -40,12 +40,15 @@ public class DjourService {
 }
 	/* saves the record into the db */
 
-	public void persistAppUser(JsonNode add) throws MongoException {
+	public boolean persistAppUser(JsonNode add) throws MongoException {
+		logger.info("New app User added: " + ((DBObject) JSON.parse(add.toString())).toString());
+		
 		collections=connectToDB(HOST, PORT, APP_USER_COLLECTION_NAME, DATABASE);
 		DBObject toInsert=(DBObject) JSON.parse(add.toString());		
 		collections.insert(toInsert);	
-		logger.debug("New app User added: " + toInsert.toString());
+		
 		closeConnection();
+return true;
 	}
 	
 /*	public List<DBObject> getData() {
@@ -75,11 +78,11 @@ public class DjourService {
 	}
 	
 	public boolean isUserRegisteredinApp(String username, String password) {
+		logger.info("Request to authenticate " + username );
 		collections=connectToDB(HOST, PORT, APP_USER_COLLECTION_NAME, DATABASE);
-		
 		DBObject getUser= QueryBuilder.start("username").is(username).and("password").is(password).get();
 		DBCursor cursor=collections.find(getUser);
-		logger.info("Request to authenticate " + username +" returned: "+cursor.count());
+		logger.info("User Registered?: "+cursor.count());
 		if(cursor.count()>0)	
 		{		closeConnection();
 			return true;

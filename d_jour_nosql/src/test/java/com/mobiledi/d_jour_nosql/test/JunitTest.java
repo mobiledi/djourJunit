@@ -3,14 +3,23 @@ package com.mobiledi.d_jour_nosql.test;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.node.JsonNodeFactory;
 import org.codehaus.jackson.node.ObjectNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.mobiledi.d_jour_nosql.DjourPortalService;
+import com.mobiledi.d_jour_nosql.DjourService;
 
 import junit.framework.TestCase;
 
 public class JunitTest extends TestCase {
-	private static final String USER_USERNAME = "earl@gmail.com";
-	private static final String USER_PASSWORD = "login123";
+
+	
+	private static final String APP_USER_USERNAME = "pp";
+	private static final String APP_USER_PASSWORD = "kk";
+	
+	
+	private static final String PORTAL_USER_USERNAME = "cp@gmail.com";
+	private static final String PORTAL_USER_PASSWORD = "login123";
 	
 	private static final String NAME = "Old Blinking Light";
 	private static final String TITLE = "Seasonal, Southwestern-inspired American fare";
@@ -33,14 +42,16 @@ public class JunitTest extends TestCase {
 	private static final int WECM = 00;
 	
 	
-	DjourPortalService djour;
+	DjourPortalService djourPortal;
+	DjourService djourApp;
 	
 	protected static void setUpBeforeClass() throws Exception {
 	}
 
 	protected void setUp() throws Exception {
 		super.setUp();
-		djour= new DjourPortalService();
+		djourPortal= new DjourPortalService();
+		djourApp=new DjourService();
 	}
 
 	protected void tearDown() throws Exception {
@@ -59,22 +70,41 @@ public class JunitTest extends TestCase {
 	/*Check if a user is registered in the db*/
 public void testUserRegisteredinportal() {
 		ObjectNode obj= new ObjectNode(JsonNodeFactory.instance);
-		obj.put("username", USER_USERNAME);
-		obj.put("password", USER_PASSWORD);
+		obj.put("username", PORTAL_USER_USERNAME);
+		obj.put("password", PORTAL_USER_PASSWORD);
 		JsonNode toAuthenticate=obj;
-		assertEquals("User is registered:", true, djour.isUserRegisteredinportal(toAuthenticate));
+		assertEquals("User is registered:", true, djourPortal.isUserRegisteredinportal(toAuthenticate));
 	}
 	
 	
 public void testGetUserDetails(){
 	ObjectNode obj= new ObjectNode(JsonNodeFactory.instance);
-	obj.put("username", USER_USERNAME);
-	obj.put("password", USER_PASSWORD);
-	JsonNode result=djour.getUserDetails(obj);
+	obj.put("username", PORTAL_USER_USERNAME);
+	obj.put("password", PORTAL_USER_PASSWORD);
+	JsonNode result=djourPortal.getUserDetails(obj);
 	System.out.println("User info:" + result.toString());
 	assertNotNull("Can't connect to db", result);
 		
 	}
+
+public void testUserRegisteredinApp() {
+	assertTrue("User is registered:", djourApp.isUserRegisteredinApp(APP_USER_USERNAME, APP_USER_PASSWORD));
+
+}
+
+
+public void testAppSignUp(){
+	ObjectNode testInput= new ObjectNode(JsonNodeFactory.instance);
+	testInput.put("fname", NAME);
+	testInput.put("lname", TITLE);
+	testInput.put("sex", EMAIL);
+	testInput.put("dob", PHONE);
+	testInput.put("password", APP_USER_PASSWORD);
+	assertEquals("APp user Signup was not successful", true, djourApp.persistAppUser(testInput));
+	
+	
+	
+}
 
 /*public void testSignUp(){
 	ObjectNode testInput= new ObjectNode(JsonNodeFactory.instance);
