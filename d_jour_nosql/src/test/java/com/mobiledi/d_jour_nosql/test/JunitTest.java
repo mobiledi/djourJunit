@@ -9,7 +9,7 @@ import com.mobiledi.d_jour_nosql.DjourPortalService;
 import junit.framework.TestCase;
 
 public class JunitTest extends TestCase {
-	private static final String USER_USERNAME = "cp@gmail.com";
+	private static final String USER_USERNAME = "earl@gmail.com";
 	private static final String USER_PASSWORD = "login123";
 	
 	private static final String NAME = "Old Blinking Light";
@@ -40,7 +40,7 @@ public class JunitTest extends TestCase {
 
 	protected void setUp() throws Exception {
 		super.setUp();
-		// djour= new DjourPortalService();
+		djour= new DjourPortalService();
 	}
 
 	protected void tearDown() throws Exception {
@@ -57,16 +57,16 @@ public class JunitTest extends TestCase {
 	}*/
 	
 	/*Check if a user is registered in the db*/
-/*	public void testUserRegisteredinportal() {
+public void testUserRegisteredinportal() {
 		ObjectNode obj= new ObjectNode(JsonNodeFactory.instance);
 		obj.put("username", USER_USERNAME);
 		obj.put("password", USER_PASSWORD);
 		JsonNode toAuthenticate=obj;
 		assertEquals("User is registered:", true, djour.isUserRegisteredinportal(toAuthenticate));
-	}*/
+	}
 	
 	
-/*public void testGetUserDetails(){
+public void testGetUserDetails(){
 	ObjectNode obj= new ObjectNode(JsonNodeFactory.instance);
 	obj.put("username", USER_USERNAME);
 	obj.put("password", USER_PASSWORD);
@@ -74,7 +74,7 @@ public class JunitTest extends TestCase {
 	System.out.println("User info:" + result.toString());
 	assertNotNull("Can't connect to db", result);
 		
-	}*/
+	}
 
 /*public void testSignUp(){
 	ObjectNode testInput= new ObjectNode(JsonNodeFactory.instance);

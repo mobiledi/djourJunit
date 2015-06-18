@@ -10,6 +10,7 @@ import org.codehaus.jackson.JsonNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.healthmarketscience.sqlbuilder.dbspec.basic.DbObject;
 import com.mongodb.DB;
 import com.mongodb.DBAddress;
 import com.mongodb.DBCollection;
@@ -41,7 +42,9 @@ public class DjourService {
 
 	public void persistAppUser(JsonNode add) throws MongoException {
 		collections=connectToDB(HOST, PORT, APP_USER_COLLECTION_NAME, DATABASE);
-		collections.insert((DBObject) JSON.parse(add.toString()));
+		DBObject toInsert=(DBObject) JSON.parse(add.toString());		
+		collections.insert(toInsert);	
+		logger.debug("New app User added: " + toInsert.toString());
 		closeConnection();
 	}
 	
@@ -63,7 +66,6 @@ public class DjourService {
 			//if(CLIENT==null)
 			CLIENT = new MongoClient(host, port);
 			DB db = CLIENT.getDB(dbname);
-			logger.info("Client open now..");
 			return db.getCollection(collectionName);
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
