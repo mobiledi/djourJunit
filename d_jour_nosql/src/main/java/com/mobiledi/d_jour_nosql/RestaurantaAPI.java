@@ -39,7 +39,7 @@ public class RestaurantaAPI {
 	@Path("/getprofile")
 	public JsonNode getProfile(JsonNode toget) {
 		JsonNode toreturn=portaldjour.getUserDetails(toget);
-		System.out.println("Get Profile returns:" + toreturn);
+		//System.out.println("Get Profile returns:" + toreturn);
 		//String user=toget.get("username").asText();
 		return toreturn;
 		}

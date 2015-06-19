@@ -87,13 +87,13 @@ public void testGetUserDetails(){
 		
 	}
 
-public void testUserRegisteredinApp() {
+/*public void testUserRegisteredinApp() {
 	assertTrue("User is registered:", djourApp.isUserRegisteredinApp(APP_USER_USERNAME, APP_USER_PASSWORD));
 
-}
+}*/
 
 
-public void testAppSignUp(){
+/*public void testAppSignUp(){
 	ObjectNode testInput= new ObjectNode(JsonNodeFactory.instance);
 	testInput.put("fname", NAME);
 	testInput.put("lname", TITLE);
@@ -104,7 +104,7 @@ public void testAppSignUp(){
 	
 	
 	
-}
+}*/
 
 /*public void testSignUp(){
 	ObjectNode testInput= new ObjectNode(JsonNodeFactory.instance);

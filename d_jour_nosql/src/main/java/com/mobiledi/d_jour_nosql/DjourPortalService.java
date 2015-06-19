@@ -33,14 +33,14 @@ public class DjourPortalService {
 	/* DB details */
 
 	
-	/*  final static String DATABASE = "djour"; final static String DB_USERNAME =
+	 /* final static String DATABASE = "djour"; final static String DB_USERNAME =
 	  "praks"; final static String DB_PASSWORD = ""; final static String DB_IP
 	  = "127.0.0.1:5432";*/
 	 
 
 	// QA INSTANCE
 	// jdbc:postgresql://djourqadb.cf7cvypppwg2.us-west-1.rds.amazonaws.com:5432/djour
-	final static String DATABASE = "djour";
+final static String DATABASE = "djour";
 	final static String DB_USERNAME = "djour_portal";
 	final static String DB_PASSWORD = "dj0ur";
 	final static String DB_IP = "djourqadb.cf7cvypppwg2.us-west-1.rds.amazonaws.com:5432";
@@ -62,7 +62,7 @@ public class DjourPortalService {
 			}
 
 			else {
-				logger.info("Connected to POSTGRES db ");
+				logger.error("Connected to POSTGRES db ");
 				return true;
 			}
 
@@ -101,7 +101,7 @@ public class DjourPortalService {
 					+ masterBuilder.toString());
 
 			try {
-				logger.debug("Request to add new Portal user:" + name + title
+				logger.info("Request to add new Portal user:" + name + title
 						+ email + website + phone + password);
 				PreparedStatement stmt = connection.prepareStatement(
 						masterBuilder.toString(),
@@ -142,7 +142,7 @@ public class DjourPortalService {
 
 		if (connectToDB()) {
 			int id = getMasterId(toGet.get("username").asText());
-			logger.debug("Requested User details for " + toGet.get("username").asText());
+			logger.info("Requested User details for " + toGet.get("username").asText());
 
 			ObjectNode toreturn = new ObjectNode(JsonNodeFactory.instance);
 			ObjectNode masterInfos = getMasterInfo(id);
@@ -174,11 +174,12 @@ public class DjourPortalService {
 		if (connectToDB()) {
 
 			int masterid = getMasterId(toUpdate.get("username").asText());
-			logger.debug("Request to UPDATE User details for " + toUpdate.get("username").asText());
+			logger.info("Request to UPDATE User details for " + toUpdate.get("username").asText());
 
 			String name = toUpdate.get(Constants.COLUMN_NAME).asText();
 			String title = toUpdate.get(Constants.COLUMN_TITLE).asText();
 			String email = toUpdate.get(Constants.COLUMN_EMAIL).asText();
+			String image = toUpdate.get(Constants.COLUMN_BANNER_IMAGE).asText();
 			String phone = toUpdate.get(Constants.COLUMN_PHONE).asText();
 			String website = toUpdate.get(Constants.COLUMN_WEBSITE).asText();
 			// String password =
@@ -190,13 +191,14 @@ public class DjourPortalService {
 			masterBuilder.append(" SET (" + Constants.COLUMN_NAME + ",");
 			masterBuilder.append(Constants.COLUMN_TITLE + ",");
 			masterBuilder.append(Constants.COLUMN_EMAIL + ",");
+			masterBuilder.append(Constants.COLUMN_BANNER_IMAGE + ",");
 			masterBuilder.append(Constants.COLUMN_WEBSITE + ",");
 			// masterBuilder.append(Constants.COLUMN_PHONE + ",");
 			masterBuilder.append(Constants.COLUMN_PHONE + ") ");
 			// masterBuilder.append("VALUES (?,?,?,?,?,?)");
-			masterBuilder.append("= (?,?,?,?,?) WHERE "
+			masterBuilder.append("= (?,?,?,decode(?,'base64'),?,?) WHERE "
 					+ Constants.COLUMN_MASTER_ID + "=" + masterid);
-			logger.info("Generated master info update String: "
+			logger.debug("Generated master info update String: "
 					+ masterBuilder.toString());
 
 			try {
@@ -207,10 +209,11 @@ public class DjourPortalService {
 				stmt.setString(1, name);
 				stmt.setString(2, title);
 				stmt.setString(3, email);
-				stmt.setString(4, website);
-				stmt.setString(5, phone);
+				stmt.setString(4, image);
+				stmt.setString(5, website);
+				stmt.setString(6, phone);
 				// stmt.setString(6, email);
-				logger.info("Generated master info update query: " + stmt.toString());
+				logger.debug("Generated master info update query: " + stmt.toString());
 				success = (stmt.executeUpdate() > 0 ? true : false);
 
 				// ResultSet rs=stmt.getGeneratedKeys();
@@ -292,7 +295,7 @@ public class DjourPortalService {
 				addstmt.setInt(9, 1);
 				addstmt.setDate(10,
 						new java.sql.Date(new java.util.Date().getTime()));
-				logger.info("Generated Address insert query: "
+				logger.debug("Generated Address insert query: "
 						+ addstmt.toString());
 				success = success
 						&& (addstmt.executeUpdate() > 0 ? true : false);
@@ -423,7 +426,7 @@ public class DjourPortalService {
 			boolean toreturn = false;
 			String username = toAuthenticate.get(Constants.USERNAME).asText();
 			String password = toAuthenticate.get(Constants.PASSWORD).asText();
-			logger.debug("Request to authenticate portal user : " +username);
+			logger.info("Request to authenticate portal user : " +username);
 			StringBuilder masterID = new StringBuilder();
 			masterID.append("SELECT * FROM ");
 			masterID.append(Constants.TABLE_RESTAURANT_MASTER);
@@ -438,7 +441,7 @@ public class DjourPortalService {
 				ResultSet results = masterid.executeQuery();
 				while (results.next()) {
 					toreturn = true;
-					logger.debug("USER " + username + " is registered");
+					logger.info("USER " + username + " is registered");
 				}
 				results.close();
 
@@ -490,7 +493,7 @@ public class DjourPortalService {
 	private ObjectNode getMasterInfo(int id) {
 		ObjectNode toreturn = new ObjectNode(JsonNodeFactory.instance);
 		StringBuilder masterID = new StringBuilder();
-		masterID.append("SELECT * FROM ");
+		masterID.append("SELECT name,title,email,phone,website,encode(banner_image,'base64') AS banner_image FROM ");
 		masterID.append(Constants.TABLE_RESTAURANT_MASTER);
 		masterID.append(" WHERE " + Constants.COLUMN_MASTER_ID + "= " + id + "");
 		logger.info("GET MASTER INFO QUERY:" + masterID.toString());
@@ -504,12 +507,14 @@ public class DjourPortalService {
 				String name = results.getString(Constants.COLUMN_NAME);
 				String title = results.getString(Constants.COLUMN_TITLE);
 				String email = results.getString(Constants.COLUMN_EMAIL);
+				String image = results.getString(Constants.COLUMN_BANNER_IMAGE);
 				String phone = results.getString(Constants.COLUMN_PHONE);
 				String website = results.getString(Constants.COLUMN_WEBSITE);
 
 				toreturn.put("name", name);
 				toreturn.put("title", title);
 				toreturn.put("email", email);
+				toreturn.put("banner_image", image);
 				toreturn.put("phone", phone);
 				toreturn.put("website", website);
 				break;
