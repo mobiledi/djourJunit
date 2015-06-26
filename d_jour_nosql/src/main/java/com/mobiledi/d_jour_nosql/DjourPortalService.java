@@ -1,6 +1,8 @@
 package com.mobiledi.d_jour_nosql;
 
 import com.mobiledi.d_jour_nosql.Constants;
+import com.mongodb.BasicDBObject;
+import com.mongodb.util.JSON;
 
 import java.sql.Connection;
 import java.sql.Date;
@@ -9,12 +11,17 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.ejb.Stateless;
 
 import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.JsonNodeFactory;
 import org.codehaus.jackson.node.ObjectNode;
 import org.slf4j.Logger;
@@ -33,14 +40,14 @@ public class DjourPortalService {
 	/* DB details */
 
 	
-	 /* final static String DATABASE = "djour"; final static String DB_USERNAME =
+	  /*final static String DATABASE = "djour"; final static String DB_USERNAME =
 	  "praks"; final static String DB_PASSWORD = ""; final static String DB_IP
-	  = "127.0.0.1:5432";*/
+	  = "127.0.0.1:5432";
 	 
-
+*/
 	// QA INSTANCE
 	// jdbc:postgresql://djourqadb.cf7cvypppwg2.us-west-1.rds.amazonaws.com:5432/djour
-final static String DATABASE = "djour";
+		final static String DATABASE = "djour";
 	final static String DB_USERNAME = "djour_portal";
 	final static String DB_PASSWORD = "dj0ur";
 	final static String DB_IP = "djourqadb.cf7cvypppwg2.us-west-1.rds.amazonaws.com:5432";
@@ -164,6 +171,34 @@ final static String DATABASE = "djour";
 		}
 
 	}
+	
+	public JsonNode getRestaurantProfile(int id) {
+
+		if (connectToDB()) {
+			//int id = getMasterId(toGet.get("username").asText());
+			logger.info("Requested RestaurantProfile for " + id);
+			ObjectNode toreturn = new ObjectNode(JsonNodeFactory.instance);
+			ObjectNode masterInfos = getMasterInfo(id);		
+			ObjectNode addressInfos = getAddressInfo(id);
+			ObjectNode hoursInfos = getHoursInfo(id);
+			ObjectNode typesInfos = getTypesInfo(id);
+			 toreturn.putAll(masterInfos);
+			toreturn.putAll(addressInfos);
+			toreturn.putAll(hoursInfos);
+			toreturn.putAll(typesInfos);		
+			disconnectFromDB();
+			return toreturn;
+
+		} else {
+
+			logger.error("Cannot connect to POSTGRES db");
+			return null;
+		}
+
+	}
+
+	
+	
 
 	public boolean updateSignUpData(JsonNode toUpdate) {
 		boolean success = false;
@@ -457,7 +492,39 @@ final static String DATABASE = "djour";
 		else
 			return false;
 	}
+///
+	public JsonNode getRestaurants() {
 
+		if (connectToDB()) {
+			ArrayList<Integer> ids = getUniqueMasterId();
+			ArrayNode toreturn = new ArrayNode(JsonNodeFactory.instance);
+			for(int id:ids){
+				ObjectNode singleObject = new ObjectNode(JsonNodeFactory.instance);
+				ObjectNode masterInfos = getMasterInfo(id);
+				ObjectNode addressInfos = getAddressInfo(id);
+				ObjectNode hoursInfos = getHoursInfo(id);
+				ObjectNode typesInfos = getTypesInfo(id);
+				singleObject.putAll(masterInfos);
+				singleObject.putAll(addressInfos);
+				singleObject.putAll(hoursInfos);
+				singleObject.putAll(typesInfos);
+				toreturn.add(singleObject);
+			}
+			disconnectFromDB();
+			return toreturn;
+
+		} else {
+
+			logger.error("Cannot connect to POSTGRES db");
+			return null;
+		}
+
+	}
+	
+	
+	
+	
+///
 	private int getMasterId(String key) {
 		int toreturn = 0;
 		// String email = toFind.get(Constants.COLUMN_EMAIL).asText();
@@ -489,12 +556,44 @@ final static String DATABASE = "djour";
 
 		return toreturn;
 	}
+	
+	private ArrayList<Integer> getUniqueMasterId() {
+		
+		ArrayList<Integer> ids= new ArrayList<Integer>();
+		//int toreturn = 0;
+		StringBuilder masterID = new StringBuilder();
+		masterID.append("SELECT id FROM ");
+		masterID.append(Constants.TABLE_RESTAURANT_MASTER);
+		
+		try {
+			PreparedStatement masterid = connection.prepareStatement(masterID
+					.toString());
+			logger.debug("Get Unique Master ID query:" + masterid.toString());
+			ResultSet results = masterid.executeQuery();
+
+			while (results.next()) {
+				//toreturn = results.getInt("id");
+				ids.add(results.getInt("id"));
+				logger.debug("Got Unique master id: " + results.getInt("id") );
+				//break;
+			}
+			results.close();
+
+		} catch (SQLException e) {
+
+			e.printStackTrace();
+		}
+
+		return ids;
+	}
+	
+	
 
 	private ObjectNode getMasterInfo(int id) {
 		ObjectNode toreturn = new ObjectNode(JsonNodeFactory.instance);
 		StringBuilder masterID = new StringBuilder();
-		masterID.append("SELECT name,title,email,phone,website,encode(banner_image,'base64') AS banner_image FROM ");
-		masterID.append(Constants.TABLE_RESTAURANT_MASTER);
+		masterID.append("SELECT id,name,title,email,phone,website,encode(banner_image,'base64') AS banner_image FROM ");
+			masterID.append(Constants.TABLE_RESTAURANT_MASTER);
 		masterID.append(" WHERE " + Constants.COLUMN_MASTER_ID + "= " + id + "");
 		logger.info("GET MASTER INFO QUERY:" + masterID.toString());
 		try {
@@ -504,13 +603,15 @@ final static String DATABASE = "djour";
 			ResultSet results = masterid.executeQuery();
 
 			while (results.next()) {
+				int restaurant_id = results.getInt(Constants.COLUMN_MASTER_ID);
 				String name = results.getString(Constants.COLUMN_NAME);
 				String title = results.getString(Constants.COLUMN_TITLE);
-				String email = results.getString(Constants.COLUMN_EMAIL);
+				String email = results.getString(Constants.COLUMN_EMAIL);	
 				String image = results.getString(Constants.COLUMN_BANNER_IMAGE);
 				String phone = results.getString(Constants.COLUMN_PHONE);
 				String website = results.getString(Constants.COLUMN_WEBSITE);
 
+				toreturn.put("id", restaurant_id);
 				toreturn.put("name", name);
 				toreturn.put("title", title);
 				toreturn.put("email", email);
@@ -884,6 +985,30 @@ final static String DATABASE = "djour";
 		System.out.println("Returning:" + toreturn.toString());
 		return toreturn;
 
+	}
+	
+	private static JsonNode merge(JsonNode mainNode, JsonNode updateNode) {
+
+	    Iterator<String> fieldNames = updateNode.getFieldNames();
+	    while (fieldNames.hasNext()) {
+
+	        String fieldName = fieldNames.next();
+	        JsonNode jsonNode = mainNode.get(fieldName);
+	        // if field exists and is an embedded object
+	        if (jsonNode != null && jsonNode.isObject()) {
+	            merge(jsonNode, updateNode.get(fieldName));
+	        }
+	        else {
+	            if (mainNode instanceof ObjectNode) {
+	                // Overwrite field
+	                JsonNode value = updateNode.get(fieldName);
+	                ((ObjectNode) mainNode).put(fieldName, value);
+	            }
+	        }
+
+	    }
+
+	    return mainNode;
 	}
 
 }

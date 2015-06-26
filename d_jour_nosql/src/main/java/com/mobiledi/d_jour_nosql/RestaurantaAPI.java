@@ -44,7 +44,23 @@ public class RestaurantaAPI {
 		return toreturn;
 		}
 	
+	/*get list of all restaurants listed*/
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/getrestaurants")
+	public String getRestaurantLists() {
+		JsonNode toreturn=portaldjour.getRestaurants();
+		return toreturn.toString();
+		}
 	
+	
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/getrestaurants/{id}")
+	public String getRestaurantprofile(@PathParam("id") int id) {
+		JsonNode toreturn=portaldjour.getRestaurantProfile(id);
+		return toreturn.toString();
+		}
 	
 	
 	/*Portal users registration*/

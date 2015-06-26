@@ -61,6 +61,28 @@ public class JunitTest extends TestCase {
 	public void testApp() {
 		assertTrue(true);
 	}
+/*	public void testGetUserDetails(){
+		//ObjectNode obj= new ObjectNode(JsonNodeFactory.instance);
+		//obj.put("username", PORTAL_USER_USERNAME);
+		//obj.put("password", PORTAL_USER_PASSWORD);
+		JsonNode result=djourPortal.getRestaurants();
+		System.out.println("Restaurants info:" + result.toString());
+		assertNotNull("Can't connect to db", result);
+			
+		}
+	
+	public void testRestaurantDetails(){
+		int id=1;
+		//ObjectNode obj= new ObjectNode(JsonNodeFactory.instance);
+		//obj.put("username", PORTAL_USER_USERNAME);
+		//obj.put("password", PORTAL_USER_PASSWORD);
+		JsonNode result=djourPortal.getRestaurantProfile(id);
+		System.out.println("Restaurants Profile for ID: "+id + " -- "  + result.toString());
+		assertNotNull("Can't connect to db", result);
+			
+		}*/
+	
+	
 /*
 	public void testDBConnection() {	
 		boolean connected=djour.connectToDB();
@@ -68,16 +90,16 @@ public class JunitTest extends TestCase {
 	}*/
 	
 	/*Check if a user is registered in the db*/
-public void testUserRegisteredinportal() {
+/*public void testUserRegisteredinportal() {
 		ObjectNode obj= new ObjectNode(JsonNodeFactory.instance);
 		obj.put("username", PORTAL_USER_USERNAME);
 		obj.put("password", PORTAL_USER_PASSWORD);
 		JsonNode toAuthenticate=obj;
 		assertEquals("User is registered:", true, djourPortal.isUserRegisteredinportal(toAuthenticate));
 	}
+	*/
 	
-	
-public void testGetUserDetails(){
+/*public void testGetUserDetails(){
 	ObjectNode obj= new ObjectNode(JsonNodeFactory.instance);
 	obj.put("username", PORTAL_USER_USERNAME);
 	obj.put("password", PORTAL_USER_PASSWORD);
@@ -85,7 +107,7 @@ public void testGetUserDetails(){
 	System.out.println("User info:" + result.toString());
 	assertNotNull("Can't connect to db", result);
 		
-	}
+	}*/
 
 /*public void testUserRegisteredinApp() {
 	assertTrue("User is registered:", djourApp.isUserRegisteredinApp(APP_USER_USERNAME, APP_USER_PASSWORD));
