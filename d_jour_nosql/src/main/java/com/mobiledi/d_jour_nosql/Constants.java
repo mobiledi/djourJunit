@@ -31,6 +31,8 @@ public final class Constants {
 	//final static String COLUMN_LONG = "long";
 	final static String COLUMN_ACTIVE="active_flag";
 	final static String COLUMN_CREATED="create_date";
+	final static String COLUMN_LATITUDE = "latitude";
+	final static String COLUMN_LONGITUDE = "longitude";
 	
 	/* HOURS TABLE details */
 	final static String TABLE_RESTAURANT_HOURS = "restaurant_hours";

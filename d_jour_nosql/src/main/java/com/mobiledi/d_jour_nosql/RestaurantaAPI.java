@@ -19,6 +19,8 @@ import org.codehaus.jackson.node.JsonNodeFactory;
 import org.codehaus.jackson.node.ObjectNode;
 import org.jboss.resteasy.specimpl.ResponseBuilderImpl;
 
+import com.google.code.geocoder.model.LatLng;
+
 @Path("/api/portal")
 @Stateless
 public class RestaurantaAPI {
@@ -203,13 +205,21 @@ public class RestaurantaAPI {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/getlatlong")
 	public String getLatLong(JsonNode toInsert) {
+		ObjectNode toreturn=new ObjectNode(JsonNodeFactory.instance);
 		try {
-			portaldjour.getCo_ordinates(toInsert.get("address").getTextValue());					
-			return "{\"status\":\"OK\"}";
+			LatLng latLong= portaldjour.getCo_ordinates(toInsert.get("address").getTextValue());					
+			
+			toreturn.put("Status", "ok");
+			toreturn.put("address", toInsert.get("address").getTextValue());
+			toreturn.put("latitude", latLong.getLat());
+			toreturn.put("longitude", latLong.getLng());		
+			
+			
 		} catch (Exception e) {
 			e.printStackTrace();
-			return "{\"status\":\"FAIL\"}";
+			toreturn.put("Status", "fail");
 		}
+		return toreturn.toString();
 	}
 	
 	//DB test query

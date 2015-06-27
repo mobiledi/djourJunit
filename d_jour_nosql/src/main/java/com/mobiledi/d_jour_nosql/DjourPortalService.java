@@ -40,16 +40,16 @@ public class DjourPortalService {
 	/* DB details */
 
 	
-	  /*final static String DATABASE = "djour"; final static String DB_USERNAME =
+	/* final static String DATABASE = "djour"; final static String DB_USERNAME =
 	  "praks"; final static String DB_PASSWORD = ""; final static String DB_IP
 	  = "127.0.0.1:5432";
-	 
-*/
+	 */
+
 	// QA INSTANCE
 	// jdbc:postgresql://djourqadb.cf7cvypppwg2.us-west-1.rds.amazonaws.com:5432/djour
-		final static String DATABASE = "djour";
-	final static String DB_USERNAME = "djour_portal";
-	final static String DB_PASSWORD = "dj0ur";
+final static String DATABASE = "djour";
+	final static String DB_USERNAME = "djourqa";//"djour_portal";
+	final static String DB_PASSWORD = "dj0urqalpha";//"dj0ur";
 	final static String DB_IP = "djourqadb.cf7cvypppwg2.us-west-1.rds.amazonaws.com:5432";
 
 	final static String URL = "jdbc:postgresql://" + DB_IP + "/" + DATABASE;
@@ -307,9 +307,11 @@ public class DjourPortalService {
 			addressBuilder.append(Constants.COLUMN_LAT_LNG + ",");
 			// addressBuilder.append(Constants.COLUMN_LONG + ",");
 			addressBuilder.append(Constants.COLUMN_ACTIVE + ",");
-			addressBuilder.append(Constants.COLUMN_CREATED + ") ");
+			addressBuilder.append(Constants.COLUMN_CREATED + ", ");
+			addressBuilder.append(Constants.COLUMN_LATITUDE + ",");
+			addressBuilder.append(Constants.COLUMN_LONGITUDE + ") ");
 			addressBuilder
-					.append("VALUES (?,?,?,?,?,?,ST_MakePoint(?, ?),?,?)");
+					.append("VALUES (?,?,?,?,?,?,ST_MakePoint(?, ?),?,?,?,?)");
 
 			try {
 				PreparedStatement addstmt = connection.prepareStatement(
@@ -330,6 +332,8 @@ public class DjourPortalService {
 				addstmt.setInt(9, 1);
 				addstmt.setDate(10,
 						new java.sql.Date(new java.util.Date().getTime()));
+				addstmt.setDouble(11, geos.getLat().doubleValue());
+				addstmt.setDouble(12, geos.getLng().doubleValue());
 				logger.debug("Generated Address insert query: "
 						+ addstmt.toString());
 				success = success
@@ -640,6 +644,10 @@ public class DjourPortalService {
 		masterID.append(Constants.COLUMN_CITY + ",");
 		masterID.append(Constants.COLUMN_STATE + ",");
 		masterID.append(Constants.COLUMN_ZIP + ",");
+		///
+		masterID.append(Constants.COLUMN_LATITUDE + ",");
+		masterID.append(Constants.COLUMN_LONGITUDE + ",");
+		///
 		masterID.append("ST_X(" + Constants.COLUMN_LAT_LNG
 				+ "::geometry) AS lat,");
 		masterID.append("ST_Y(" + Constants.COLUMN_LAT_LNG
@@ -666,9 +674,10 @@ public class DjourPortalService {
 				String city = results.getString(Constants.COLUMN_CITY);
 				String state = results.getString(Constants.COLUMN_STATE);
 				int zip = results.getInt(Constants.COLUMN_ZIP);
-				float lat = results.getFloat("lat");
-				float lng = results.getFloat("long");
-
+				/*float lat = results.getFloat("lat");
+				float lng = results.getFloat("long");*/
+				double lat = results.getFloat(Constants.COLUMN_LATITUDE);
+				double lng = results.getFloat(Constants.COLUMN_LONGITUDE);
 				toreturn.put(Constants.COLUMN_ADD1, address_line1);
 				toreturn.put(Constants.COLUMN_ADD2, address_line2);
 				toreturn.put(Constants.COLUMN_CITY, city);
@@ -914,7 +923,7 @@ public class DjourPortalService {
 	 */
 
 	public LatLng getCo_ordinates(String address) {
-		logger.debug("STARTING Geo Coder");
+		//logger.debug("STARTING Geo Coder");
 
 		final Geocoder geocoder = new Geocoder();
 		try {
