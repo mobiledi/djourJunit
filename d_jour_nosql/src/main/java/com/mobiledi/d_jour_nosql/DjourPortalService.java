@@ -430,7 +430,25 @@ final static String DATABASE = "djour";
 		types[1] = toInsert.get(Constants.GLUTEN_FREE).asBoolean();
 		types[2] = toInsert.get(Constants.VEG).asBoolean();
 		types[3] = toInsert.get(Constants.VEGAN).asBoolean();
-
+		//DELETE OLD TYPES
+		
+		
+		StringBuilder delBuilder = new StringBuilder();
+		delBuilder.append("DELETE FROM ");
+		delBuilder.append(Constants.TABLE_RESTAURANT_TAGS);
+		delBuilder.append(" WHERE " + Constants.COLUMN_MASTER_ID_TAGS);
+		delBuilder.append("=" +masterid);
+		try{
+			PreparedStatement delStatement = connection
+					.prepareStatement(delBuilder.toString());
+			delStatement.executeQuery();
+			logger.debug("Types info REady to Update : ");
+		}
+		catch(SQLException e){
+			logger.debug("Types Update failed OR new Record"  + e.getMessage());
+				
+		}
+		
 		for (int i = 0; i < types.length; i++) {
 			if (types[i]) {
 				StringBuilder typeBuilder = new StringBuilder();
@@ -762,8 +780,16 @@ final static String DATABASE = "djour";
 		types[1] = false;
 		types[2] = false;
 		types[3] = false;
+		
+		
 		String type_name[] = { Constants.ORGANIC, Constants.GLUTEN_FREE,
 				Constants.VEG, Constants.VEGAN };
+		
+		
+		
+		
+		
+		
 
 		for (int i = 0; i < types.length; i++) {
 
