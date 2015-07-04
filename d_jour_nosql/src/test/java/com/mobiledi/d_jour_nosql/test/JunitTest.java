@@ -6,8 +6,8 @@ import org.codehaus.jackson.node.ObjectNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.mobiledi.d_jour_nosql.DjourPortalService;
-import com.mobiledi.d_jour_nosql.DjourService;
+import com.mobiledi.djourDAO.DjourAppDAO;
+import com.mobiledi.djourDAO.RestaurantManagerDAO;
 
 import junit.framework.TestCase;
 
@@ -42,16 +42,16 @@ public class JunitTest extends TestCase {
 	private static final int WECM = 00;
 	
 	
-	DjourPortalService djourPortal;
-	DjourService djourApp;
+	RestaurantManagerDAO djourPortal;
+	DjourAppDAO djourApp;
 	
 	protected static void setUpBeforeClass() throws Exception {
 	}
 
 	protected void setUp() throws Exception {
 		super.setUp();
-		djourPortal= new DjourPortalService();
-		djourApp=new DjourService();
+		djourPortal= new RestaurantManagerDAO();
+		djourApp=new DjourAppDAO();
 	}
 
 	protected void tearDown() throws Exception {

@@ -1,4 +1,4 @@
-package com.mobiledi.d_jour_nosql;
+package com.mobiledi.djour;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -6,6 +6,8 @@ import java.util.Set;
 import javax.ws.rs.ApplicationPath;
 
 import org.jboss.resteasy.plugins.interceptors.CorsFilter;
+
+import com.mobiledi.djourDAO.DjourAppDAO;
 
 
 @ApplicationPath("/api")
@@ -15,7 +17,7 @@ public class RestApplication extends javax.ws.rs.core.Application {
   @Override
   public Set<Class<?>> getClasses() {
     HashSet<Class<?>> clazzes = new HashSet<>();
-    clazzes.add(DjourService.class);
+    clazzes.add(DjourAppDAO.class);
     return clazzes;
   }
 

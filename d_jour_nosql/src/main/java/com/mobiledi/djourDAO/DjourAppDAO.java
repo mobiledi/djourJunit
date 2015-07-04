@@ -1,4 +1,4 @@
-package com.mobiledi.d_jour_nosql;
+package com.mobiledi.djourDAO;
 
 import java.net.UnknownHostException;
 import java.util.List;
@@ -23,16 +23,16 @@ import com.mongodb.util.JSON;
 
 @Stateless
 //@Singleton
-public class DjourService {
+public class DjourAppDAO {
 	private static final String APP_USER_COLLECTION_NAME = "AppUsers";
 	private static final String DATABASE = "djour_app_db";
 	private static final String HOST = "localhost";
 	private static final int PORT = 27017;
 	private static MongoClient CLIENT; 
 	private DBCollection collections;
-	static Logger logger=LoggerFactory.getLogger(DjourService.class);
+	static Logger logger=LoggerFactory.getLogger(DjourAppDAO.class);
 	
-	public DjourService() {
+	public DjourAppDAO() {
 		}
 
 	public static String sayHello(String name){
@@ -93,8 +93,8 @@ return true;
 
 	private void closeConnection() {
 		logger.debug("Closing Client..");
-		if (DjourService.CLIENT != null) {
-			DjourService.CLIENT.close();
+		if (DjourAppDAO.CLIENT != null) {
+			DjourAppDAO.CLIENT.close();
 			logger.debug("Connection Closed..");
 		}
 	}

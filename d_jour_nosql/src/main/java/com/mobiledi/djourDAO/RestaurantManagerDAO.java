@@ -1,6 +1,6 @@
-package com.mobiledi.d_jour_nosql;
+package com.mobiledi.djourDAO;
 
-import com.mobiledi.d_jour_nosql.Constants;
+import com.mobiledi.djour.Constants;
 import com.mongodb.BasicDBObject;
 import com.mongodb.util.JSON;
 
@@ -35,7 +35,7 @@ import com.google.code.geocoder.model.GeocoderResult;
 import com.google.code.geocoder.model.LatLng;
 
 @Stateless
-public class DjourPortalService {
+public class RestaurantManagerDAO {
 
 	/* DB details */
 
@@ -56,7 +56,7 @@ final static String DATABASE = "djour";
 	final static int INSERT_ONLY = 1;
 	final static int UPDATE_ONLY = 2;
 	Connection connection = null;
-	static Logger logger = LoggerFactory.getLogger(DjourPortalService.class);
+	static Logger logger = LoggerFactory.getLogger(RestaurantManagerDAO.class);
 
 	public boolean connectToDB() {
 		try {

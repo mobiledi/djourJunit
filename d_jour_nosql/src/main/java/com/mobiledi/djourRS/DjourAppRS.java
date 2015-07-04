@@ -1,4 +1,4 @@
-package com.mobiledi.d_jour_nosql;
+package com.mobiledi.djourRS;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -11,16 +11,18 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import org.codehaus.jackson.JsonNode;
+
+import com.mobiledi.djourDAO.DjourAppDAO;
 @Path("/api")
 @Stateless
-public class DjourApi {
+public class DjourAppRS {
 	@EJB
-	DjourService djour;
+	DjourAppDAO djour;
 	@GET
 	@Produces({"application/javascript"})
 	@Path("/sayhello/{name}")
 	public String hello(@PathParam("name") String name) {
-		return DjourService.sayHello(name + "new data");
+		return DjourAppDAO.sayHello(name + "new data");
 	}
 
 	/*@GET

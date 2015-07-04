@@ -1,4 +1,4 @@
-package com.mobiledi.d_jour_nosql;
+package com.mobiledi.djourRS;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -20,12 +20,15 @@ import org.codehaus.jackson.node.ObjectNode;
 import org.jboss.resteasy.specimpl.ResponseBuilderImpl;
 
 import com.google.code.geocoder.model.LatLng;
+import com.mobiledi.djour.Constants;
+import com.mobiledi.djourDAO.DjourAppDAO;
+import com.mobiledi.djourDAO.RestaurantManagerDAO;
 
 @Path("/api/portal")
 @Stateless
-public class RestaurantaAPI {
+public class RestaurantManagerRS {
 	@EJB
-	DjourPortalService portaldjour;
+	RestaurantManagerDAO portaldjour;
 	
 	
 	@GET
@@ -33,7 +36,7 @@ public class RestaurantaAPI {
 	@Produces(MediaType.TEXT_PLAIN)
 	@Path("/datahello/{name}")
 	public String hello(@PathParam("name") String name) {
-		return DjourService.sayHello(" "+name + " sent from datas");
+		return DjourAppDAO.sayHello(" "+name + " sent from datas");
 	}
 	
 	@POST
