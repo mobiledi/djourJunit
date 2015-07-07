@@ -1,9 +1,6 @@
 package com.mobiledi.djourDAO;
 
 import com.mobiledi.djour.Constants;
-import com.mongodb.BasicDBObject;
-import com.mongodb.util.JSON;
-
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.DriverManager;
@@ -15,9 +12,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import javax.ejb.Stateless;
 
 import org.codehaus.jackson.JsonNode;
