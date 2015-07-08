@@ -16,6 +16,7 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import javax.persistence.PersistenceContext;
 
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.node.ArrayNode;
@@ -32,6 +33,8 @@ import com.google.code.geocoder.model.GeocoderResult;
 import com.google.code.geocoder.model.LatLng;
 import com.mobiledi.djour.Constants;
 import com.mobiledi.entities.ProfileTag;
+import com.mobiledi.entities.RestaurantAddress;
+import com.mobiledi.entities.RestaurantMaster;
 
 @Stateless
 public class RestaurantManagerDAO {
@@ -57,7 +60,8 @@ public class RestaurantManagerDAO {
 	final static int UPDATE_ONLY = 2;
 	Connection connection = null;
 	static Logger logger = LoggerFactory.getLogger(RestaurantManagerDAO.class);
-
+	@PersistenceContext(unitName= "d_jour_nosql")
+    private EntityManager entityManager;
 	public boolean connectToDB() {
 		try {
 			connection = DriverManager.getConnection(URL, DB_USERNAME,
@@ -1049,16 +1053,30 @@ public class RestaurantManagerDAO {
 	
 	public void testEm(){
 		
-		 EntityManagerFactory emfactory = Persistence.createEntityManagerFactory( "d_jour_nosql" );
-	      EntityManager entitymanager = emfactory.createEntityManager();
-	      
-	      for(int i=0;i<4;i++){
+		 	//EntityManagerFactory emfactory = Persistence.createEntityManagerFactory( "d_jour_nosql" );
+	     // EntityManager entitymanager = emfactory.createEntityManager();
+		List<RestaurantMaster> results = entityManager.createNamedQuery("RestaurantMaster.findAll").getResultList();
+		for(int i=0;i<results.size();i++){
+			
+			   System.out.println("Tag master name = " + results.get(i).getName());
+			      System.out.println("Tag address = " + results.get(i).getRestaurantAddresses().get(0).getAddressLine1());
+			     System.out.println("Tag hour = " +results.get(i).getRestaurantHours().get(0).getWeekdayOpeningHour());
+			
+			
+		}
+		
+		//RestaurantAddress ra=entityManager.createNamedQuery("")
+	      /*for(int i=0;i<4;i++){
 	   
-	    ProfileTag tag = entitymanager.find(ProfileTag.class, i);
+	    ProfileTag tag = entityManager.find(ProfileTag.class, i+1);
+	    
 	      System.out.println("Tag ID = " + tag.getId());
 	      System.out.println("Tag key = " + tag.getTagKey());
 	      System.out.println("Tag Value = " + tag.getTagValue());
 	      }
-	      }
+	      */
+	     // entitymanager.close();
+	     // emfactory.close();
+	}
 
 }
