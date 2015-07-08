@@ -236,4 +236,14 @@ public class RestaurantManagerRS {
 	}
 	
 	
+	
+	@GET
+	@Produces(MediaType.TEXT_PLAIN)
+	@Path("/gettest")
+	public String gettestem() {
+		portaldjour.testEm();
+		return "{\"STATUS\":\"OK\"}";
+	}
+	
+	
 }

@@ -1,14 +1,18 @@
 package com.mobiledi.entities;
 
 import java.io.Serializable;
+
 import javax.persistence.*;
+
+import org.postgis.PGgeometry;
+
 import java.sql.Timestamp;
 
 
-/**
+/*//**
  * The persistent class for the restaurant_address database table.
  * 
- */
+ *//*/*/
 @Entity
 @Table(name="restaurant_address")
 @NamedQuery(name="RestaurantAddress.findAll", query="SELECT r FROM RestaurantAddress r")
@@ -37,7 +41,7 @@ public class RestaurantAddress implements Serializable {
 	private Timestamp createDate;
 
 	@Column(name="lat_lng")
-	private Object latLng;
+	private PGgeometry latLng;
 
 	private double latitude;
 
@@ -105,11 +109,11 @@ public class RestaurantAddress implements Serializable {
 		this.createDate = createDate;
 	}
 
-	public Object getLatLng() {
+	public PGgeometry getLatLng() {
 		return this.latLng;
 	}
 
-	public void setLatLng(Object latLng) {
+	public void setLatLng(PGgeometry latLng) {
 		this.latLng = latLng;
 	}
 

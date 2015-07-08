@@ -1,6 +1,5 @@
 package com.mobiledi.djourDAO;
 
-import com.mobiledi.djour.Constants;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.DriverManager;
@@ -12,7 +11,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
+
 import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.node.ArrayNode;
@@ -27,6 +30,8 @@ import com.google.code.geocoder.model.GeocodeResponse;
 import com.google.code.geocoder.model.GeocoderRequest;
 import com.google.code.geocoder.model.GeocoderResult;
 import com.google.code.geocoder.model.LatLng;
+import com.mobiledi.djour.Constants;
+import com.mobiledi.entities.ProfileTag;
 
 @Stateless
 public class RestaurantManagerDAO {
@@ -34,18 +39,19 @@ public class RestaurantManagerDAO {
 	/* DB details */
 
 	
-	/* final static String DATABASE = "djour"; final static String DB_USERNAME =
-	  "praks"; final static String DB_PASSWORD = ""; final static String DB_IP
-	  = "127.0.0.1:5432";
-	 */
-
+	 final static String DATABASE = "djour"; 
+	 final static String DB_USERNAME = "praks"; 
+	 final static String DB_PASSWORD = ""; 
+	 final static String DB_IP = "127.0.0.1:5432";
+	 
+	  /*
 	// QA INSTANCE
 	// jdbc:postgresql://djourqadb.cf7cvypppwg2.us-west-1.rds.amazonaws.com:5432/djour
-final static String DATABASE = "djour";
+	final static String DATABASE = "djour";
 	final static String DB_USERNAME = "djourqa";//"djour_portal";
 	final static String DB_PASSWORD = "dj0urqalpha";//"dj0ur";
 	final static String DB_IP = "djourqadb.cf7cvypppwg2.us-west-1.rds.amazonaws.com:5432";
-
+*/
 	final static String URL = "jdbc:postgresql://" + DB_IP + "/" + DATABASE;
 	final static int INSERT_ONLY = 1;
 	final static int UPDATE_ONLY = 2;
@@ -1039,5 +1045,20 @@ final static String DATABASE = "djour";
 
 	    return mainNode;
 	}
+	
+	
+	public void testEm(){
+		
+		 EntityManagerFactory emfactory = Persistence.createEntityManagerFactory( "d_jour_nosql" );
+	      EntityManager entitymanager = emfactory.createEntityManager();
+	      
+	      for(int i=0;i<4;i++){
+	   
+	    ProfileTag tag = entitymanager.find(ProfileTag.class, i);
+	      System.out.println("Tag ID = " + tag.getId());
+	      System.out.println("Tag key = " + tag.getTagKey());
+	      System.out.println("Tag Value = " + tag.getTagValue());
+	      }
+	      }
 
 }

@@ -27,11 +27,11 @@
   <ejb-local-ref>
     <ejb-ref-name>ejb/data</ejb-ref-name>
     <ejb-ref-type>Session</ejb-ref-type>
-    <local>com.mobiledi.d_jour_nosql.DjourService</local>  
+    <local>com.mobiledi.djourRS.DjourAppRS</local>  
   </ejb-local-ref>
     <ejb-local-ref>
     <ejb-ref-name>ejb/data1</ejb-ref-name>
     <ejb-ref-type>Session</ejb-ref-type>
-    <local>com.mobiledi.d_jour_nosql.DjourPortalService</local>  
+    <local>com.mobiledi.djourRS.RestaurantManagerRS</local>  
   </ejb-local-ref>
 </web-app>
