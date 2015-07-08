@@ -4,7 +4,10 @@ import java.io.Serializable;
 
 import javax.persistence.*;
 
+import org.hibernate.annotations.Type;
 import org.postgis.PGgeometry;
+
+import com.vividsolutions.jts.geom.Geometry;
 
 import java.sql.Timestamp;
 
@@ -40,7 +43,10 @@ public class RestaurantAddress implements Serializable {
 	@Column(name="create_date")
 	private Timestamp createDate;
 
-	@Column(name="lat_lng")
+	@Column(name="lat_lng",columnDefinition="Geometry")
+	//@Type(type = "org.hibernate.spatial.GeometryType")
+	@Type(type="org.hibernate.spatial.GeometryType")
+	//@Column(name="lat_lng",columnDefinition="Geometry") 
 	private PGgeometry latLng;
 
 	private double latitude;
