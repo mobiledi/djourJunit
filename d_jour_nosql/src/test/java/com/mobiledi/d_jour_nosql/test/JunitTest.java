@@ -1,11 +1,5 @@
 package com.mobiledi.d_jour_nosql.test;
 
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.node.JsonNodeFactory;
-import org.codehaus.jackson.node.ObjectNode;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.mobiledi.djourDAO.DjourAppDAO;
 import com.mobiledi.djourDAO.RestaurantManagerDAO;
 

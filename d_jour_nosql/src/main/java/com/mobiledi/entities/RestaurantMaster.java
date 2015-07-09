@@ -42,7 +42,7 @@ public class RestaurantMaster implements Serializable {
 	private String website;
 
 	//bi-directional many-to-one association to RestaurantAddress
-	@OneToMany(mappedBy="restaurantMaster")
+	@OneToMany(mappedBy="restaurantMaster", fetch=FetchType.LAZY)
 	private List<RestaurantAddress> restaurantAddresses;
 
 	//bi-directional many-to-one association to RestaurantFeedItem

@@ -1,4 +1,4 @@
-package com.mobiledi.djour;
+/*package com.mobiledi.djour;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -32,4 +32,4 @@ public class RestApplication extends javax.ws.rs.core.Application {
     }
     return singletons;
   }
-}
+}*/

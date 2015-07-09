@@ -1,18 +1,13 @@
 package com.mobiledi.djourDAO;
 
 import java.net.UnknownHostException;
-import java.util.List;
-
 import javax.ejb.Stateless;
 
-import org.apache.commons.logging.Log;
 import org.codehaus.jackson.JsonNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-//import com.healthmarketscience.sqlbuilder.dbspec.basic.DbObject;
 import com.mongodb.DB;
-import com.mongodb.DBAddress;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;

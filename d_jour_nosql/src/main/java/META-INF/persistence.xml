@@ -12,9 +12,10 @@ xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/x
 		<properties>
 		 <property name="hibernate.connection.driver_class" value="org.postgresql.Driver" />
 		<property name="hibernate.transaction.jta.platform" value="org.hibernate.service.jta.platform.internal.JBossAppServerJtaPlatform" />
-		 <property name="hibernate.dialect" value="org.hibernate.spatial.dialect.postgis.PostgisDialect"/> 
+	  <property name="hibernate.dialect" value="org.hibernate.spatial.dialect.postgis.PostgisDialect"/> 
 		 <property name="dialect" value="org.hibernate.dialect.PostgreSQLDialect" />
 		  <property name="hibernate.connection.url" value='jdbc:postgresql://localhost:5432/djour'/>
+		  <property name="hibernate.temp.use_jdbc_metadata_defaults" value="false" />
         <property name="hibernate.connection.username" value="praks"/>
         <property name="hibernate.connection.password" value=""/>       
 		<property name="hibernate.show_sql" value="true" />    

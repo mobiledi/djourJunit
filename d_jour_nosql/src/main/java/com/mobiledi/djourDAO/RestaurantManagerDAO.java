@@ -1,5 +1,6 @@
 package com.mobiledi.djourDAO;
 
+import java.io.UnsupportedEncodingException;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.DriverManager;
@@ -14,8 +15,6 @@ import java.util.Random;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import javax.persistence.PersistenceContext;
 
 import org.codehaus.jackson.JsonNode;
@@ -33,8 +32,11 @@ import com.google.code.geocoder.model.GeocoderResult;
 import com.google.code.geocoder.model.LatLng;
 import com.mobiledi.djour.Constants;
 import com.mobiledi.entities.ProfileTag;
-import com.mobiledi.entities.RestaurantAddress;
 import com.mobiledi.entities.RestaurantMaster;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.io.ParseException;
+import com.vividsolutions.jts.io.WKTReader;
 
 @Stateless
 public class RestaurantManagerDAO {
@@ -1057,16 +1059,40 @@ public class RestaurantManagerDAO {
 	     // EntityManager entitymanager = emfactory.createEntityManager();
 		List<RestaurantMaster> results = entityManager.createNamedQuery("RestaurantMaster.findAll").getResultList();
 		for(int i=0;i<results.size();i++){
+			System.out.println("Tag master name = " + results.get(i).getName());
+			System.out.println("Tag hour = " +results.get(i).getRestaurantHours().get(0).getWeekdayOpeningHour());
+			 
 			
-			   System.out.println("Tag master name = " + results.get(i).getName());
-			      System.out.println("Tag address = " + results.get(i).getRestaurantAddresses().get(0).getAddressLine1());
+/*			     try {
+			    	 WKTReader myreader= new WKTReader(new GeometryFactory());
+			    	   System.out.println("Tag master name = " + results.get(i).getName());
+					     System.out.println("Tag address = " + results.get(i).getRestaurantAddresses().get(0).getAddressLine1());
+					     if(myreader.read(results.get(i).getRestaurantAddresses().get(1).getLatLng().getBytes("st_asbinary").toString())!=null){
+					    	 System.out.println("latlong NOT null");
+					    	 Geometry geom1= (myreader.read(results.get(i).getRestaurantAddresses().get(1).getLatLng().getBytes("st_asbinary").toString()));
+					    	 
+					    	 Geometry geom= new GeometryFactory() .createGeometry(geom1);
+					    	 
+					     System.out.println("Tag lat = " + geom.getCoordinates()[0]);
+					     }
+					     else{
+					    	 System.out.println("latlong IS null");
+						    	 
+					     }
+					     
+					     
+					//System.out.println("Tag long = " + geom.getCoordinates()[1] );
+			     } catch (ParseException | UnsupportedEncodingException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			     System.out.println("Tag hour = " +results.get(i).getRestaurantHours().get(0).getWeekdayOpeningHour());
-			
+			*/
 			
 		}
 		
 		//RestaurantAddress ra=entityManager.createNamedQuery("")
-	      /*for(int i=0;i<4;i++){
+/*	      for(int i=0;i<4;i++){
 	   
 	    ProfileTag tag = entityManager.find(ProfileTag.class, i+1);
 	    
@@ -1074,9 +1100,7 @@ public class RestaurantManagerDAO {
 	      System.out.println("Tag key = " + tag.getTagKey());
 	      System.out.println("Tag Value = " + tag.getTagValue());
 	      }
-	      */
-	     // entitymanager.close();
-	     // emfactory.close();
+*/
+	
 	}
-
 }

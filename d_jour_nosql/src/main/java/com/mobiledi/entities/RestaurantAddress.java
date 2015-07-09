@@ -1,13 +1,22 @@
 package com.mobiledi.entities;
 
+import java.io.IOException;
+import java.io.Reader;
 import java.io.Serializable;
 
 import javax.persistence.*;
 
 import org.hibernate.annotations.Type;
+//import org.postgis.PGgeometry;
+
+
 import org.postgis.PGgeometry;
+import org.postgresql.util.PGobject;
 
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.io.WKTReader;
+import com.vividsolutions.jts.io.WKTWriter;
 
 import java.sql.Timestamp;
 
@@ -44,10 +53,8 @@ public class RestaurantAddress implements Serializable {
 	private Timestamp createDate;
 
 	@Column(name="lat_lng",columnDefinition="Geometry")
-	//@Type(type = "org.hibernate.spatial.GeometryType")
-	@Type(type="org.hibernate.spatial.GeometryType")
-	//@Column(name="lat_lng",columnDefinition="Geometry") 
-	private PGgeometry latLng;
+	//@Type(type="org.hibernate.spatial.GeometryType")
+	private  String latLng;
 
 	private double latitude;
 
@@ -115,11 +122,14 @@ public class RestaurantAddress implements Serializable {
 		this.createDate = createDate;
 	}
 
-	public PGgeometry getLatLng() {
+	public  String getLatLng() {
 		return this.latLng;
 	}
 
-	public void setLatLng(PGgeometry latLng) {
+	public void setLatLng( String latLng) {
+		//Geometry geom= new WKTReader().read(latLng.toString());
+		
+		//Geometry geom = myWKBReader.read(myResultSet.getBytes("st_asbinary"));
 		this.latLng = latLng;
 	}
 
