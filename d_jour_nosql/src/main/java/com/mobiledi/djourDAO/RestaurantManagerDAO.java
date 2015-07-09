@@ -1061,6 +1061,7 @@ public class RestaurantManagerDAO {
 		for(int i=0;i<results.size();i++){
 			System.out.println("Tag master name = " + results.get(i).getName());
 			System.out.println("Tag hour = " +results.get(i).getRestaurantHours().get(0).getWeekdayOpeningHour());
+			  System.out.println("Tag address = " + results.get(i).getRestaurantAddresses().get(0).getAddressLine1());
 			 
 			
 /*			     try {

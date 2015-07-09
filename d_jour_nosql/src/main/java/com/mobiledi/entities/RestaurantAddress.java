@@ -126,7 +126,7 @@ public class RestaurantAddress implements Serializable {
 		return this.latLng;
 	}
 
-	public void setLatLng( String latLng) {
+	public void setLatLng(String latLng) {
 		//Geometry geom= new WKTReader().read(latLng.toString());
 		
 		//Geometry geom = myWKBReader.read(myResultSet.getBytes("st_asbinary"));
