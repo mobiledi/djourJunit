@@ -1,5 +1,7 @@
 package com.mobiledi.djourDAO;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.sql.Connection;
 import java.sql.Date;
@@ -21,6 +23,9 @@ import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.JsonNodeFactory;
 import org.codehaus.jackson.node.ObjectNode;
+import org.eclipse.persistence.platform.database.PostgreSQLPlatform;
+import org.hibernate.spatial.dialect.postgis.PostgisDialect;
+import org.postgis.PGgeometry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,7 +40,11 @@ import com.mobiledi.entities.ProfileTag;
 import com.mobiledi.entities.RestaurantMaster;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.io.ByteArrayInStream;
+import com.vividsolutions.jts.io.InStream;
+import com.vividsolutions.jts.io.InputStreamInStream;
 import com.vividsolutions.jts.io.ParseException;
+import com.vividsolutions.jts.io.WKBReader;
 import com.vividsolutions.jts.io.WKTReader;
 
 @Stateless
@@ -333,8 +342,8 @@ public class RestaurantManagerDAO {
 				addstmt.setString(5, state);
 				addstmt.setInt(6, zip);
 
-				addstmt.setFloat(7, geos.getLat().floatValue());
-				addstmt.setFloat(8, geos.getLng().floatValue());
+				addstmt.setDouble(7, geos.getLat().doubleValue());
+				addstmt.setDouble(8, geos.getLng().doubleValue());
 				addstmt.setInt(9, 1);
 				addstmt.setDate(10,
 						new java.sql.Date(new java.util.Date().getTime()));
@@ -1059,10 +1068,38 @@ public class RestaurantManagerDAO {
 	     // EntityManager entitymanager = emfactory.createEntityManager();
 		List<RestaurantMaster> results = entityManager.createNamedQuery("RestaurantMaster.findAll").getResultList();
 		for(int i=0;i<results.size();i++){
-			System.out.println("Tag master name = " + results.get(i).getName());
-			System.out.println("Tag hour = " +results.get(i).getRestaurantHours().get(0).getWeekdayOpeningHour());
-			  System.out.println("Tag address = " + results.get(i).getRestaurantAddresses().get(0).getAddressLine1());
+			logger.info("Tag master name = " + results.get(i).getName());
+			logger.info("Tag hour = " +results.get(i).getRestaurantHours().get(0).getWeekdayOpeningHour());
+			logger.info("Tag address = " + results.get(i).getRestaurantAddresses().get(0).getAddressLine1());
+			 String latLngstr= results.get(i).getRestaurantAddresses().get(0).getLatLng();
+			 logger.info("Tag latlng="+ results.get(i).getRestaurantAddresses().get(0).getLatLng().toString());
+			  
+				try {
+
+org.postgis.Geometry pgg= PGgeometry.geomFromString(latLngstr);
+logger.info("PGGeometry Values: "+ pgg.getValue());
+					GeometryFactory gepmfac= new GeometryFactory();
+					//gepmfac.
+					Geometry geom= null;
+					geom=new WKBReader(gepmfac).read(WKBReader.hexToBytes(latLngstr));
+					geom.setSRID(geom.);
+//;
+					
+					//new WKBReader(gepmfac).hexToBytes(arg0)
+					logger.info("Passed  conversion");
+					
+					logger.info("Lat-Lng"+geom.getCoordinates()[0] + " Co-ordinate " + geom.getCoordinate()  + " SRID " + geom.getSRID() );
+					logger.info("Tag lat="+ results.get(i).getRestaurantAddresses().get(0).getLatitude());
+					logger.info("Tag lng="+ results.get(i).getRestaurantAddresses().get(0).getLongitude());
+				
+				} catch (ParseException | SQLException e) {
+					logger.info("Failed  conversion");
+					e.printStackTrace();
+				}
+			
 			 
+			  
+			  
 			
 /*			     try {
 			    	 WKTReader myreader= new WKTReader(new GeometryFactory());

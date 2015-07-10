@@ -21,7 +21,7 @@ public class RestaurantAddress_ {
 	public static volatile SingularAttribute<RestaurantAddress, String> addressLine2;
 	public static volatile SingularAttribute<RestaurantAddress, String> city;
 	public static volatile SingularAttribute<RestaurantAddress, Timestamp> createDate;
-	public static volatile SingularAttribute<RestaurantAddress,String> latLng;
+	public static volatile SingularAttribute<RestaurantAddress, Geometry> latLng;
 	public static volatile SingularAttribute<RestaurantAddress, Double> latitude;
 	public static volatile SingularAttribute<RestaurantAddress, Double> longitude;
 	public static volatile SingularAttribute<RestaurantAddress, String> state;

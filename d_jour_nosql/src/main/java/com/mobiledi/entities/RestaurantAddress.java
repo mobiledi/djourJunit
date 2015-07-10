@@ -1,22 +1,17 @@
 package com.mobiledi.entities;
 
-import java.io.IOException;
-import java.io.Reader;
 import java.io.Serializable;
 
 import javax.persistence.*;
 
-import org.hibernate.annotations.Type;
-//import org.postgis.PGgeometry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-
-import org.postgis.PGgeometry;
-import org.postgresql.util.PGobject;
-
+import com.mobiledi.djourDAO.RestaurantManagerDAO;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.io.WKTReader;
-import com.vividsolutions.jts.io.WKTWriter;
+import com.vividsolutions.jts.io.ParseException;
+import com.vividsolutions.jts.io.WKBReader;
 
 import java.sql.Timestamp;
 
@@ -31,7 +26,7 @@ import java.sql.Timestamp;
 
 public class RestaurantAddress implements Serializable {
 	private static final long serialVersionUID = 1L;
-
+	static Logger logger = LoggerFactory.getLogger(RestaurantAddress.class);
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	@Column(unique=true, nullable=false)
@@ -122,15 +117,14 @@ public class RestaurantAddress implements Serializable {
 		this.createDate = createDate;
 	}
 
-	public  String getLatLng() {
+	public String getLatLng() {
+		//logger.debug("GET Bytestring"+latLng.toString() +" ==== Length "+ latLng.length());
 		return this.latLng;
 	}
 
 	public void setLatLng(String latLng) {
-		//Geometry geom= new WKTReader().read(latLng.toString());
 		
-		//Geometry geom = myWKBReader.read(myResultSet.getBytes("st_asbinary"));
-		this.latLng = latLng;
+		this.latLng=latLng;
 	}
 
 	public double getLatitude() {
