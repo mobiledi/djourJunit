@@ -40,6 +40,7 @@ import com.mobiledi.entities.ProfileTag;
 import com.mobiledi.entities.RestaurantMaster;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.PrecisionModel;
 import com.vividsolutions.jts.io.ByteArrayInStream;
 import com.vividsolutions.jts.io.InStream;
 import com.vividsolutions.jts.io.InputStreamInStream;
@@ -126,8 +127,7 @@ public class RestaurantManagerDAO {
 				logger.info("Request to add new Portal user:" + name + title
 						+ email + website + phone + password);
 				PreparedStatement stmt = connection.prepareStatement(
-						masterBuilder.toString(),
-						Statement.RETURN_GENERATED_KEYS);
+						masterBuilder.toString(),Statement.RETURN_GENERATED_KEYS);
 				stmt.setString(1, name);
 				stmt.setString(2, title);
 				stmt.setString(3, email);
@@ -342,8 +342,8 @@ public class RestaurantManagerDAO {
 				addstmt.setString(5, state);
 				addstmt.setInt(6, zip);
 
-				addstmt.setDouble(7, geos.getLat().doubleValue());
-				addstmt.setDouble(8, geos.getLng().doubleValue());
+				addstmt.setDouble(7, geos.getLng().doubleValue());
+				addstmt.setDouble(8, geos.getLat().doubleValue());
 				addstmt.setInt(9, 1);
 				addstmt.setDate(10,
 						new java.sql.Date(new java.util.Date().getTime()));
@@ -357,6 +357,7 @@ public class RestaurantManagerDAO {
 				addstmt.close();
 
 			} catch (SQLException e) {
+				logger.error("Error: ",e);
 				e.printStackTrace();
 				success = false;
 			}
@@ -482,7 +483,7 @@ public class RestaurantManagerDAO {
 					logger.debug("Generated Types info query : " + addstmt.toString());
 					success = (addstmt.executeUpdate() > 0 ? true : false);
 				} catch (SQLException e) {
-					e.printStackTrace();
+					logger.error("Error: ",e);
 
 				}
 
@@ -682,9 +683,9 @@ public class RestaurantManagerDAO {
 		masterID.append(Constants.COLUMN_LONGITUDE + ",");
 		///
 		masterID.append("ST_X(" + Constants.COLUMN_LAT_LNG
-				+ "::geometry) AS lat,");
+				+ "::geometry) AS long,");
 		masterID.append("ST_Y(" + Constants.COLUMN_LAT_LNG
-				+ "::geometry) AS long");
+				+ "::geometry) AS lat");
 		// masterID.append(ST_Y(geogcolumn::geometry));
 
 		masterID.append(" FROM ");
@@ -1082,7 +1083,7 @@ logger.info("PGGeometry Values: "+ pgg.getValue());
 					//gepmfac.
 					Geometry geom= null;
 					geom=new WKBReader(gepmfac).read(WKBReader.hexToBytes(latLngstr));
-					geom.setSRID(geom.);
+					//geom.setSRID(geom.);
 //;
 					
 					//new WKBReader(gepmfac).hexToBytes(arg0)

@@ -140,11 +140,11 @@
 				<!-- <exclusion>
 					<artifactId>postgis-stubs</artifactId>
 					<groupId>org.postgis</groupId>
-				</exclusion> 
+				</exclusion> -->
 				<exclusion>
 					<artifactId>postgresql</artifactId>
 					<groupId>postgresql</groupId>
-				</exclusion>-->
+				</exclusion>
 			</exclusions>
 			
 		</dependency>
