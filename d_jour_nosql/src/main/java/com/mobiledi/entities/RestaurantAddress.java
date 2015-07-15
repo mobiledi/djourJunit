@@ -4,65 +4,58 @@ import java.io.Serializable;
 
 import javax.persistence.*;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import org.hibernate.annotations.Type;
 
-import com.mobiledi.djourDAO.RestaurantManagerDAO;
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.io.ParseException;
-import com.vividsolutions.jts.io.WKBReader;
 
 import java.sql.Timestamp;
 
 
-/*//**
+/**
  * The persistent class for the restaurant_address database table.
  * 
- *//*/*/
+ */
 @Entity
 @Table(name="restaurant_address")
 @NamedQuery(name="RestaurantAddress.findAll", query="SELECT r FROM RestaurantAddress r")
 
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class RestaurantAddress implements Serializable {
 	private static final long serialVersionUID = 1L;
-	static Logger logger = LoggerFactory.getLogger(RestaurantAddress.class);
+
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
-	@Column(unique=true, nullable=false)
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Integer id;
 
-	@Column(name="active_flag", nullable=false)
+	@Column(name="active_flag")
 	private Integer activeFlag;
 
-	@Column(name="address_line1", nullable=false, length=255)
+	@Column(name="address_line1")
 	private String addressLine1;
 
-	@Column(name="address_line2", length=255)
+	@Column(name="address_line2")
 	private String addressLine2;
 
-	@Column(length=100)
 	private String city;
 
 	@Column(name="create_date")
 	private Timestamp createDate;
 
-	@Column(name="lat_lng",columnDefinition="Geometry")
-	//@Type(type="org.hibernate.spatial.GeometryType")
-	private  String latLng;
+	@Column(columnDefinition = "Geometry", nullable = true)
+	@Type(type = "org.hibernate.spatial.GeometryType")
+	private Geometry geom;
 
 	private double latitude;
 
 	private double longitude;
 
-	@Column(nullable=false, length=100)
 	private String state;
 
-	@Column(nullable=false)
 	private Integer zip;
 
 	//bi-directional many-to-one association to RestaurantMaster
-	@ManyToOne
+	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="fk_restaurant_master_id")
 	private RestaurantMaster restaurantMaster;
 
@@ -117,14 +110,12 @@ public class RestaurantAddress implements Serializable {
 		this.createDate = createDate;
 	}
 
-	public String getLatLng() {
-		//logger.debug("GET Bytestring"+latLng.toString() +" ==== Length "+ latLng.length());
-		return this.latLng;
+	public Geometry getGeom() {
+		return this.geom;
 	}
 
-	public void setLatLng(String latLng) {
-		
-		this.latLng=latLng;
+	public void setGeom(Geometry geom) {
+		this.geom = geom;
 	}
 
 	public double getLatitude() {

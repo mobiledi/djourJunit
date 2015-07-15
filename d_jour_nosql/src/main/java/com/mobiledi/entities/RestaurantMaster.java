@@ -1,7 +1,11 @@
 package com.mobiledi.entities;
 
 import java.io.Serializable;
+
 import javax.persistence.*;
+
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+
 import java.util.List;
 
 
@@ -11,38 +15,35 @@ import java.util.List;
  */
 @Entity
 @Table(name="restaurant_master")
-@NamedQuery(name="RestaurantMaster.findAll", query="SELECT r FROM RestaurantMaster r")
+@NamedQueries({
+	@NamedQuery(name="RestaurantMaster.findAll", query="SELECT r FROM RestaurantMaster r"),
+	@NamedQuery(name="RestaurantMaster.findOne", query="SELECT r FROM RestaurantMaster r WHERE r.id=:id")
+	})
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class RestaurantMaster implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
-	@Column(unique=true, nullable=false)
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Integer id;
 
 	@Column(name="banner_image")
 	private byte[] bannerImage;
 
-	@Column(nullable=false, length=100)
 	private String email;
 
-	@Column(nullable=false, length=255)
 	private String name;
 
-	@Column(nullable=false, length=255)
 	private String password;
 
-	@Column(nullable=false, length=2147483647)
 	private String phone;
 
-	@Column(length=255)
 	private String title;
 
-	@Column(length=255)
 	private String website;
 
 	//bi-directional many-to-one association to RestaurantAddress
-	@OneToMany(mappedBy="restaurantMaster", fetch=FetchType.LAZY)
+	@OneToMany(mappedBy="restaurantMaster")
 	private List<RestaurantAddress> restaurantAddresses;
 
 	//bi-directional many-to-one association to RestaurantFeedItem
@@ -53,18 +54,9 @@ public class RestaurantMaster implements Serializable {
 	@OneToMany(mappedBy="restaurantMaster")
 	private List<RestaurantHour> restaurantHours;
 
-	//bi-directional many-to-many association to ProfileTag
-	@ManyToMany
-	@JoinTable(
-		name="restaurant_tags"
-		, joinColumns={
-			@JoinColumn(name="fk_restaurant_id")
-			}
-		, inverseJoinColumns={
-			@JoinColumn(name="fk_profile_tags_id")
-			}
-		)
-	private List<ProfileTag> profileTags;
+	//bi-directional many-to-one association to RestaurantTag
+	@OneToMany(mappedBy="restaurantMaster")
+	private List<RestaurantTag> restaurantTags;
 
 	public RestaurantMaster() {
 	}
@@ -199,12 +191,26 @@ public class RestaurantMaster implements Serializable {
 		return restaurantHour;
 	}
 
-	public List<ProfileTag> getProfileTags() {
-		return this.profileTags;
+	public List<RestaurantTag> getRestaurantTags() {
+		return this.restaurantTags;
 	}
 
-	public void setProfileTags(List<ProfileTag> profileTags) {
-		this.profileTags = profileTags;
+	public void setRestaurantTags(List<RestaurantTag> restaurantTags) {
+		this.restaurantTags = restaurantTags;
+	}
+
+	public RestaurantTag addRestaurantTag(RestaurantTag restaurantTag) {
+		getRestaurantTags().add(restaurantTag);
+		restaurantTag.setRestaurantMaster(this);
+
+		return restaurantTag;
+	}
+
+	public RestaurantTag removeRestaurantTag(RestaurantTag restaurantTag) {
+		getRestaurantTags().remove(restaurantTag);
+		restaurantTag.setRestaurantMaster(null);
+
+		return restaurantTag;
 	}
 
 }

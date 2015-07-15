@@ -1,8 +1,5 @@
 package com.mobiledi.djourDAO;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.DriverManager;
@@ -23,9 +20,6 @@ import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.JsonNodeFactory;
 import org.codehaus.jackson.node.ObjectNode;
-import org.eclipse.persistence.platform.database.PostgreSQLPlatform;
-import org.hibernate.spatial.dialect.postgis.PostgisDialect;
-import org.postgis.PGgeometry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,18 +29,11 @@ import com.google.code.geocoder.model.GeocodeResponse;
 import com.google.code.geocoder.model.GeocoderRequest;
 import com.google.code.geocoder.model.GeocoderResult;
 import com.google.code.geocoder.model.LatLng;
-import com.mobiledi.djour.Constants;
-import com.mobiledi.entities.ProfileTag;
 import com.mobiledi.entities.RestaurantMaster;
+import com.mobiledi.utils.Constants;
+//import com.mobiledi.entities.ProfileTag;
+//import com.mobiledi.entities.RestaurantMaster;
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.PrecisionModel;
-import com.vividsolutions.jts.io.ByteArrayInStream;
-import com.vividsolutions.jts.io.InStream;
-import com.vividsolutions.jts.io.InputStreamInStream;
-import com.vividsolutions.jts.io.ParseException;
-import com.vividsolutions.jts.io.WKBReader;
-import com.vividsolutions.jts.io.WKTReader;
 
 @Stateless
 public class RestaurantManagerDAO {
@@ -319,14 +306,14 @@ public class RestaurantManagerDAO {
 			addressBuilder.append(Constants.COLUMN_CITY + ",");
 			addressBuilder.append(Constants.COLUMN_STATE + ",");
 			addressBuilder.append(Constants.COLUMN_ZIP + ",");
-			addressBuilder.append(Constants.COLUMN_LAT_LNG + ",");
+			addressBuilder.append(Constants.COLUMN_LAT_LNG+ ",");
 			// addressBuilder.append(Constants.COLUMN_LONG + ",");
 			addressBuilder.append(Constants.COLUMN_ACTIVE + ",");
 			addressBuilder.append(Constants.COLUMN_CREATED + ", ");
 			addressBuilder.append(Constants.COLUMN_LATITUDE + ",");
 			addressBuilder.append(Constants.COLUMN_LONGITUDE + ") ");
 			addressBuilder
-					.append("VALUES (?,?,?,?,?,?,ST_MakePoint(?, ?),?,?,?,?)");
+					.append("VALUES (?,?,?,?,?,?,ST_SetSRID(ST_MakePoint(?, ?),4326),?,?,?,?)");
 
 			try {
 				PreparedStatement addstmt = connection.prepareStatement(
@@ -1063,7 +1050,7 @@ public class RestaurantManagerDAO {
 	}
 	
 	
-	public void testEm(){
+	public void testEm() {
 		
 		 	//EntityManagerFactory emfactory = Persistence.createEntityManagerFactory( "d_jour_nosql" );
 	     // EntityManager entitymanager = emfactory.createEntityManager();
@@ -1072,31 +1059,14 @@ public class RestaurantManagerDAO {
 			logger.info("Tag master name = " + results.get(i).getName());
 			logger.info("Tag hour = " +results.get(i).getRestaurantHours().get(0).getWeekdayOpeningHour());
 			logger.info("Tag address = " + results.get(i).getRestaurantAddresses().get(0).getAddressLine1());
-			 String latLngstr= results.get(i).getRestaurantAddresses().get(0).getLatLng();
-			 logger.info("Tag latlng="+ results.get(i).getRestaurantAddresses().get(0).getLatLng().toString());
+			 Geometry geom= results.get(i).getRestaurantAddresses().get(0).getGeom();
+			 logger.info("Tag latlng="+ results.get(i).getRestaurantAddresses().get(0).getGeom().getCoordinates()[0]);
 			  
-				try {
-
-org.postgis.Geometry pgg= PGgeometry.geomFromString(latLngstr);
-logger.info("PGGeometry Values: "+ pgg.getValue());
-					GeometryFactory gepmfac= new GeometryFactory();
-					//gepmfac.
-					Geometry geom= null;
-					geom=new WKBReader(gepmfac).read(WKBReader.hexToBytes(latLngstr));
-					//geom.setSRID(geom.);
-//;
-					
-					//new WKBReader(gepmfac).hexToBytes(arg0)
-					logger.info("Passed  conversion");
-					
-					logger.info("Lat-Lng"+geom.getCoordinates()[0] + " Co-ordinate " + geom.getCoordinate()  + " SRID " + geom.getSRID() );
-					logger.info("Tag lat="+ results.get(i).getRestaurantAddresses().get(0).getLatitude());
-					logger.info("Tag lng="+ results.get(i).getRestaurantAddresses().get(0).getLongitude());
+				logger.info("Passed  conversion");
 				
-				} catch (ParseException | SQLException e) {
-					logger.info("Failed  conversion");
-					e.printStackTrace();
-				}
+				logger.info("Lat-Lng"+geom.getCoordinates()[0] + " Co-ordinate " + geom.getCoordinate()  + " SRID " + geom.getSRID() );
+				logger.info("Tag lat="+ results.get(i).getRestaurantAddresses().get(0).getLatitude());
+				logger.info("Tag lng="+ results.get(i).getRestaurantAddresses().get(0).getLongitude());
 			
 			 
 			  
@@ -1139,7 +1109,8 @@ logger.info("PGGeometry Values: "+ pgg.getValue());
 	      System.out.println("Tag key = " + tag.getTagKey());
 	      System.out.println("Tag Value = " + tag.getTagValue());
 	      }
-*/
+
 	
-	}
-}
+	}*/
+}}
+		

@@ -1,4 +1,4 @@
-package com.mobiledi.djour;
+package com.mobiledi.utils;
 
 public final class Constants {
 	
@@ -27,7 +27,7 @@ public final class Constants {
 	public final static String COLUMN_CITY = "city";
 	public final static String COLUMN_STATE = "state";
 	public final static String COLUMN_ZIP = "zip";
-	public final static String COLUMN_LAT_LNG = "lat_lng";
+	public final static String COLUMN_LAT_LNG = "geom";
 	//public final static String COLUMN_LONG = "long";
 	public final static String COLUMN_ACTIVE="active_flag";
 	public final static String COLUMN_CREATED="create_date";

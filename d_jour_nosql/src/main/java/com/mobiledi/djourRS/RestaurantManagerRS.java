@@ -20,9 +20,9 @@ import org.codehaus.jackson.node.ObjectNode;
 import org.jboss.resteasy.specimpl.ResponseBuilderImpl;
 
 import com.google.code.geocoder.model.LatLng;
-import com.mobiledi.djour.Constants;
 import com.mobiledi.djourDAO.DjourAppDAO;
 import com.mobiledi.djourDAO.RestaurantManagerDAO;
+import com.mobiledi.utils.Constants;
 
 @Path("/api/portal")
 @Stateless

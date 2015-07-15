@@ -1,23 +1,27 @@
 package com.mobiledi.entities;
 
 import java.io.Serializable;
+
 import javax.persistence.*;
+
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+
 import java.sql.Timestamp;
-@Entity
+
 
 /**
  * The persistent class for the restaurant_feed_items database table.
  * 
  */
-
+@Entity
 @Table(name="restaurant_feed_items")
 @NamedQuery(name="RestaurantFeedItem.findAll", query="SELECT r FROM RestaurantFeedItem r")
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class RestaurantFeedItem implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
-	@Column(unique=true, nullable=false)
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Integer id;
 
 	@Column(name="create_date")
@@ -26,20 +30,20 @@ public class RestaurantFeedItem implements Serializable {
 	@Column(name="fee_sequence_number")
 	private Integer feeSequenceNumber;
 
-	@Column(name="feed_description", length=255)
+	@Column(name="feed_description")
 	private String feedDescription;
 
 	@Column(name="feed_image")
 	private byte[] feedImage;
 
-	@Column(name="feed_title", nullable=false, length=100)
+	@Column(name="feed_title")
 	private String feedTitle;
 
 	@Column(name="update_date")
 	private Timestamp updateDate;
 
 	//bi-directional many-to-one association to RestaurantMaster
-	@ManyToOne
+	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="fk_restaurant_master")
 	private RestaurantMaster restaurantMaster;
 

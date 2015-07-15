@@ -1,7 +1,11 @@
 package com.mobiledi.entities;
 
 import java.io.Serializable;
+
 import javax.persistence.*;
+
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+
 import java.sql.Timestamp;
 
 
@@ -12,46 +16,46 @@ import java.sql.Timestamp;
 @Entity
 @Table(name="restaurant_hours")
 @NamedQuery(name="RestaurantHour.findAll", query="SELECT r FROM RestaurantHour r")
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class RestaurantHour implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
-	@Column(unique=true, nullable=false)
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Integer id;
 
-	@Column(name="active_flag", nullable=false)
+	@Column(name="active_flag")
 	private Integer activeFlag;
 
 	@Column(name="create_datetime")
 	private Timestamp createDatetime;
 
-	@Column(name="weekday_closing_hour", nullable=false)
+	@Column(name="weekday_closing_hour")
 	private Integer weekdayClosingHour;
 
 	@Column(name="weekday_closing_minutes")
 	private Integer weekdayClosingMinutes;
 
-	@Column(name="weekday_opening_hour", nullable=false)
+	@Column(name="weekday_opening_hour")
 	private Integer weekdayOpeningHour;
 
 	@Column(name="weekday_opening_minutes")
 	private Integer weekdayOpeningMinutes;
 
-	@Column(name="weekend_closing_hour", nullable=false)
+	@Column(name="weekend_closing_hour")
 	private Integer weekendClosingHour;
 
 	@Column(name="weekend_closing_minutes")
 	private Integer weekendClosingMinutes;
 
-	@Column(name="weekend_opening_hour", nullable=false)
+	@Column(name="weekend_opening_hour")
 	private Integer weekendOpeningHour;
 
 	@Column(name="weekend_opening_minutes")
 	private Integer weekendOpeningMinutes;
 
 	//bi-directional many-to-one association to RestaurantMaster
-	@ManyToOne
+	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="fk_restaurant_master_id")
 	private RestaurantMaster restaurantMaster;
 
