@@ -1,15 +1,31 @@
 package com.mobiledi.daos;
 
-import java.util.List;
-
 import org.codehaus.jackson.JsonNode;
-
-import com.mobiledi.entities.RestaurantMaster;
+import org.codehaus.jackson.node.ObjectNode;
 
 public interface RManagerDao {
 	
-	public List<RestaurantMaster> getAllRestaurants();
-	public RestaurantMaster getRestaurant(int id);
-	public boolean persistRestaurantBasicinfo(JsonNode toInsert);
+	public JsonNode getAllRestaurants();
+	public JsonNode getRestaurant(int id);
+	
+	
+	public ObjectNode getRBasicinfo(int id);
+	public ObjectNode getRAddressinfo(int id);
+	public ObjectNode getRHoursinfo(int id);
+	public ObjectNode getRTypesinfo(int id);
+	
+	
+	
+	public boolean persistRBasicinfo(JsonNode toInsert);
+	public boolean persistRAddressinfo(JsonNode toInsert);
+	public boolean persistRHoursinfo(JsonNode toInsert);
+	public boolean persistRTypesinfo(JsonNode toInsert);
+	
+	
+	public boolean updateRBasicinfo(JsonNode toInsert);
+	public boolean updateRAddressinfo(JsonNode toInsert);
+	public boolean updateRHoursinfo(JsonNode toInsert);
+	public boolean updateRTypesinfo(JsonNode toInsert);
+	
 	
 }

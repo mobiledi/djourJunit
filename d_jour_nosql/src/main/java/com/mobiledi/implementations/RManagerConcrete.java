@@ -1,6 +1,12 @@
 package com.mobiledi.implementations;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
@@ -11,8 +17,21 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
+import org.codehaus.jackson.Base64Variant;
+import org.codehaus.jackson.JsonFactory;
+import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.JsonParser;
+import org.codehaus.jackson.JsonProcessingException;
+import org.codehaus.jackson.JsonStreamContext;
+import org.codehaus.jackson.ObjectCodec;
+import org.codehaus.jackson.JsonGenerator.Feature;
+import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.node.ArrayNode;
+import org.codehaus.jackson.node.JsonNodeFactory;
+import org.codehaus.jackson.node.ObjectNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,7 +43,9 @@ import com.google.code.geocoder.model.GeocoderResult;
 import com.google.code.geocoder.model.LatLng;
 import com.mobiledi.daos.RManagerDao;
 import com.mobiledi.entities.RestaurantAddress;
+import com.mobiledi.entities.RestaurantHour;
 import com.mobiledi.entities.RestaurantMaster;
+import com.mobiledi.entities.RestaurantTag;
 import com.mobiledi.utils.Constants;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
@@ -38,12 +59,13 @@ public class RManagerConcrete implements RManagerDao{
 	
 	
 	@Override
-	public List<RestaurantMaster> getAllRestaurants() {
+	public JsonNode getAllRestaurants() {
 		List<RestaurantMaster> results=new ArrayList<RestaurantMaster>();
 			results = entityManager.createNamedQuery("RestaurantMaster.findAll").getResultList();
-		
+			ArrayNode toreturn = new ArrayNode(JsonNodeFactory.instance);
 		for(int i=0;i<results.size();i++){
-		
+			ObjectNode resultNode=new ObjectNode(JsonNodeFactory.instance);
+			
 			logger.info("Tag master name = " + results.get(i).getName());
 			//logger.info("Tag hour = " +results.get(i).getRestaurantHours().get(0).getWeekdayOpeningHour());
 			logger.info("Tag address = " + results.get(i).getRestaurantAddresses().get(0).getAddressLine1());
@@ -52,16 +74,19 @@ public class RManagerConcrete implements RManagerDao{
 			logger.info("Geometry Co-ordinates: "+ geom.getCoordinates()[0]);
 			logger.info("Geocode Longitude="+ results.get(i).getRestaurantAddresses().get(0).getLongitude());
 			logger.info("Geocode Latitude="+ results.get(i).getRestaurantAddresses().get(0).getLatitude());
-	
+			resultNode=(ObjectNode) convertToJsonNode(results.get(i));
+			
+			toreturn.add(resultNode);
 		}
-		return results;
+		return toreturn;
 
 	}
 
 	@Override
-	public RestaurantMaster getRestaurant(int id) {
+	public JsonNode getRestaurant(int id) {
 		Query query=entityManager.createNamedQuery("RestaurantMaster.findOne");
 		query.setParameter("id", id);
+		@SuppressWarnings("unchecked")
 		List<RestaurantMaster> results= query.getResultList();
 		for(int i=0;i<results.size();i++){
 			
@@ -73,14 +98,14 @@ public class RManagerConcrete implements RManagerDao{
 			logger.info("Geometry Co-ordinates: "+ geom.getCoordinates()[0]);
 			logger.info("Geocode Longitude="+ results.get(i).getRestaurantAddresses().get(0).getLongitude());
 			logger.info("Geocode Latitude="+ results.get(i).getRestaurantAddresses().get(0).getLatitude());
-			return results.get(i);
+			return convertToJsonNode(results.get(i));
 		}
 		
 return null;
 	}
 
 	@Override
-	public boolean persistRestaurantBasicinfo(JsonNode toInsert) {
+	public boolean persistRBasicinfo(JsonNode toInsert) {
 		
 		logger.debug("Insert Data:" +toInsert.toString());
 
@@ -122,6 +147,7 @@ return null;
 			addresses.add(restAdd);
 			restObj.setRestaurantAddresses(addresses);
 			entityManager.persist(restObj);
+			restObj.getId();
 			entityManager.persist(restAdd);
 			
 		logger.info("email info"+restObj.getEmail());
@@ -134,8 +160,184 @@ return null;
 		}
 		return true;
 	}
+
+	@Override
+	public boolean persistRAddressinfo(JsonNode toInsert) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean persistRHoursinfo(JsonNode toInsert) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean persistRTypesinfo(JsonNode toInsert) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean updateRBasicinfo(JsonNode toInsert) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean updateRAddressinfo(JsonNode toInsert) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean updateRHoursinfo(JsonNode toInsert) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean updateRTypesinfo(JsonNode toInsert) {
+		// TODO Auto-generated method stub
+		return false;
+	}
 	
-	public LatLng getCo_ordinates(String address) {
+	
+	private JsonNode convertToJsonNode(RestaurantMaster toConvert){
+		ObjectNode toreturn=new ObjectNode(JsonNodeFactory.instance);
+	
+		try {
+			int id=toConvert.getId();
+			String name = toConvert.getName();
+			String title = toConvert.getTitle();
+			String email = toConvert.getEmail();
+			byte[] image = toConvert.getBannerImage();
+			String phone = toConvert.getPhone();
+			String website = toConvert.getWebsite();
+			
+			toreturn.put("id", id);
+			toreturn.put("name", name);
+			toreturn.put("title", title);
+			toreturn.put("email", email);
+			toreturn.put("banner_image", image);
+			toreturn.put("phone", phone);
+			toreturn.put("website", website);
+		} catch (Exception e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+		
+		
+		try {
+			RestaurantAddress addObj=toConvert.getRestaurantAddresses().get(0);
+			String address_line1 = addObj.getAddressLine1();
+			String address_line2 = addObj.getAddressLine2();
+			String city = addObj.getCity();
+			String state = addObj.getState();
+			int zip = addObj.getZip();
+			double lat = addObj.getLatitude();
+			double lng = addObj.getLongitude();
+			
+			toreturn.put(Constants.COLUMN_ADD1, address_line1);
+			toreturn.put(Constants.COLUMN_ADD2, address_line2);
+			toreturn.put(Constants.COLUMN_CITY, city);
+			toreturn.put(Constants.COLUMN_STATE, state);
+			toreturn.put(Constants.COLUMN_ZIP, zip);
+			toreturn.put("lat", lat);
+			toreturn.put("long", lng);
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+
+		
+		try {
+			RestaurantHour hourObj=toConvert.getRestaurantHours().get(0);
+			int WDOH = hourObj
+					.getWeekdayOpeningHour();
+			int WEOH = hourObj
+					.getWeekendOpeningHour();
+			int WDOM = hourObj
+					.getWeekdayOpeningMinutes();
+			int WEOM = hourObj
+					.getWeekendOpeningMinutes();
+			int WDCH = hourObj
+					.getWeekdayClosingHour();
+			int WECH = hourObj
+					.getWeekendClosingHour();
+			int WDCM = hourObj
+					.getWeekdayClosingMinutes();
+			int WECM = hourObj
+					.getWeekendClosingMinutes();
+
+			
+
+			toreturn.put("weekday_opening_hour", WDOH);
+			toreturn.put("weekend_opening_hour", WEOH);
+
+			toreturn.put("weekday_opening_minutes", WDOM);
+			toreturn.put("weekend_opening_minutes", WEOM);
+
+			toreturn.put("weekday_closing_hour", WDCH);
+			toreturn.put("weekend_closing_hour", WECH);
+
+			toreturn.put("weekday_closing_minutes", WDCM);
+			toreturn.put("weekend_closing_minutes", WECM);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+			
+		try {
+			List<RestaurantTag> tagObj= new ArrayList<RestaurantTag>();
+			tagObj= toConvert.getRestaurantTags();
+			String type_name[] = { Constants.ORGANIC, Constants.GLUTEN_FREE,
+					Constants.VEG, Constants.VEGAN };
+			
+			boolean types[] = new boolean[4];
+			types[0] = false;
+			types[1] = false;
+			types[2] = false;
+			types[3] = false;
+			
+			for(int i=0;i<tagObj.size();i++){
+				switch(tagObj.get(i).getFkProfileTagsId()){
+				
+				case(1):
+					types[0]=true;
+					break;
+				case(2):
+					types[1]=true;
+					break;
+				case(3):
+					types[2]=true;
+					break;
+				case(4):
+					types[3]=true;
+					break;		
+				}
+			
+			}
+
+			for (int i = 0; i < 4; i++) {
+				if (types[i]) {
+					toreturn.put(Constants.ORGANIC, types[0]);
+					toreturn.put(Constants.GLUTEN_FREE, types[1]);
+					toreturn.put(Constants.VEG, types[2]);
+					toreturn.put(Constants.VEGAN, types[3]);
+					break;
+				}
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return toreturn;
+		
+		
+	}
+ 	private LatLng getCo_ordinates(String address) {
 		final Geocoder geocoder = new Geocoder();
 		try {
 			GeocoderRequest geocoderRequest = new GeocoderRequestBuilder()
@@ -158,6 +360,30 @@ return null;
 
 		return null;
 
+	}
+
+	@Override
+	public ObjectNode getRBasicinfo(int id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ObjectNode getRAddressinfo(int id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ObjectNode getRHoursinfo(int id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ObjectNode getRTypesinfo(int id) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
