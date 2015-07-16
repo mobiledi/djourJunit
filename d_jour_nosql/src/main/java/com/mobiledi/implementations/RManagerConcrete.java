@@ -9,12 +9,10 @@ import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 
-import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.node.JsonNodeFactory;
-import org.codehaus.jackson.node.ObjectNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,22 +27,19 @@ import com.mobiledi.entities.RestaurantAddress;
 import com.mobiledi.entities.RestaurantMaster;
 import com.mobiledi.utils.Constants;
 import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.CoordinateSequence;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.io.WKBReader;
-import com.vividsolutions.jts.io.WKBWriter;
 @Stateless
 public class RManagerConcrete implements RManagerDao{
 	static Logger logger = LoggerFactory.getLogger(RManagerConcrete.class);
 	 @PersistenceContext(unitName="d_jour_nosql")
 	 private EntityManager entityManager;
 	
+	
 	@Override
 	public List<RestaurantMaster> getAllRestaurants() {
 		List<RestaurantMaster> results=new ArrayList<RestaurantMaster>();
-
 			results = entityManager.createNamedQuery("RestaurantMaster.findAll").getResultList();
 		
 		for(int i=0;i<results.size();i++){
@@ -65,8 +60,23 @@ public class RManagerConcrete implements RManagerDao{
 
 	@Override
 	public RestaurantMaster getRestaurant(int id) {
+		Query query=entityManager.createNamedQuery("RestaurantMaster.findOne");
+		query.setParameter("id", id);
+		List<RestaurantMaster> results= query.getResultList();
+		for(int i=0;i<results.size();i++){
+			
+			logger.info("Single master name = " + results.get(i).getName());
+			//logger.info("Tag hour = " +results.get(i).getRestaurantHours().get(0).getWeekdayOpeningHour());
+			logger.info("Tag address = " + results.get(i).getRestaurantAddresses().get(0).getAddressLine1());
+			Geometry geom= results.get(i).getRestaurantAddresses().get(0).getGeom();
+			
+			logger.info("Geometry Co-ordinates: "+ geom.getCoordinates()[0]);
+			logger.info("Geocode Longitude="+ results.get(i).getRestaurantAddresses().get(0).getLongitude());
+			logger.info("Geocode Latitude="+ results.get(i).getRestaurantAddresses().get(0).getLatitude());
+			return results.get(i);
+		}
 		
-		return null;
+return null;
 	}
 
 	@Override
