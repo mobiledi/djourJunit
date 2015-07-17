@@ -54,6 +54,9 @@ import com.vividsolutions.jts.geom.Point;
 
 @Stateless
 public class RManagerConcrete implements RManagerDao {
+	final private static int INACTIVE_FLAG=0;
+	final private static int ACTIVE_FLAG=1;
+	
 	static Logger logger = LoggerFactory.getLogger(RManagerConcrete.class);
 	@PersistenceContext(unitName = "d_jour_nosql")
 	private EntityManager entityManager;
@@ -138,28 +141,52 @@ public class RManagerConcrete implements RManagerDao {
 
 	@Override
 	public boolean persistRBasicinfo(JsonNode toInsert) {
-
 		logger.debug("Insert Data:" + toInsert.toString());
-
-		String name = toInsert.get(Constants.COLUMN_NAME).asText();
-		String address_line1 = toInsert.get(Constants.COLUMN_ADD1).asText();
-		String address_line2 = toInsert.get(Constants.COLUMN_ADD2).asText();
-		String city = toInsert.get(Constants.COLUMN_CITY).asText();
-		String state = toInsert.get(Constants.COLUMN_STATE).asText();
-		int zip = toInsert.get(Constants.COLUMN_ZIP).asInt();
-		LatLng geos = getCo_ordinates(name + ", " + address_line1 + ", "
-				+ address_line2 + ", " + city + ", " + state + ", " + zip);
-
+		RestaurantMaster masterObj=new RestaurantMaster();
 		try {
-			ObjectMapper mapper = new ObjectMapper();
-			RestaurantMaster restObj = mapper.readValue(toInsert.toString(),
-					RestaurantMaster.class);
+			String name = toInsert.get(Constants.COLUMN_NAME).asText();
+			String title = toInsert.get(Constants.COLUMN_TITLE).asText();
+			String email = toInsert.get(Constants.COLUMN_EMAIL).asText();	
+			byte[] banner_image=toInsert.get(Constants.COLUMN_BANNER_IMAGE).getBinaryValue();
+			String phone = toInsert.get(Constants.COLUMN_PHONE).asText();
+			String website = toInsert.get(Constants.COLUMN_WEBSITE).asText();		
+			masterObj.setName(name);
+			masterObj.setTitle(title);
+			masterObj.setEmail(email);
+			masterObj.setBannerImage(banner_image);
+			masterObj.setPhone(phone);
+			masterObj.setWebsite(website);
+			entityManager.persist(masterObj);
+			persistRAddressinfo(masterObj, toInsert);
+			return true;
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+		
+	}
 
-			mapper = new ObjectMapper();
-			RestaurantAddress restAdd = mapper.readValue(toInsert.toString(),
-					RestaurantAddress.class);
+	@Override
+	public boolean persistRAddressinfo (RestaurantMaster master,JsonNode toInsert) {
 
-			logger.info("Address info" + restAdd.getAddressLine1());
+		
+		try {
+			
+			RestaurantAddress restAdd =new	RestaurantAddress();
+			restAdd.setRestaurantMaster(master);
+			
+			
+			String name = toInsert.get(Constants.COLUMN_NAME).asText();
+			String address_line1 = toInsert.get(Constants.COLUMN_ADD1).asText();
+			String address_line2 = toInsert.get(Constants.COLUMN_ADD2).asText();
+			String city = toInsert.get(Constants.COLUMN_CITY).asText();
+			String state = toInsert.get(Constants.COLUMN_STATE).asText();
+			int zip = toInsert.get(Constants.COLUMN_ZIP).asInt();
+			LatLng geos = getCo_ordinates(name + ", " + address_line1 + ", "
+					+ address_line2 + ", " + city + ", " + state + ", " + zip);
+
+
 			GeometryFactory geometryFactory = new GeometryFactory();
 
 			Coordinate coord = new Coordinate(geos.getLng().doubleValue(), geos
@@ -167,8 +194,6 @@ public class RManagerConcrete implements RManagerDao {
 			Point point = geometryFactory.createPoint(coord);
 			point.setSRID(4326);
 			geometryFactory.createGeometry(point);
-
-			restAdd.setRestaurantMaster(restObj);
 			restAdd.setAddressLine1(address_line1);
 			restAdd.setAddressLine2(address_line2);
 
@@ -176,27 +201,14 @@ public class RManagerConcrete implements RManagerDao {
 			restAdd.setLongitude(geos.getLng().doubleValue());
 			restAdd.setGeom(point);
 			restAdd.setCreateDate(new Timestamp(new Date().getTime()));
-			restAdd.setActiveFlag(1);
-			List<RestaurantAddress> addresses = new ArrayList<RestaurantAddress>();
-			addresses.add(restAdd);
-			restObj.setRestaurantAddresses(addresses);
-			entityManager.persist(restObj);
-			restObj.getId();
+			restAdd.setActiveFlag(ACTIVE_FLAG);
 			entityManager.persist(restAdd);
-
-			logger.info("email info" + restObj.getEmail());
-
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			return true;
+			}
+		catch(Exception e){		
 			e.printStackTrace();
+			return false;
 		}
-		return true;
-	}
-
-	@Override
-	public boolean persistRAddressinfo(RestaurantMaster master,JsonNode toInsert) {
-		// TODO Auto-generated method stub
-		return false;
 	}
 
 	@Override
@@ -223,7 +235,7 @@ public class RManagerConcrete implements RManagerDao {
 		
 		RestaurantHour hourObj= new RestaurantHour();
 		hourObj.setRestaurantMaster(master);
-		hourObj.setActiveFlag(1);
+		hourObj.setActiveFlag(ACTIVE_FLAG);
 		hourObj.setCreateDatetime(new Timestamp(new Date().getTime()));
 		
 		hourObj.setWeekdayOpeningHour(wd_o_h);
@@ -265,26 +277,73 @@ public class RManagerConcrete implements RManagerDao {
 
 	@Override
 	public boolean updateRBasicinfo(RestaurantMaster master,JsonNode toInsert) {
-		// TODO Auto-generated method stub
+		try {
+			String name = toInsert.get(Constants.COLUMN_NAME).asText();
+			String title = toInsert.get(Constants.COLUMN_TITLE).asText();
+			String email = toInsert.get(Constants.COLUMN_EMAIL).asText();	
+			byte[] banner_image=toInsert.get(Constants.COLUMN_BANNER_IMAGE).getBinaryValue();
+			String phone = toInsert.get(Constants.COLUMN_PHONE).asText();
+			String website = toInsert.get(Constants.COLUMN_WEBSITE).asText();		
+			master.setName(name);
+			master.setTitle(title);
+			master.setEmail(email);
+			master.setBannerImage(banner_image);
+			master.setPhone(phone);
+			master.setWebsite(website);
+			entityManager.merge(master);
+			return true;
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}	
 		return false;
 	}
 
 	@Override
 	public boolean updateRAddressinfo(RestaurantMaster master,JsonNode toInsert) {
-		// TODO Auto-generated method stub
-		return false;
+	
+		Query query = entityManager
+				.createNamedQuery("RestaurantAddress.findAllWithId");
+		query.setParameter("id", master.getId());
+		List<RestaurantAddress> listToUpdate=query.getResultList();
+		for (int i = 0; i < listToUpdate.size(); i++) {
+			listToUpdate.get(i).setActiveFlag(INACTIVE_FLAG);
+			entityManager.merge(listToUpdate.get(i));
+		}
+		
+		persistRAddressinfo(master, toInsert);
+		return true;
 	}
 
 	@Override
 	public boolean updateRHoursinfo(RestaurantMaster master,JsonNode toInsert) {
-		// TODO Auto-generated method stub
-		return false;
+
+		Query query = entityManager
+				.createNamedQuery("RestaurantHour.findAllWithId");
+		query.setParameter("id", master.getId());
+		List<RestaurantHour> listToUpdate=query.getResultList();
+		for (int i = 0; i < listToUpdate.size(); i++) {
+			listToUpdate.get(i).setActiveFlag(INACTIVE_FLAG);
+			entityManager.merge(listToUpdate.get(i));
+		}
+		
+		persistRHoursinfo(master, toInsert);
+		return true;
+		
 	}
 
 	@Override
 	public boolean updateRTypesinfo(RestaurantMaster master,JsonNode toInsert) {
-		// TODO Auto-generated method stub
-		return false;
+		Query query = entityManager
+				.createNamedQuery("RestaurantTag.findAllWithId");
+		query.setParameter("id", master.getId());
+		List<RestaurantTag> listToUpdate=query.getResultList();
+		for (int i = 0; i < listToUpdate.size(); i++) {
+			entityManager.remove(listToUpdate.get(i));
+			
+		}
+		persistRTypesinfo(master, toInsert);
+		return true;
 	}
 
 	private JsonNode convertToJsonNode(RestaurantMaster toConvert) {
@@ -436,26 +495,33 @@ public class RManagerConcrete implements RManagerDao {
 	}
 
 	@Override
-	public ObjectNode getRBasicinfo(int id) {
-		// TODO Auto-generated method stub
+	public JsonNode persistNewRestaurant(JsonNode toInsert) {
+		
+		persistRBasicinfo(toInsert);
 		return null;
 	}
 
 	@Override
-	public ObjectNode getRAddressinfo(int id) {
-		// TODO Auto-generated method stub
+	public JsonNode updateRestaurant(JsonNode toInsert) {
+		RestaurantMaster master=getIdfromEmail(toInsert.get(Constants.COLUMN_EMAIL).asText());
+		//TODO fetch master
+		updateRBasicinfo(master, toInsert);
+		updateRAddressinfo(master, toInsert);
+		updateRHoursinfo(master, toInsert);
+		updateRTypesinfo(master, toInsert);
+		
 		return null;
 	}
-
-	@Override
-	public ObjectNode getRHoursinfo(int id) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public ObjectNode getRTypesinfo(int id) {
-		// TODO Auto-generated method stub
+	
+	
+	private RestaurantMaster getIdfromEmail(String email){
+		Query query = entityManager
+				.createNamedQuery("RestaurantMaster.findId");
+		query.setParameter("email", email);
+		List<RestaurantMaster> list=query.getResultList();
+		for (int i = 0; i < list.size(); i++) {
+			return list.get(i);
+		}	
 		return null;
 	}
 

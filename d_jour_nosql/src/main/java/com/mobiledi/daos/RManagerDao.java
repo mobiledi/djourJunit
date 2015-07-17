@@ -7,15 +7,19 @@ import com.mobiledi.entities.RestaurantMaster;
 
 public interface RManagerDao {
 	
+	
+	public JsonNode persistNewRestaurant(JsonNode toInsert);
+	public JsonNode updateRestaurant(JsonNode toInsert);
+	
 	public JsonNode getAllRestaurants();
 	public JsonNode getRestaurant(int id);
 	
 	
-	public ObjectNode getRBasicinfo(int id);
+/*	public ObjectNode getRBasicinfo(int id);
 	public ObjectNode getRAddressinfo(int id);
 	public ObjectNode getRHoursinfo(int id);
 	public ObjectNode getRTypesinfo(int id);
-	
+	*/
 	
 	
 	public boolean persistRBasicinfo(JsonNode toInsert);

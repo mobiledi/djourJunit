@@ -17,7 +17,8 @@ import java.util.List;
 @Table(name="restaurant_master")
 @NamedQueries({
 	@NamedQuery(name="RestaurantMaster.findAll", query="SELECT r FROM RestaurantMaster r"),
-	@NamedQuery(name="RestaurantMaster.findOne", query="SELECT r FROM RestaurantMaster r WHERE r.id=:id")
+	@NamedQuery(name="RestaurantMaster.findOne", query="SELECT r FROM RestaurantMaster r WHERE r.id=:id"),
+	@NamedQuery(name="RestaurantMaster.findId", query="SELECT r FROM RestaurantMaster r WHERE r.email=:email")
 	})
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class RestaurantMaster implements Serializable {

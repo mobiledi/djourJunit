@@ -14,7 +14,10 @@ import org.codehaus.jackson.annotate.JsonIgnoreType;
  */
 @Entity
 @Table(name="restaurant_tags")
-@NamedQuery(name="RestaurantTag.findAll", query="SELECT r FROM RestaurantTag r")
+@NamedQueries({
+	@NamedQuery(name="RestaurantTag.findAll", query="SELECT r FROM RestaurantTag r"),
+	@NamedQuery(name="RestaurantTag.findAllWithId", query="SELECT r FROM RestaurantTag r WHERE r.restaurantMaster.id=:id")
+	})
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class RestaurantTag implements Serializable {
 	private static final long serialVersionUID = 1L;

@@ -15,7 +15,10 @@ import java.sql.Timestamp;
  */
 @Entity
 @Table(name="restaurant_hours")
-@NamedQuery(name="RestaurantHour.findAll", query="SELECT r FROM RestaurantHour r")
+@NamedQueries({
+	@NamedQuery(name="RestaurantHour.findAll", query="SELECT r FROM RestaurantHour r"),
+	@NamedQuery(name="RestaurantHour.findAllWithId", query="SELECT r FROM RestaurantHour r WHERE r.restaurantMaster.id=:id")
+	})
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class RestaurantHour implements Serializable {
 	private static final long serialVersionUID = 1L;
