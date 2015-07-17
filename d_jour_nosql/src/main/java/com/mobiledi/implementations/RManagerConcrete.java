@@ -39,7 +39,8 @@ public class RManagerConcrete implements RManagerDao {
 	final private static int INACTIVE_FLAG=0;
 	final private static int ACTIVE_FLAG=1;
 	
-	private static Logger logger = LoggerFactory.getLogger(RManagerConcrete.class);
+	private static  Logger logger = LoggerFactory.getLogger(RManagerConcrete.class);
+	
 	@PersistenceContext(unitName = "d_jour_nosql")
 	private EntityManager entityManager;
 
@@ -85,6 +86,7 @@ public class RManagerConcrete implements RManagerDao {
 
 	@Override
 	public JsonNode getRestaurant(int id) {
+		logger.info("Details requested for id:" +id);
 		Query query = entityManager
 				.createNamedQuery("RestaurantMaster.findOne");
 		query.setParameter("id", id);
@@ -123,7 +125,7 @@ public class RManagerConcrete implements RManagerDao {
 
 	@Override
 	public boolean persistRBasicinfo(JsonNode toInsert) {
-		logger.debug("Insert Data:" + toInsert.toString());
+		logger.info("Insert Data:" + toInsert.toString());
 		RestaurantMaster masterObj=new RestaurantMaster();
 		try {
 			String name = toInsert.get(Constants.COLUMN_NAME).asText();
@@ -352,7 +354,7 @@ public class RManagerConcrete implements RManagerDao {
 			byte[] image = toConvert.getBannerImage();
 			String phone = toConvert.getPhone();
 			String website = toConvert.getWebsite();
-
+			logger.info("Basic Details found were: id "+ id + "-"+ name + " "+ email );
 			toreturn.put("id", id);
 			toreturn.put("name", name);
 			toreturn.put("title", title);
@@ -372,8 +374,7 @@ public class RManagerConcrete implements RManagerDao {
 					addObj=ctrAddObj;
 				
 			}
-			logger.debug("Active Address row create date:" + addObj.getCreateDate());
-			System.out.println("Active Address row create date:" + addObj.getCreateDate());
+			logger.info("Active Address row create date:" + addObj.getCreateDate());
 			String address_line1 = addObj.getAddressLine1();
 			String address_line2 = addObj.getAddressLine2();
 			String city = addObj.getCity();
@@ -389,6 +390,7 @@ public class RManagerConcrete implements RManagerDao {
 			toreturn.put(Constants.COLUMN_ZIP, zip);
 			toreturn.put("lat", lat);
 			toreturn.put("long", lng);
+			logger.info("Address Details found were: "+ address_line1 + " - "+ state + " and Co-ords "+ lat +"/" +  lng );
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -401,8 +403,7 @@ public class RManagerConcrete implements RManagerDao {
 					hourObj=ctrhourObj;
 				
 			}
-			logger.debug("Debug Active Hour row create date:" + hourObj.getCreateDatetime());
-			System.out.println("Active Hour row create date:" + hourObj.getCreateDatetime());
+			logger.info("Debug Active Hour row create date:" + hourObj.getCreateDatetime());
 			int WDOH = hourObj.getWeekdayOpeningHour();
 			int WEOH = hourObj.getWeekendOpeningHour();
 			int WDOM = hourObj.getWeekdayOpeningMinutes();
@@ -423,6 +424,7 @@ public class RManagerConcrete implements RManagerDao {
 
 			toreturn.put("weekday_closing_minutes", WDCM);
 			toreturn.put("weekend_closing_minutes", WECM);
+			logger.info("Hours  Details found were found" );
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -461,6 +463,7 @@ public class RManagerConcrete implements RManagerDao {
 
 			for (int i = 0; i < 4; i++) {
 				if (types[i]) {
+					logger.info("Tag  Details found were found" );
 					toreturn.put(Constants.ORGANIC, types[0]);
 					toreturn.put(Constants.GLUTEN_FREE, types[1]);
 					toreturn.put(Constants.VEG, types[2]);
@@ -486,7 +489,7 @@ public class RManagerConcrete implements RManagerDao {
 			List<GeocoderResult> results = geocoderResponse.getResults();
 			for (GeocoderResult result : results) {
 				LatLng latLong = result.getGeometry().getLocation();
-				logger.debug("Geocoder returned for address: " + address
+				logger.info("Geocoder returned for address: " + address
 						+ " Lat: " + latLong.getLat() + " Long"
 						+ latLong.getLng());
 
