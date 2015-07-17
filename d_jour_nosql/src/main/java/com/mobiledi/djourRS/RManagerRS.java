@@ -50,10 +50,8 @@ public class RManagerRS {
 	public String getRestaurantWithId(@PathParam("id") int id) {
 	/*	RestaurantMaster result=implnt.getRestaurant(id);
 		return "{\"STATUS\":\"OK\"}";*/
-		System.out.println("Value retrieving  to be sent...");
 		logger.debug("Value retrieving  to be sent...");
 		JsonNode toreturn = implnt.getRestaurant(id);
-		System.out.println("Value to be sent"+ toreturn.toString());		
 		return toreturn.toString();
 	}
 
@@ -64,7 +62,7 @@ public class RManagerRS {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/registerrestaurant")
 	public Response registerPortalUser(JsonNode toInsert) {
-		System.out.println("Register request from:" + toInsert.get(Constants.COLUMN_EMAIL));
+		logger.info("Register request from:" + toInsert.get(Constants.COLUMN_EMAIL));
 		ResponseBuilder rs = new ResponseBuilderImpl();	
 		try {
 			if(implnt.persistRBasicinfo(toInsert))
@@ -83,7 +81,7 @@ public class RManagerRS {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/updatenewrestaurant")
 	public Response updateNewPortalUser(JsonNode toInsert) {
-		System.out.println("Update request from:" + toInsert.get(Constants.COLUMN_EMAIL));
+		logger.info("Update request from:" + toInsert.get(Constants.COLUMN_EMAIL));
 		ResponseBuilder rs = new ResponseBuilderImpl();	
 		try {
 			implnt.updateNewRestaurant(toInsert);
@@ -104,7 +102,7 @@ public class RManagerRS {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/updaterestaurant")
 	public Response updatePortalUser(JsonNode toInsert) {
-		System.out.println("Update request from:" + toInsert.get(Constants.COLUMN_EMAIL));
+		logger.info("Update request from:" + toInsert.get(Constants.COLUMN_EMAIL));
 		ResponseBuilder rs = new ResponseBuilderImpl();	
 		try {
 			implnt.updateRestaurant(toInsert);
@@ -116,5 +114,27 @@ public class RManagerRS {
 		return rs.build();
 	}
 	
+	/*Portal users authentication*/
+	@POST
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Path("/authenticateuser")
+	public Response authenticatePortalUser(JsonNode toauthenticate) {	
+		logger.info("Login Request String: " + toauthenticate.toString());
+		logger.info("Login Request from: " + toauthenticate.get("username"));
+		
+		boolean registered=implnt.authenticateUser(toauthenticate);
+		ResponseBuilder rs = new ResponseBuilderImpl();	
+		
+		if(registered)
+			rs.status(Response.Status.ACCEPTED);
+		
+		else
+			rs.status(Response.Status.UNAUTHORIZED);
+		
+		logger.info("Login Request approved: " + registered);
+			return rs.build();
+		}
 	
+
 }

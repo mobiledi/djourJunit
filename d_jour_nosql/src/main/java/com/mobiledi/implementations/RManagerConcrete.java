@@ -545,6 +545,16 @@ public class RManagerConcrete implements RManagerDao {
 		return null;
 	}
 
+	@Override
+	public boolean authenticateUser(JsonNode toauthenticate) {
+		RestaurantMaster restObMaster = getIdfromEmail(toauthenticate.get(Constants.USERNAME).asText());
+		String passString= toauthenticate.get(Constants.PASSWORD).asText();
+		if(restObMaster!=null && passString.equals(restObMaster.getPassword()))
+			return true;
+		
+		return false;
+	}
+
 	
 
 }
