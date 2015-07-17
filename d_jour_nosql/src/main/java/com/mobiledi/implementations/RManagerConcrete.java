@@ -1,12 +1,6 @@
 package com.mobiledi.implementations;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
@@ -17,18 +11,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.codehaus.jackson.Base64Variant;
-import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.JsonGenerationException;
-import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.JsonParser;
-import org.codehaus.jackson.JsonProcessingException;
-import org.codehaus.jackson.JsonStreamContext;
-import org.codehaus.jackson.ObjectCodec;
-import org.codehaus.jackson.JsonGenerator.Feature;
-import org.codehaus.jackson.map.JsonMappingException;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.JsonNodeFactory;
 import org.codehaus.jackson.node.ObjectNode;
@@ -48,7 +31,6 @@ import com.mobiledi.entities.RestaurantMaster;
 import com.mobiledi.entities.RestaurantTag;
 import com.mobiledi.utils.Constants;
 import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;
 
@@ -57,7 +39,7 @@ public class RManagerConcrete implements RManagerDao {
 	final private static int INACTIVE_FLAG=0;
 	final private static int ACTIVE_FLAG=1;
 	
-	static Logger logger = LoggerFactory.getLogger(RManagerConcrete.class);
+	private static Logger logger = LoggerFactory.getLogger(RManagerConcrete.class);
 	@PersistenceContext(unitName = "d_jour_nosql")
 	private EntityManager entityManager;
 
@@ -145,15 +127,25 @@ public class RManagerConcrete implements RManagerDao {
 		RestaurantMaster masterObj=new RestaurantMaster();
 		try {
 			String name = toInsert.get(Constants.COLUMN_NAME).asText();
-			String title = toInsert.get(Constants.COLUMN_TITLE).asText();
+			
 			String email = toInsert.get(Constants.COLUMN_EMAIL).asText();	
 			byte[] banner_image=toInsert.get(Constants.COLUMN_BANNER_IMAGE).getBinaryValue();
 			String phone = toInsert.get(Constants.COLUMN_PHONE).asText();
-			String website = toInsert.get(Constants.COLUMN_WEBSITE).asText();		
+			String website = toInsert.get(Constants.COLUMN_WEBSITE).asText();
 			masterObj.setName(name);
+			//New Registrations don't have titles until update
+			if(toInsert.has(Constants.COLUMN_TITLE))
+			{
+			String title = toInsert.get(Constants.COLUMN_TITLE).asText();
 			masterObj.setTitle(title);
+			}
 			masterObj.setEmail(email);
 			masterObj.setBannerImage(banner_image);
+			//updates  don't have password field 
+			if(toInsert.has(Constants.COLUMN_PASSWORD)){
+				String password = toInsert.get(Constants.COLUMN_PASSWORD).asText();
+				masterObj.setPassword(password);
+				}
 			masterObj.setPhone(phone);
 			masterObj.setWebsite(website);
 			entityManager.persist(masterObj);
@@ -194,9 +186,12 @@ public class RManagerConcrete implements RManagerDao {
 			Point point = geometryFactory.createPoint(coord);
 			point.setSRID(4326);
 			geometryFactory.createGeometry(point);
+			
 			restAdd.setAddressLine1(address_line1);
 			restAdd.setAddressLine2(address_line2);
-
+			restAdd.setCity(city);
+			restAdd.setState(state);
+			restAdd.setZip(zip);
 			restAdd.setLatitude(geos.getLat().doubleValue());
 			restAdd.setLongitude(geos.getLng().doubleValue());
 			restAdd.setGeom(point);
@@ -256,15 +251,15 @@ public class RManagerConcrete implements RManagerDao {
 	}
 
 	@Override
-	public boolean persistRTypesinfo(RestaurantMaster master,JsonNode toInsert) {
-		boolean types[] = new boolean[4];
-		types[0] = toInsert.get(Constants.ORGANIC).asBoolean();
-		types[1] = toInsert.get(Constants.GLUTEN_FREE).asBoolean();
-		types[2] = toInsert.get(Constants.VEG).asBoolean();
-		types[3] = toInsert.get(Constants.VEGAN).asBoolean();
+	public boolean persistRTagsinfo(RestaurantMaster master,JsonNode toInsert) {
+		boolean tagsArray[] = new boolean[4];
+		tagsArray[0] = toInsert.get(Constants.ORGANIC).asBoolean();
+		tagsArray[1] = toInsert.get(Constants.GLUTEN_FREE).asBoolean();
+		tagsArray[2] = toInsert.get(Constants.VEG).asBoolean();
+		tagsArray[3] = toInsert.get(Constants.VEGAN).asBoolean();
 		
 		for(int i=0;i<4;i++){
-			if(types[i]){
+			if(tagsArray[i]){
 				RestaurantTag tagsObj= new RestaurantTag();
 				tagsObj.setRestaurantMaster(master);
 				tagsObj.setFkProfileTagsId(i+1);
@@ -333,7 +328,7 @@ public class RManagerConcrete implements RManagerDao {
 	}
 
 	@Override
-	public boolean updateRTypesinfo(RestaurantMaster master,JsonNode toInsert) {
+	public boolean updateRTagsinfo(RestaurantMaster master,JsonNode toInsert) {
 		Query query = entityManager
 				.createNamedQuery("RestaurantTag.findAllWithId");
 		query.setParameter("id", master.getId());
@@ -342,7 +337,7 @@ public class RManagerConcrete implements RManagerDao {
 			entityManager.remove(listToUpdate.get(i));
 			
 		}
-		persistRTypesinfo(master, toInsert);
+		persistRTagsinfo(master, toInsert);
 		return true;
 	}
 
@@ -371,8 +366,14 @@ public class RManagerConcrete implements RManagerDao {
 		}
 
 		try {
-			RestaurantAddress addObj = toConvert.getRestaurantAddresses()
-					.get(0);
+			RestaurantAddress addObj=null;
+			for(RestaurantAddress ctrAddObj:toConvert.getRestaurantAddresses()){
+				if(ctrAddObj.getActiveFlag()==ACTIVE_FLAG)
+					addObj=ctrAddObj;
+				
+			}
+			logger.debug("Active Address row create date:" + addObj.getCreateDate());
+			System.out.println("Active Address row create date:" + addObj.getCreateDate());
 			String address_line1 = addObj.getAddressLine1();
 			String address_line2 = addObj.getAddressLine2();
 			String city = addObj.getCity();
@@ -394,7 +395,14 @@ public class RManagerConcrete implements RManagerDao {
 		}
 
 		try {
-			RestaurantHour hourObj = toConvert.getRestaurantHours().get(0);
+			RestaurantHour hourObj=null;
+			for(RestaurantHour ctrhourObj:toConvert.getRestaurantHours()){
+				if(ctrhourObj.getActiveFlag()==ACTIVE_FLAG)
+					hourObj=ctrhourObj;
+				
+			}
+			logger.debug("Debug Active Hour row create date:" + hourObj.getCreateDatetime());
+			System.out.println("Active Hour row create date:" + hourObj.getCreateDatetime());
 			int WDOH = hourObj.getWeekdayOpeningHour();
 			int WEOH = hourObj.getWeekendOpeningHour();
 			int WDOM = hourObj.getWeekdayOpeningMinutes();
@@ -495,20 +503,29 @@ public class RManagerConcrete implements RManagerDao {
 	}
 
 	@Override
-	public JsonNode persistNewRestaurant(JsonNode toInsert) {
-		
+	public JsonNode persistNewRestaurant(JsonNode toInsert) {	
 		persistRBasicinfo(toInsert);
+		return null;
+	}
+	
+	@Override
+	public JsonNode updateNewRestaurant(JsonNode toInsert) {
+		RestaurantMaster master=getIdfromEmail(toInsert.get(Constants.USERNAME).asText());
+		updateRBasicinfo(master, toInsert);
+		updateRAddressinfo(master, toInsert);
+		persistRHoursinfo(master, toInsert);
+		persistRTagsinfo(master, toInsert);	
 		return null;
 	}
 
 	@Override
 	public JsonNode updateRestaurant(JsonNode toInsert) {
-		RestaurantMaster master=getIdfromEmail(toInsert.get(Constants.COLUMN_EMAIL).asText());
+		RestaurantMaster master=getIdfromEmail(toInsert.get(Constants.USERNAME).asText());
 		//TODO fetch master
 		updateRBasicinfo(master, toInsert);
 		updateRAddressinfo(master, toInsert);
 		updateRHoursinfo(master, toInsert);
-		updateRTypesinfo(master, toInsert);
+		updateRTagsinfo(master, toInsert);
 		
 		return null;
 	}
@@ -524,5 +541,7 @@ public class RManagerConcrete implements RManagerDao {
 		}	
 		return null;
 	}
+
+	
 
 }

@@ -7,6 +7,7 @@ import javax.ejb.Stateless;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -52,19 +53,16 @@ public class RManagerRS {
 		System.out.println("Value retrieving  to be sent...");
 		logger.debug("Value retrieving  to be sent...");
 		JsonNode toreturn = implnt.getRestaurant(id);
-		System.out.println("Value to be sent"+ toreturn.toString());
-		
+		System.out.println("Value to be sent"+ toreturn.toString());		
 		return toreturn.toString();
-		}
-	
-	
-	
+	}
+
 /*Portal users registration*/
 	
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path("/registeruserem")
+	@Path("/registerrestaurant")
 	public Response registerPortalUser(JsonNode toInsert) {
 		System.out.println("Register request from:" + toInsert.get(Constants.COLUMN_EMAIL));
 		ResponseBuilder rs = new ResponseBuilderImpl();	
@@ -77,5 +75,46 @@ public class RManagerRS {
 		}
 		return rs.build();
 	}
+	
+/*Portal users update*/
+	
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/updatenewrestaurant")
+	public Response updateNewPortalUser(JsonNode toInsert) {
+		System.out.println("Update request from:" + toInsert.get(Constants.COLUMN_EMAIL));
+		ResponseBuilder rs = new ResponseBuilderImpl();	
+		try {
+			implnt.updateNewRestaurant(toInsert);
+			rs.status(Response.Status.CREATED);
+		} catch (Exception e) {
+			e.printStackTrace();
+			rs.status(Response.Status.CONFLICT);
+		}
+		return rs.build();
+	}
+		
+	
+	
+/*Portal users update*/
+	
+	@PUT
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/updaterestaurant")
+	public Response updatePortalUser(JsonNode toInsert) {
+		System.out.println("Update request from:" + toInsert.get(Constants.COLUMN_EMAIL));
+		ResponseBuilder rs = new ResponseBuilderImpl();	
+		try {
+			implnt.updateRestaurant(toInsert);
+			rs.status(Response.Status.CREATED);
+		} catch (Exception e) {
+			e.printStackTrace();
+			rs.status(Response.Status.CONFLICT);
+		}
+		return rs.build();
+	}
+	
 	
 }

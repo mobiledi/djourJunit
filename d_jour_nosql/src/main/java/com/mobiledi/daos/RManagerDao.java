@@ -9,6 +9,7 @@ public interface RManagerDao {
 	
 	
 	public JsonNode persistNewRestaurant(JsonNode toInsert);
+	public JsonNode updateNewRestaurant(JsonNode toInsert);
 	public JsonNode updateRestaurant(JsonNode toInsert);
 	
 	public JsonNode getAllRestaurants();
@@ -25,13 +26,13 @@ public interface RManagerDao {
 	public boolean persistRBasicinfo(JsonNode toInsert);
 	public boolean persistRAddressinfo(RestaurantMaster master,JsonNode toInsert);
 	public boolean persistRHoursinfo(RestaurantMaster master,JsonNode toInsert);
-	public boolean persistRTypesinfo(RestaurantMaster master,JsonNode toInsert);
+	public boolean persistRTagsinfo(RestaurantMaster master,JsonNode toInsert);
 	
 	
 	public boolean updateRBasicinfo(RestaurantMaster master,JsonNode toInsert);
 	public boolean updateRAddressinfo(RestaurantMaster master,JsonNode toInsert);
 	public boolean updateRHoursinfo(RestaurantMaster master,JsonNode toInsert);
-	public boolean updateRTypesinfo(RestaurantMaster master,JsonNode toInsert);
+	public boolean updateRTagsinfo(RestaurantMaster master,JsonNode toInsert);
 	
 	
 }
