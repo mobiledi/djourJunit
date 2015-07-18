@@ -7,6 +7,8 @@ xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/x
 	 <class>com.mobiledi.entities.RestaurantHour</class>
 	 <class>com.mobiledi.entities.RestaurantMaster</class>
 	 <class>com.mobiledi.entities.RestaurantTag</class>
+	 <class>com.mobiledi.entities.DjourRepeat</class>
+	 <class>com.mobiledi.entities.RestaurantDjour</class>
 	<exclude-unlisted-classes>false</exclude-unlisted-classes>
 
 		<properties>
