@@ -1,5 +1,7 @@
 package com.mobiledi.utils;
 
+import java.sql.Timestamp;
+
 public final class Constants {
 	
 	public final static String USERNAME = "username";
@@ -66,14 +68,34 @@ public final class Constants {
 	public final static String VEG = "veg";
 	public final static String VEGAN = "vgn";
 	
+	
+	/*DJOUR*/
+	
+	public final static String DJOUR_MASTER_ID ="fk_restauran_id"; 
+	public final static String DJOUR_STATUS= "active_status"; 
+	public final static String DJOUR_SPECIAL_NAME="special_name"; 
+	public final static String DJOUR_DESCRIPTION="description"; 		  
+	public final static String DJOUR_SPECIAL_TYPE="special_type"; 
+	public final static String DJOUR_PRICE="price";
+	public final static String DJOUR_REPEATE="repeat";
+	public final static String DJOUR_START_FROM="start_from";
+	public final static String DJOUR_END_ON="end_on"; 
+	public final static String DJOUR_CREATE_DATE="create_date";
+	
+	
+	/*REPEAT*/
+	public final static String REPEAT_DJOUR_ID="fk_djour_id";
+	public final static String REPEAT_REPEATE_ON="repeat_on"; 
+	
+	
 	/* RESTAURANT FEED ITEMS*/
 	public final static String TABLE_RESTAURANT_FEED_ITEMS = "restaurant_feed_items";
-	public final static String COLUMN_ID_FEED = "id";
-	public final static String COLUMN_MASTER_ID_FEED = "fk_restaurant_master";
-	public final static String COLUMN_FEED_TITLE = "feed_title";
-	public final static String COLUMN_FEED_DESCRIPTION = "feed_description";
-	public final static String COLUMN_FEED_IMAGE = "feed_image";
-	public final static String COLUMN_FEED_SEQUENCE_NUMBER = "fee_sequence_number";
-	public final static String COLUMN_FEED_CREATE_DATE = "create_date";
-	public final static String COLUMN_FEED_UPDATE_TIME = "update_date";
+	public final static String FEED_ID = "id";
+	public final static String FEED_MASTER_ID = "fk_restaurant_master";
+	public final static String FEED_TITLE = "feed_title";
+	public final static String FEED_DESCRIPTION = "feed_description";
+	public final static String FEED_IMAGE = "feed_image";
+	public final static String FEED_SEQUENCE_NUMBER = "fee_sequence_number";
+	public final static String FEED_CREATE_DATE = "create_date";
+	public final static String FEED_UPDATE_TIME = "update_date";
 }
