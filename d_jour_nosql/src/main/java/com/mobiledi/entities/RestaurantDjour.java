@@ -1,7 +1,9 @@
 package com.mobiledi.entities;
 
 import java.io.Serializable;
+
 import javax.persistence.*;
+
 import java.sql.Timestamp;
 import java.util.List;
 
@@ -12,7 +14,10 @@ import java.util.List;
  */
 @Entity
 @Table(name="restaurant_djour")
-@NamedQuery(name="RestaurantDjour.findAll", query="SELECT r FROM RestaurantDjour r")
+@NamedQueries({
+	@NamedQuery(name="RestaurantDjour.findAll", query="SELECT r FROM RestaurantDjour r"),
+	@NamedQuery(name="RestaurantDjour.findAllWithId", query="SELECT r FROM RestaurantDjour r WHERE r.restaurantMaster.id=:id")
+	})
 public class RestaurantDjour implements Serializable {
 	private static final long serialVersionUID = 1L;
 

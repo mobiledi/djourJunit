@@ -21,6 +21,8 @@ public final class Constants {
 	public final static String COLUMN_WEBSITE = "website";
 	public final static String COLUMN_PASSWORD = "password";
 	
+	public final static String JSON_MASTER_ID="master_id";
+	
 	/* ADDRESS TABLE details */
 	public final static String TABLE_RESTAURANT_ADDRESS = "restaurant_address";	
 	public final static String COLUMN_MASTER_ID_ADDRESS = "fk_restaurant_master_id";

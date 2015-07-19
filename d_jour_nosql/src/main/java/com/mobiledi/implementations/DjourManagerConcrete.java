@@ -2,14 +2,17 @@ package com.mobiledi.implementations;
 
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.List;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 
 import org.codehaus.jackson.JsonNode;
 
 import com.mobiledi.daos.DjourManagerDAO;
+import com.mobiledi.entities.RestaurantAddress;
 import com.mobiledi.entities.RestaurantDjour;
 import com.mobiledi.entities.RestaurantMaster;
 import com.mobiledi.utils.Constants;
@@ -29,7 +32,19 @@ public class DjourManagerConcrete implements DjourManagerDAO {
 
 	@Override
 	public void update(RestaurantMaster master,JsonNode updateInfo) {
-		entityManager.merge(jsonToObj(master, updateInfo));
+		Query query = entityManager
+				.createNamedQuery("RestaurantDjour.findAllWithId");
+		query.setParameter("id", master.getId());
+		List<RestaurantAddress> listToUpdate=query.getResultList();
+		for (int i = 0; i < listToUpdate.size(); i++) {
+			
+			
+			entityManager.merge(listToUpdate.get(i));
+		}
+		
+		
+		
+		//entityManager.merge(jsonToObj(master, updateInfo));
 	}
 
 	@Override

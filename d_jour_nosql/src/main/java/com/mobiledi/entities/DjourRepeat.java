@@ -1,6 +1,7 @@
 package com.mobiledi.entities;
 
 import java.io.Serializable;
+
 import javax.persistence.*;
 
 
@@ -10,7 +11,10 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name="djour_repeat")
-@NamedQuery(name="DjourRepeat.findAll", query="SELECT d FROM DjourRepeat d")
+@NamedQueries({
+	@NamedQuery(name="DjourRepeat.findAll", query="SELECT r FROM DjourRepeat r"),
+	@NamedQuery(name="DjourRepeat.findAllWithId", query="SELECT r FROM DjourRepeat r WHERE r.restaurantDjour.id=:djourid")
+	})
 public class DjourRepeat implements Serializable {
 	private static final long serialVersionUID = 1L;
 

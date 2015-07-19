@@ -122,6 +122,24 @@ public class RManagerConcrete implements RManagerDao {
 		failedObj.put("Status", "No Such record");
 		return failedObj;
 	}
+	@Override
+	public JsonNode getRestaurantProfile(JsonNode toget) {
+		RestaurantMaster master=getMaster(toget.get(Constants.JSON_MASTER_ID).asInt());
+		try {
+			Query query = entityManager
+					.createNamedQuery("RestaurantMaster.findOne");
+			query.setParameter("id",master.getId());
+			@SuppressWarnings("unchecked")
+			List<RestaurantMaster> results = query.getResultList();
+
+			return convertToJsonNode(results.get(0));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	
 
 	@Override
 	public boolean persistRBasicinfo(JsonNode toInsert) {
@@ -131,18 +149,21 @@ public class RManagerConcrete implements RManagerDao {
 			String name = toInsert.get(Constants.COLUMN_NAME).asText();
 			
 			String email = toInsert.get(Constants.COLUMN_EMAIL).asText();	
+			if(toInsert.has(Constants.COLUMN_BANNER_IMAGE))
+			{
 			byte[] banner_image=toInsert.get(Constants.COLUMN_BANNER_IMAGE).getBinaryValue();
+			masterObj.setBannerImage(banner_image);
+			}
 			String phone = toInsert.get(Constants.COLUMN_PHONE).asText();
 			String website = toInsert.get(Constants.COLUMN_WEBSITE).asText();
 			masterObj.setName(name);
 			//New Registrations don't have titles until update
-			if(toInsert.has(Constants.COLUMN_TITLE))
-			{
+			
 			String title = toInsert.get(Constants.COLUMN_TITLE).asText();
 			masterObj.setTitle(title);
-			}
+			
 			masterObj.setEmail(email);
-			masterObj.setBannerImage(banner_image);
+			
 			//updates  don't have password field 
 			if(toInsert.has(Constants.COLUMN_PASSWORD)){
 				String password = toInsert.get(Constants.COLUMN_PASSWORD).asText();
@@ -513,7 +534,7 @@ public class RManagerConcrete implements RManagerDao {
 	
 	@Override
 	public JsonNode updateNewRestaurant(JsonNode toInsert) {
-		RestaurantMaster master=getIdfromEmail(toInsert.get(Constants.USERNAME).asText());
+		RestaurantMaster master=getMaster(toInsert.get(Constants.JSON_MASTER_ID).asInt());
 		updateRBasicinfo(master, toInsert);
 		updateRAddressinfo(master, toInsert);
 		persistRHoursinfo(master, toInsert);
@@ -523,7 +544,7 @@ public class RManagerConcrete implements RManagerDao {
 
 	@Override
 	public JsonNode updateRestaurant(JsonNode toInsert) {
-		RestaurantMaster master=getIdfromEmail(toInsert.get(Constants.USERNAME).asText());
+		RestaurantMaster master=getMaster(toInsert.get(Constants.JSON_MASTER_ID).asInt());
 		//TODO fetch master
 		updateRBasicinfo(master, toInsert);
 		updateRAddressinfo(master, toInsert);
@@ -534,10 +555,24 @@ public class RManagerConcrete implements RManagerDao {
 	}
 	
 	
-	private RestaurantMaster getIdfromEmail(String email){
+	private RestaurantMaster getId(String email,String restaurantkey){
 		Query query = entityManager
 				.createNamedQuery("RestaurantMaster.findId");
 		query.setParameter("email", email);
+		query.setParameter("restaurantkey", restaurantkey);
+		List<RestaurantMaster> list=query.getResultList();
+		for (int i = 0; i < list.size(); i++) {
+			return list.get(i);
+		}	
+		return null;
+	}
+	
+	
+	private RestaurantMaster getMaster(int id){
+		Query query = entityManager
+				.createNamedQuery("RestaurantMaster.findOne");
+		query.setParameter("id", id);
+		//query.setParameter("restaurantkey", restaurantkey);
 		List<RestaurantMaster> list=query.getResultList();
 		for (int i = 0; i < list.size(); i++) {
 			return list.get(i);
@@ -546,15 +581,16 @@ public class RManagerConcrete implements RManagerDao {
 	}
 
 	@Override
-	public boolean authenticateUser(JsonNode toauthenticate) {
-		RestaurantMaster restObMaster = getIdfromEmail(toauthenticate.get(Constants.USERNAME).asText());
-		String passString= toauthenticate.get(Constants.PASSWORD).asText();
-		if(restObMaster!=null && passString.equals(restObMaster.getPassword()))
-			return true;
+	public int authenticateUser(JsonNode toauthenticate) {
+		//RestaurantMaster restObMaster = getIdfromEmail(toauthenticate.get(Constants.USERNAME).asText());
+		RestaurantMaster restObMaster = getId(toauthenticate.
+				get(Constants.USERNAME).asText(),toauthenticate.get("restaurantkey").asText());
+		if(restObMaster!=null)
+			return restObMaster.getId();
 		
-		return false;
+		return 0;
 	}
 
-	
+
 
 }

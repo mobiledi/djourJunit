@@ -40,8 +40,15 @@ public class RManagerRS {
 		//List<RestaurantMaster> results=implnt.getAllRestaurants();
 		//return "{\"STATUS\":\"OK\"}";
 		return implnt.getAllRestaurants().toString();
+		
 		}
-	
+	@POST
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/getrestaurantprofile")
+	public String getRestaurantProfile(JsonNode toget) {
+		JsonNode toreturn=implnt.getRestaurantProfile(toget);
+		return toreturn.toString();
+		}
 
 	/*get list of all restaurants listed*/
 	@GET
@@ -123,12 +130,15 @@ public class RManagerRS {
 		logger.info("Login Request String: " + toauthenticate.toString());
 		logger.info("Login Request from: " + toauthenticate.get("username"));
 		
-		boolean registered=implnt.authenticateUser(toauthenticate);
+		int registered=implnt.authenticateUser(toauthenticate);
 		ResponseBuilder rs = new ResponseBuilderImpl();	
 		
-		if(registered)
+		if(registered!=0){
+			
 			rs.status(Response.Status.ACCEPTED);
-		
+			rs.entity("{\"master_id\":"+ registered+"}");
+			
+		}
 		else
 			rs.status(Response.Status.UNAUTHORIZED);
 		

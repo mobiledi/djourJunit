@@ -16,8 +16,9 @@ public interface RManagerDao {
 	
 	public JsonNode getAllRestaurants();
 	public JsonNode getRestaurant(int id);
+	public JsonNode getRestaurantProfile(JsonNode toget);
 	
-	public boolean authenticateUser(JsonNode toauthenticate);
+	public int authenticateUser(JsonNode toauthenticate);
 	
 /*	public ObjectNode getRBasicinfo(int id);
 	public ObjectNode getRAddressinfo(int id);
