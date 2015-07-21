@@ -72,7 +72,7 @@ public final class Constants {
 	
 	
 	/*DJOUR*/
-	
+	public final static String DJOUR_JSON_MASTER_ID ="master_id";
 	public final static String DJOUR_MASTER_ID ="fk_restauran_id"; 
 	public final static String DJOUR_STATUS= "active_status"; 
 	public final static String DJOUR_SPECIAL_NAME="special_name"; 
@@ -83,7 +83,8 @@ public final class Constants {
 	public final static String DJOUR_START_FROM="start_from";
 	public final static String DJOUR_END_ON="end_on"; 
 	public final static String DJOUR_CREATE_DATE="create_date";
-	
+	public final static String DJOUR_START_TIME="start_time";
+	public final static String DJOUR_END_TIME="end_time";
 	
 	/*REPEAT*/
 	public final static String REPEAT_DJOUR_ID="fk_djour_id";
