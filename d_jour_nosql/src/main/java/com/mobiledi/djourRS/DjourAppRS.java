@@ -1,4 +1,4 @@
-package com.mobiledi.d_jour_nosql;
+package com.mobiledi.djourRS;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -11,28 +11,28 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import org.codehaus.jackson.JsonNode;
+
+import com.mobiledi.djourDAO.DjourAppDAO;
 @Path("/api")
 @Stateless
-public class DjourApi {
+public class DjourAppRS {
 	@EJB
-	DjourService djour;
-	
-	
+	DjourAppDAO djour;
 	@GET
-	//@Produces(MediaType.)
 	@Produces({"application/javascript"})
 	@Path("/sayhello/{name}")
 	public String hello(@PathParam("name") String name) {
-		return DjourService.sayHello(name + "new data");
+		return DjourAppDAO.sayHello(name + "new data");
 	}
+
 	/*@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/get")
 	public List<DBObject> getDataFromDb() {
 		return djour.getData();
 		}
-	
-	
+	*/
+	/*App users registration*/
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
@@ -47,18 +47,13 @@ public class DjourApi {
 		}
 	}
 	
-	@POST
-	@Consumes(MediaType.APPLICATION_JSON)
+	/*App users authentication*/
+	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path("/registerportaluser")
-	public String registerPortalUser(JsonNode toInsert) {
-		try {
-			djour.persistPortalData(toInsert);					
-			return "{\"status\":\"OK\"}";
-		} catch (Exception e) {
-			e.printStackTrace();
-			return "{\"status\":\"FAIL\"}";
+	@Path("/appauthenticate/{username}/{password}")
+	public String authenticateAppUser(@PathParam("username") String username,@PathParam("password") String password) {		
+		boolean registered=djour.isUserRegisteredinApp(username,password);
+		return "{\"authenticated\": \""+registered+ "\"}";	
 		}
-	}
-	*/
+	
 }

@@ -27,7 +27,24 @@
   <ejb-local-ref>
     <ejb-ref-name>ejb/data</ejb-ref-name>
     <ejb-ref-type>Session</ejb-ref-type>
-    <local>com.mobiledi.d_jour_nosql.DjourService</local>
-    
+    <local>com.mobiledi.djourRS.DjourAppRS</local>  
   </ejb-local-ref>
+    <ejb-local-ref>
+    <ejb-ref-name>ejb/data1</ejb-ref-name>
+    <ejb-ref-type>Session</ejb-ref-type>
+    <local>com.mobiledi.djourRS.RestaurantManagerRS</local>  
+  </ejb-local-ref>
+      <ejb-local-ref>
+    <ejb-ref-name>ejb/data2</ejb-ref-name>
+    <ejb-ref-type>Session</ejb-ref-type>
+    <local>com.mobiledi.djourRS.RManagerRS</local> 
+     
+  </ejb-local-ref>
+   <ejb-local-ref>
+    <ejb-ref-name>ejb/data3</ejb-ref-name>
+    <ejb-ref-type>Session</ejb-ref-type>
+    <local>com.mobiledi.djourRS.RestaurantDjourRS</local> 
+     
+  </ejb-local-ref>
+  
 </web-app>
