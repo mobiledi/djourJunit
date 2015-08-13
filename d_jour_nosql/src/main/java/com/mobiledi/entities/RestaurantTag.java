@@ -1,11 +1,11 @@
 package com.mobiledi.entities;
 
+
 import java.io.Serializable;
 
 import javax.persistence.*;
 
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
-import org.codehaus.jackson.annotate.JsonIgnoreType;
 
 
 /**
@@ -25,40 +25,40 @@ public class RestaurantTag implements Serializable {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Integer id;
-
+	
 	@Column(name="fk_profile_tags_id")
 	private Integer fkProfileTagsId;
 
 	//bi-directional many-to-one association to RestaurantMaster
-	@ManyToOne(fetch=FetchType.LAZY)
-	@JoinColumn(name="fk_restaurant_id")
-	private RestaurantMaster restaurantMaster;
+		@ManyToOne(fetch=FetchType.LAZY)
+		@JoinColumn(name="fk_restaurant_id")
+		private RestaurantMaster restaurantMaster;
 
-	public RestaurantTag() {
-	}
+		public RestaurantTag() {
+		}
 
-	public Integer getId() {
-		return this.id;
-	}
+		public Integer getId() {
+			return this.id;
+		}
 
-	public void setId(Integer id) {
-		this.id = id;
-	}
+		public void setId(Integer id) {
+			this.id = id;
+		}
 
-	public Integer getFkProfileTagsId() {
-		return this.fkProfileTagsId;
-	}
+		public Integer getFkProfileTagsId() {
+			return this.fkProfileTagsId;
+		}
 
-	public void setFkProfileTagsId(Integer fkProfileTagsId) {
-		this.fkProfileTagsId = fkProfileTagsId;
-	}
+		public void setFkProfileTagsId(Integer fkProfileTagsId) {
+			this.fkProfileTagsId = fkProfileTagsId;
+		}
 
-	public RestaurantMaster getRestaurantMaster() {
-		return this.restaurantMaster;
-	}
+		public RestaurantMaster getRestaurantMaster() {
+			return this.restaurantMaster;
+		}
 
-	public void setRestaurantMaster(RestaurantMaster restaurantMaster) {
-		this.restaurantMaster = restaurantMaster;
-	}
+		public void setRestaurantMaster(RestaurantMaster restaurantMaster) {
+			this.restaurantMaster = restaurantMaster;
+		}
 
 }

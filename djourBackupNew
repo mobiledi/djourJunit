@@ -1,0 +1,721 @@
+--
+-- PostgreSQL database dump
+--
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SET check_function_bodies = false;
+SET client_min_messages = warning;
+
+--
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
+--
+
+CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
+
+
+--
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
+
+
+--
+-- Name: postgis; Type: EXTENSION; Schema: -; Owner: 
+--
+
+CREATE EXTENSION IF NOT EXISTS postgis WITH SCHEMA public;
+
+
+--
+-- Name: EXTENSION postgis; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION postgis IS 'PostGIS geometry, geography, and raster spatial types and functions';
+
+
+SET search_path = public, pg_catalog;
+
+SET default_tablespace = '';
+
+SET default_with_oids = false;
+
+--
+-- Name: djour_repeat; Type: TABLE; Schema: public; Owner: praks; Tablespace: 
+--
+
+CREATE TABLE djour_repeat (
+    id integer NOT NULL,
+    fk_djour_id integer NOT NULL,
+    repeat_on integer,
+    CONSTRAINT djour_repeat_repeat_on_check CHECK (((repeat_on > 0) OR (repeat_on < 8)))
+);
+
+
+ALTER TABLE djour_repeat OWNER TO praks;
+
+--
+-- Name: djour_repeat_id_seq; Type: SEQUENCE; Schema: public; Owner: praks
+--
+
+CREATE SEQUENCE djour_repeat_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE djour_repeat_id_seq OWNER TO praks;
+
+--
+-- Name: djour_repeat_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: praks
+--
+
+ALTER SEQUENCE djour_repeat_id_seq OWNED BY djour_repeat.id;
+
+
+--
+-- Name: profile_tags; Type: TABLE; Schema: public; Owner: praks; Tablespace: 
+--
+
+CREATE TABLE profile_tags (
+    id integer NOT NULL,
+    tag_key character varying(10) NOT NULL,
+    tag_value character varying(20) NOT NULL
+);
+
+
+ALTER TABLE profile_tags OWNER TO praks;
+
+--
+-- Name: profile_tags_id_seq; Type: SEQUENCE; Schema: public; Owner: praks
+--
+
+CREATE SEQUENCE profile_tags_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE profile_tags_id_seq OWNER TO praks;
+
+--
+-- Name: profile_tags_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: praks
+--
+
+ALTER SEQUENCE profile_tags_id_seq OWNED BY profile_tags.id;
+
+
+--
+-- Name: restaurant_address; Type: TABLE; Schema: public; Owner: praks; Tablespace: 
+--
+
+CREATE TABLE restaurant_address (
+    id integer NOT NULL,
+    fk_restaurant_master_id integer,
+    address_line1 character varying(255) NOT NULL,
+    address_line2 character varying(255),
+    city character varying(100),
+    state character varying(100) NOT NULL,
+    zip integer NOT NULL,
+    active_flag integer NOT NULL,
+    create_date timestamp with time zone,
+    latitude double precision,
+    longitude double precision,
+    geom geometry(Point,4326)
+);
+
+
+ALTER TABLE restaurant_address OWNER TO praks;
+
+--
+-- Name: restaurant_address_id_seq; Type: SEQUENCE; Schema: public; Owner: praks
+--
+
+CREATE SEQUENCE restaurant_address_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE restaurant_address_id_seq OWNER TO praks;
+
+--
+-- Name: restaurant_address_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: praks
+--
+
+ALTER SEQUENCE restaurant_address_id_seq OWNED BY restaurant_address.id;
+
+
+--
+-- Name: restaurant_djour; Type: TABLE; Schema: public; Owner: praks; Tablespace: 
+--
+
+CREATE TABLE restaurant_djour (
+    id integer NOT NULL,
+    fk_restauran_id integer NOT NULL,
+    active_status boolean,
+    special_name character varying(20) NOT NULL,
+    description character varying(200),
+    special_type integer NOT NULL,
+    price real NOT NULL,
+    repeat boolean,
+    start_from timestamp with time zone,
+    end_on timestamp with time zone,
+    create_date timestamp with time zone
+);
+
+
+ALTER TABLE restaurant_djour OWNER TO praks;
+
+--
+-- Name: restaurant_djour_id_seq; Type: SEQUENCE; Schema: public; Owner: praks
+--
+
+CREATE SEQUENCE restaurant_djour_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE restaurant_djour_id_seq OWNER TO praks;
+
+--
+-- Name: restaurant_djour_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: praks
+--
+
+ALTER SEQUENCE restaurant_djour_id_seq OWNED BY restaurant_djour.id;
+
+
+--
+-- Name: restaurant_feed_items; Type: TABLE; Schema: public; Owner: praks; Tablespace: 
+--
+
+CREATE TABLE restaurant_feed_items (
+    id integer NOT NULL,
+    fk_restaurant_master integer,
+    feed_title character varying(100) NOT NULL,
+    feed_description character varying(255),
+    feed_image bytea,
+    fee_sequence_number integer,
+    create_date timestamp with time zone,
+    update_date timestamp with time zone
+);
+
+
+ALTER TABLE restaurant_feed_items OWNER TO praks;
+
+--
+-- Name: restaurant_feed_items_id_seq; Type: SEQUENCE; Schema: public; Owner: praks
+--
+
+CREATE SEQUENCE restaurant_feed_items_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE restaurant_feed_items_id_seq OWNER TO praks;
+
+--
+-- Name: restaurant_feed_items_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: praks
+--
+
+ALTER SEQUENCE restaurant_feed_items_id_seq OWNED BY restaurant_feed_items.id;
+
+
+--
+-- Name: restaurant_hours; Type: TABLE; Schema: public; Owner: praks; Tablespace: 
+--
+
+CREATE TABLE restaurant_hours (
+    id integer NOT NULL,
+    fk_restaurant_master_id integer,
+    weekday_opening_hour integer NOT NULL,
+    weekday_opening_minutes integer DEFAULT 0,
+    weekday_closing_hour integer NOT NULL,
+    weekday_closing_minutes integer DEFAULT 0,
+    weekend_opening_hour integer NOT NULL,
+    weekend_opening_minutes integer DEFAULT 0,
+    weekend_closing_hour integer NOT NULL,
+    weekend_closing_minutes integer DEFAULT 0,
+    active_flag integer NOT NULL,
+    create_datetime timestamp with time zone,
+    CONSTRAINT restaurant_hours_weekday_closing_hour_check CHECK (((weekday_closing_hour >= 0) AND (weekday_closing_hour <= 24))),
+    CONSTRAINT restaurant_hours_weekday_closing_minutes_check CHECK (((weekday_closing_minutes >= 0) AND (weekday_closing_minutes <= 59))),
+    CONSTRAINT restaurant_hours_weekday_opening_hour_check CHECK (((weekday_opening_hour >= 0) AND (weekday_opening_hour <= 24))),
+    CONSTRAINT restaurant_hours_weekday_opening_minutes_check CHECK (((weekday_opening_minutes >= 0) AND (weekday_opening_minutes <= 59))),
+    CONSTRAINT restaurant_hours_weekend_closing_hour_check CHECK (((weekend_closing_hour >= 0) AND (weekend_closing_hour <= 24))),
+    CONSTRAINT restaurant_hours_weekend_closing_minutes_check CHECK (((weekend_closing_minutes >= 0) AND (weekend_closing_minutes <= 59))),
+    CONSTRAINT restaurant_hours_weekend_opening_hour_check CHECK (((weekend_opening_hour >= 0) AND (weekend_opening_hour <= 24))),
+    CONSTRAINT restaurant_hours_weekend_opening_minutes_check CHECK (((weekend_opening_minutes >= 0) AND (weekend_opening_minutes <= 59)))
+);
+
+
+ALTER TABLE restaurant_hours OWNER TO praks;
+
+--
+-- Name: restaurant_hours_id_seq; Type: SEQUENCE; Schema: public; Owner: praks
+--
+
+CREATE SEQUENCE restaurant_hours_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE restaurant_hours_id_seq OWNER TO praks;
+
+--
+-- Name: restaurant_hours_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: praks
+--
+
+ALTER SEQUENCE restaurant_hours_id_seq OWNED BY restaurant_hours.id;
+
+
+--
+-- Name: restaurant_master; Type: TABLE; Schema: public; Owner: praks; Tablespace: 
+--
+
+CREATE TABLE restaurant_master (
+    id integer NOT NULL,
+    name character varying(255) NOT NULL,
+    title character varying(255),
+    email character varying(100) NOT NULL,
+    banner_image bytea,
+    phone text NOT NULL,
+    website character varying(255),
+    password character varying(255) NOT NULL
+);
+
+
+ALTER TABLE restaurant_master OWNER TO praks;
+
+--
+-- Name: restaurant_master_id_seq; Type: SEQUENCE; Schema: public; Owner: praks
+--
+
+CREATE SEQUENCE restaurant_master_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE restaurant_master_id_seq OWNER TO praks;
+
+--
+-- Name: restaurant_master_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: praks
+--
+
+ALTER SEQUENCE restaurant_master_id_seq OWNED BY restaurant_master.id;
+
+
+--
+-- Name: restaurant_tags; Type: TABLE; Schema: public; Owner: praks; Tablespace: 
+--
+
+CREATE TABLE restaurant_tags (
+    fk_restaurant_id integer,
+    fk_profile_tags_id integer,
+    id integer NOT NULL
+);
+
+
+ALTER TABLE restaurant_tags OWNER TO praks;
+
+--
+-- Name: restaurant_tags_id_seq; Type: SEQUENCE; Schema: public; Owner: praks
+--
+
+CREATE SEQUENCE restaurant_tags_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE restaurant_tags_id_seq OWNER TO praks;
+
+--
+-- Name: restaurant_tags_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: praks
+--
+
+ALTER SEQUENCE restaurant_tags_id_seq OWNED BY restaurant_tags.id;
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: praks
+--
+
+ALTER TABLE ONLY djour_repeat ALTER COLUMN id SET DEFAULT nextval('djour_repeat_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: praks
+--
+
+ALTER TABLE ONLY profile_tags ALTER COLUMN id SET DEFAULT nextval('profile_tags_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: praks
+--
+
+ALTER TABLE ONLY restaurant_address ALTER COLUMN id SET DEFAULT nextval('restaurant_address_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: praks
+--
+
+ALTER TABLE ONLY restaurant_djour ALTER COLUMN id SET DEFAULT nextval('restaurant_djour_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: praks
+--
+
+ALTER TABLE ONLY restaurant_feed_items ALTER COLUMN id SET DEFAULT nextval('restaurant_feed_items_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: praks
+--
+
+ALTER TABLE ONLY restaurant_hours ALTER COLUMN id SET DEFAULT nextval('restaurant_hours_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: praks
+--
+
+ALTER TABLE ONLY restaurant_master ALTER COLUMN id SET DEFAULT nextval('restaurant_master_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: praks
+--
+
+ALTER TABLE ONLY restaurant_tags ALTER COLUMN id SET DEFAULT nextval('restaurant_tags_id_seq'::regclass);
+
+
+--
+-- Data for Name: djour_repeat; Type: TABLE DATA; Schema: public; Owner: praks
+--
+
+COPY djour_repeat (id, fk_djour_id, repeat_on) FROM stdin;
+\.
+
+
+--
+-- Name: djour_repeat_id_seq; Type: SEQUENCE SET; Schema: public; Owner: praks
+--
+
+SELECT pg_catalog.setval('djour_repeat_id_seq', 1, false);
+
+
+--
+-- Data for Name: profile_tags; Type: TABLE DATA; Schema: public; Owner: praks
+--
+
+COPY profile_tags (id, tag_key, tag_value) FROM stdin;
+1	org	Organic
+2	gfrer	Gluten Free
+3	veg	Vegetarian
+4	vgn	Vegan
+\.
+
+
+--
+-- Name: profile_tags_id_seq; Type: SEQUENCE SET; Schema: public; Owner: praks
+--
+
+SELECT pg_catalog.setval('profile_tags_id_seq', 4, true);
+
+
+--
+-- Data for Name: restaurant_address; Type: TABLE DATA; Schema: public; Owner: praks
+--
+
+COPY restaurant_address (id, fk_restaurant_master_id, address_line1, address_line2, city, state, zip, active_flag, create_date, latitude, longitude, geom) FROM stdin;
+83	77	9344 Dorchester Street	-	Highlands Ranch	CO	80129	0	2015-07-15 00:00:00+05:30	39.547242500000003	-104.999225100000004	0101000020E6100000E975D54DF33F5AC09B3DD00A0CC64340
+92	90	Police Bazar	G.S. Road	Shillong	Meghalaya	793001	0	2015-07-17 11:08:22.997+05:30	25.576714599999999	91.8879469000000171	0101000020E61000006B053C1FD4F856402F206A91A3933940
+93	90	Police Bazar	G.S. Road	Shillong	Meghalaya	793001	0	2015-07-17 11:20:13.215+05:30	25.576714599999999	91.8879469000000171	0101000020E61000006B053C1FD4F856402F206A91A3933940
+94	90	Police Bazar	G.S. Road	Shillong	Meghalaya	793001	0	2015-07-17 11:23:21.345+05:30	25.576714599999999	91.8879469000000171	0101000020E61000006B053C1FD4F856402F206A91A3933940
+97	92	Velankani Drive	Electronic City Phase 1	Bengaluru	Karnataka	560100	1	2015-07-19 18:03:58.014+05:30	12.8478761000000006	77.663291700000002	0101000020E610000054CD075F736A5340BC1EF1D01CB22940
+96	92	Velankani Drive	Electronic City Phase 1	Bengaluru	Karnataka	560100	0	2015-07-19 18:01:28.429+05:30	12.8478761000000006	77.663291700000002	0101000020E610000054CD075F736A5340BC1EF1D01CB22940
+95	90	Police Bazar	Khyndailad, G.S. Road	Shillong	Meghalaya	793001	0	2015-07-19 17:29:22.751+05:30	25.576714599999999	91.8879469000000171	0101000020E61000006B053C1FD4F856402F206A91A3933940
+84	77	9344 Dorchester Street		Highlands Ranch	CO	80129	1	2015-07-15 00:00:00+05:30	39.547242500000003	-104.999225100000004	0101000020E6100000E975D54DF33F5AC09B3DD00A0CC64340
+99	90	Police Bazar	Khyndailad, G.S. Road	Shillong	Meghalaya	793001	1	2015-07-19 19:33:11.933+05:30	25.576714599999999	91.8879469000000171	0101000020E61000006B053C1FD4F856402F206A91A3933940
+98	90	Police Bazar	G.S. Road	Shillong	Meghalaya	793001	0	2015-07-19 19:25:32.788+05:30	25.576714599999999	91.8879469000000171	0101000020E61000006B053C1FD4F856402F206A91A3933940
+101	93	Police Bazar		Shillong	Meghalaya	793001	1	2015-07-19 19:40:38.895+05:30	25.5752750000000013	91.8845000000000027	0101000020E6100000F853E3A59BF85640D734EF3845933940
+100	93	Police Bazar	undefined	Shillong	Meghalaya	793001	0	2015-07-19 19:39:33.807+05:30	25.576714599999999	91.8879469000000171	0101000020E61000006B053C1FD4F856402F206A91A3933940
+90	85	8230 S Holly St		Centennial	CO	80122	1	2015-07-15 14:42:10.776+05:30	39.5666531000000035	-104.920524900000004	0101000020E6100000D62945E1E93A5AC0A956BA1688C84340
+\.
+
+
+--
+-- Name: restaurant_address_id_seq; Type: SEQUENCE SET; Schema: public; Owner: praks
+--
+
+SELECT pg_catalog.setval('restaurant_address_id_seq', 101, true);
+
+
+--
+-- Data for Name: restaurant_djour; Type: TABLE DATA; Schema: public; Owner: praks
+--
+
+COPY restaurant_djour (id, fk_restauran_id, active_status, special_name, description, special_type, price, repeat, start_from, end_on, create_date) FROM stdin;
+1	90	f			0	0	f	2015-07-31 00:00:04+05:30	2015-08-31 23:11:04+05:30	2015-07-21 06:44:35.499+05:30
+\.
+
+
+--
+-- Name: restaurant_djour_id_seq; Type: SEQUENCE SET; Schema: public; Owner: praks
+--
+
+SELECT pg_catalog.setval('restaurant_djour_id_seq', 1, true);
+
+
+--
+-- Data for Name: restaurant_feed_items; Type: TABLE DATA; Schema: public; Owner: praks
+--
+
+COPY restaurant_feed_items (id, fk_restaurant_master, feed_title, feed_description, feed_image, fee_sequence_number, create_date, update_date) FROM stdin;
+\.
+
+
+--
+-- Name: restaurant_feed_items_id_seq; Type: SEQUENCE SET; Schema: public; Owner: praks
+--
+
+SELECT pg_catalog.setval('restaurant_feed_items_id_seq', 1, false);
+
+
+--
+-- Data for Name: restaurant_hours; Type: TABLE DATA; Schema: public; Owner: praks
+--
+
+COPY restaurant_hours (id, fk_restaurant_master_id, weekday_opening_hour, weekday_opening_minutes, weekday_closing_hour, weekday_closing_minutes, weekend_opening_hour, weekend_opening_minutes, weekend_closing_hour, weekend_closing_minutes, active_flag, create_datetime) FROM stdin;
+52	77	7	0	21	0	8	0	0	0	1	2015-07-15 00:00:00+05:30
+53	90	7	0	22	0	6	0	22	0	0	2015-07-17 11:20:13.364+05:30
+54	90	7	0	22	0	6	0	22	0	0	2015-07-17 11:23:21.36+05:30
+56	92	11	0	22	0	8	0	23	0	1	2015-07-19 18:03:58.021+05:30
+55	90	9	0	23	0	8	0	22	0	0	2015-07-19 17:29:23.285+05:30
+58	90	9	0	23	0	8	30	22	0	1	2015-07-19 19:33:11.983+05:30
+57	90	9	0	23	0	8	30	22	0	0	2015-07-19 19:25:33.062+05:30
+59	93	11	0	21	0	8	0	21	0	1	2015-07-19 19:40:38.902+05:30
+\.
+
+
+--
+-- Name: restaurant_hours_id_seq; Type: SEQUENCE SET; Schema: public; Owner: praks
+--
+
+SELECT pg_catalog.setval('restaurant_hours_id_seq', 59, true);
+
+
+--
+-- Data for Name: restaurant_master; Type: TABLE DATA; Schema: public; Owner: praks
+--
+
+COPY restaurant_master (id, name, title, email, banner_image, phone, website, password) FROM stdin;
+77	Old Blinking Light	Update the restaurant title	earl@oldblinkinglight.com	\\x	3033469797	www.obl.com	login123
+85	Japan Sino Restaurant	Fine Yellow dining	js@gmail.com	\N	3036945432	www.japanrestaurant.com	login321
+92	Beijing Bites	Best Chinese Cuisine in South Bengaluru	bb@gmail.com	\\x	080-2288888	bbbengaluru.com	login123
+90	Center Point 	Fine dining,  in the heart of the city	cp@gmail.com	\\x	0364-555555	www.cpshillong.com	login123
+93	Hotel Alpine	Pride of Scotland of the East	cp@gmail.com	\\x	0364-2222222	hapbshillong.com	login321
+\.
+
+
+--
+-- Name: restaurant_master_id_seq; Type: SEQUENCE SET; Schema: public; Owner: praks
+--
+
+SELECT pg_catalog.setval('restaurant_master_id_seq', 93, true);
+
+
+--
+-- Data for Name: restaurant_tags; Type: TABLE DATA; Schema: public; Owner: praks
+--
+
+COPY restaurant_tags (fk_restaurant_id, fk_profile_tags_id, id) FROM stdin;
+77	1	1
+77	2	2
+92	1	9
+92	2	10
+92	3	11
+92	4	12
+90	3	14
+93	1	15
+93	2	16
+93	3	17
+\.
+
+
+--
+-- Name: restaurant_tags_id_seq; Type: SEQUENCE SET; Schema: public; Owner: praks
+--
+
+SELECT pg_catalog.setval('restaurant_tags_id_seq', 17, true);
+
+
+--
+-- Data for Name: spatial_ref_sys; Type: TABLE DATA; Schema: public; Owner: praks
+--
+
+COPY spatial_ref_sys (srid, auth_name, auth_srid, srtext, proj4text) FROM stdin;
+\.
+
+
+--
+-- Name: djour_repeat_pkey; Type: CONSTRAINT; Schema: public; Owner: praks; Tablespace: 
+--
+
+ALTER TABLE ONLY djour_repeat
+    ADD CONSTRAINT djour_repeat_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: profile_tags_pkey; Type: CONSTRAINT; Schema: public; Owner: praks; Tablespace: 
+--
+
+ALTER TABLE ONLY profile_tags
+    ADD CONSTRAINT profile_tags_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: restaurant_address_pkey; Type: CONSTRAINT; Schema: public; Owner: praks; Tablespace: 
+--
+
+ALTER TABLE ONLY restaurant_address
+    ADD CONSTRAINT restaurant_address_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: restaurant_djour_pkey; Type: CONSTRAINT; Schema: public; Owner: praks; Tablespace: 
+--
+
+ALTER TABLE ONLY restaurant_djour
+    ADD CONSTRAINT restaurant_djour_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: restaurant_feed_items_pkey; Type: CONSTRAINT; Schema: public; Owner: praks; Tablespace: 
+--
+
+ALTER TABLE ONLY restaurant_feed_items
+    ADD CONSTRAINT restaurant_feed_items_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: restaurant_hours_pkey; Type: CONSTRAINT; Schema: public; Owner: praks; Tablespace: 
+--
+
+ALTER TABLE ONLY restaurant_hours
+    ADD CONSTRAINT restaurant_hours_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: restaurant_master_pkey; Type: CONSTRAINT; Schema: public; Owner: praks; Tablespace: 
+--
+
+ALTER TABLE ONLY restaurant_master
+    ADD CONSTRAINT restaurant_master_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: restaurant_tags_pkey; Type: CONSTRAINT; Schema: public; Owner: praks; Tablespace: 
+--
+
+ALTER TABLE ONLY restaurant_tags
+    ADD CONSTRAINT restaurant_tags_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: djour_repeat_fk_djour_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: praks
+--
+
+ALTER TABLE ONLY djour_repeat
+    ADD CONSTRAINT djour_repeat_fk_djour_id_fkey FOREIGN KEY (fk_djour_id) REFERENCES restaurant_djour(id);
+
+
+--
+-- Name: restaurant_address_fk_restaurant_master_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: praks
+--
+
+ALTER TABLE ONLY restaurant_address
+    ADD CONSTRAINT restaurant_address_fk_restaurant_master_id_fkey FOREIGN KEY (fk_restaurant_master_id) REFERENCES restaurant_master(id);
+
+
+--
+-- Name: restaurant_djour_fk_restauran_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: praks
+--
+
+ALTER TABLE ONLY restaurant_djour
+    ADD CONSTRAINT restaurant_djour_fk_restauran_id_fkey FOREIGN KEY (fk_restauran_id) REFERENCES restaurant_master(id);
+
+
+--
+-- Name: restaurant_feed_items_fk_restaurant_master_fkey; Type: FK CONSTRAINT; Schema: public; Owner: praks
+--
+
+ALTER TABLE ONLY restaurant_feed_items
+    ADD CONSTRAINT restaurant_feed_items_fk_restaurant_master_fkey FOREIGN KEY (fk_restaurant_master) REFERENCES restaurant_master(id);
+
+
+--
+-- Name: restaurant_hours_fk_restaurant_master_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: praks
+--
+
+ALTER TABLE ONLY restaurant_hours
+    ADD CONSTRAINT restaurant_hours_fk_restaurant_master_id_fkey FOREIGN KEY (fk_restaurant_master_id) REFERENCES restaurant_master(id);
+
+
+--
+-- Name: restaurant_tags_fk_profile_tags_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: praks
+--
+
+ALTER TABLE ONLY restaurant_tags
+    ADD CONSTRAINT restaurant_tags_fk_profile_tags_id_fkey FOREIGN KEY (fk_profile_tags_id) REFERENCES profile_tags(id);
+
+
+--
+-- Name: restaurant_tags_fk_restaurant_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: praks
+--
+
+ALTER TABLE ONLY restaurant_tags
+    ADD CONSTRAINT restaurant_tags_fk_restaurant_id_fkey FOREIGN KEY (fk_restaurant_id) REFERENCES restaurant_master(id);
+
+
+--
+-- Name: public; Type: ACL; Schema: -; Owner: praks
+--
+
+REVOKE ALL ON SCHEMA public FROM PUBLIC;
+REVOKE ALL ON SCHEMA public FROM praks;
+GRANT ALL ON SCHEMA public TO praks;
+GRANT ALL ON SCHEMA public TO PUBLIC;
+
+
+--
+-- PostgreSQL database dump complete
+--
+

@@ -1,6 +1,6 @@
 package com.mobiledi.djourRS;
 
-import java.util.List;
+
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -21,7 +21,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.mobiledi.daos.RManagerDao;
-import com.mobiledi.entities.RestaurantMaster;
 import com.mobiledi.implementations.RManagerConcrete;
 import com.mobiledi.utils.Constants;
 
@@ -73,6 +72,7 @@ public class RManagerRS {
 		ResponseBuilder rs = new ResponseBuilderImpl();	
 		try {
 			if(implnt.persistRBasicinfo(toInsert))
+			logger.info("=========  Atfer implements persistRBasicinfo  ======== ");
 			rs.status(Response.Status.CREATED);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -92,6 +92,7 @@ public class RManagerRS {
 		ResponseBuilder rs = new ResponseBuilderImpl();	
 		try {
 			implnt.updateNewRestaurant(toInsert);
+			logger.info("=========  Atfer implements updateNewResraurant======== ");
 			rs.status(Response.Status.CREATED);
 		} catch (Exception e) {
 			e.printStackTrace();

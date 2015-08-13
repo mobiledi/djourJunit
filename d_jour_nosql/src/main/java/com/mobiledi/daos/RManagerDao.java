@@ -1,8 +1,6 @@
 package com.mobiledi.daos;
 
 import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.node.ObjectNode;
-
 import com.mobiledi.entities.RestaurantMaster;
 
 public interface RManagerDao {

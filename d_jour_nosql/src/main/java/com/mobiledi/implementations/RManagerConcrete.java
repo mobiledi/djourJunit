@@ -7,14 +7,17 @@ import java.util.Date;
 import java.util.List;
 
 import javax.ejb.Stateless;
+import javax.management.StringValueExp;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.JsonNodeFactory;
 import org.codehaus.jackson.node.ObjectNode;
+import org.hibernate.PersistentObjectException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,6 +47,7 @@ public class RManagerConcrete implements RManagerDao {
 	@PersistenceContext(unitName = "d_jour_nosql")
 	private EntityManager entityManager;
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public JsonNode getAllRestaurants() {
 		
@@ -141,20 +145,25 @@ public class RManagerConcrete implements RManagerDao {
 
 	
 
+	@SuppressWarnings("unused")
 	@Override
 	public boolean persistRBasicinfo(JsonNode toInsert) {
 		logger.info("Insert Data:" + toInsert.toString());
 		RestaurantMaster masterObj=new RestaurantMaster();
 		try {
 			String name = toInsert.get(Constants.COLUMN_NAME).asText();
-			
-			String email = toInsert.get(Constants.COLUMN_EMAIL).asText();	
-			if(toInsert.has(Constants.COLUMN_BANNER_IMAGE))
+			logger.info("column name :::: "+name);
+			String email = toInsert.get(Constants.COLUMN_EMAIL).asText();
+			logger.info("COLUMN EMAIL :::: "+email);
+			if(false)
 			{
+				logger.info("AFter BANNNER ::::::" +String.valueOf(toInsert.get(Constants.COLUMN_BANNER_IMAGE)).getBytes());
 			byte[] banner_image=toInsert.get(Constants.COLUMN_BANNER_IMAGE).getBinaryValue();
 			masterObj.setBannerImage(banner_image);
 			}
+			//byte[] banner_image="java".getBytes();
 			String phone = toInsert.get(Constants.COLUMN_PHONE).asText();
+			logger.info("COLUMN_PHONE :::: "+phone);
 			String website = toInsert.get(Constants.COLUMN_WEBSITE).asText();
 			masterObj.setName(name);
 			//New Registrations don't have titles until update
@@ -174,7 +183,7 @@ public class RManagerConcrete implements RManagerDao {
 			entityManager.persist(masterObj);
 			persistRAddressinfo(masterObj, toInsert);
 			return true;
-		} catch (IOException e) {
+		}catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return false;
@@ -193,8 +202,11 @@ public class RManagerConcrete implements RManagerDao {
 			
 			
 			String name = toInsert.get(Constants.COLUMN_NAME).asText();
+			
 			String address_line1 = toInsert.get(Constants.COLUMN_ADD1).asText();
+			logger.info("address"+ address_line1);
 			String address_line2 = toInsert.get(Constants.COLUMN_ADD2).asText();
+			logger.info("address"+ address_line2);
 			String city = toInsert.get(Constants.COLUMN_CITY).asText();
 			String state = toInsert.get(Constants.COLUMN_STATE).asText();
 			int zip = toInsert.get(Constants.COLUMN_ZIP).asInt();
@@ -250,7 +262,9 @@ public class RManagerConcrete implements RManagerDao {
 				.asInt();
 		int we_c_m = toInsert.get(Constants.COLUMN_WEEKEND_CLOSING_MINUTES)
 				.asInt();
-		
+		logger.info("COLUMN_WEEKDAY_OPENING_HOUR :::::"+wd_o_h);
+		logger.info("COLUMN_WEEKDAY_OPENING_MINUTES:::::"+wd_o_m);
+		logger.info("COLUMN_WEEKEND_OPENING_HOUR:::::"+we_o_h);
 		RestaurantHour hourObj= new RestaurantHour();
 		hourObj.setRestaurantMaster(master);
 		hourObj.setActiveFlag(ACTIVE_FLAG);
@@ -275,31 +289,49 @@ public class RManagerConcrete implements RManagerDao {
 
 	@Override
 	public boolean persistRTagsinfo(RestaurantMaster master,JsonNode toInsert) {
+		
 		boolean tagsArray[] = new boolean[4];
 		tagsArray[0] = toInsert.get(Constants.ORGANIC).asBoolean();
 		tagsArray[1] = toInsert.get(Constants.GLUTEN_FREE).asBoolean();
 		tagsArray[2] = toInsert.get(Constants.VEG).asBoolean();
 		tagsArray[3] = toInsert.get(Constants.VEGAN).asBoolean();
-		
+		logger.info("Constants.ORGANIC :::"+tagsArray[0]);
+		logger.info("Constants.GLUTEN_FREE:::"+tagsArray[1]);
+		logger.info("Constants.VEG :::"+tagsArray[2]);
+		logger.info("Constants.VEGAN :::"+tagsArray[3]);
+		try{
 		for(int i=0;i<4;i++){
 			if(tagsArray[i]){
 				RestaurantTag tagsObj= new RestaurantTag();
 				tagsObj.setRestaurantMaster(master);
 				tagsObj.setFkProfileTagsId(i+1);
+				//entityManager.merge(tagsObj);
 				entityManager.persist(tagsObj);
+				
 			}
 						
 		}	
+		}catch(PersistentObjectException e){
+			e.printStackTrace();
+			return false;
+		}
 		return true;
 	}
 
+	@SuppressWarnings("unused")
 	@Override
 	public boolean updateRBasicinfo(RestaurantMaster master,JsonNode toInsert) {
 		try {
 			String name = toInsert.get(Constants.COLUMN_NAME).asText();
 			String title = toInsert.get(Constants.COLUMN_TITLE).asText();
 			String email = toInsert.get(Constants.COLUMN_EMAIL).asText();	
-			byte[] banner_image=toInsert.get(Constants.COLUMN_BANNER_IMAGE).getBinaryValue();
+			logger.info("column name :::::"+name);
+			logger.info("COLUMN_TITLE :::::"+title);
+			logger.info("COLUMN_EMAIL :::::"+email);
+			byte[] banner_image = null;
+			if(false){
+			banner_image=toInsert.get(Constants.COLUMN_BANNER_IMAGE).getBinaryValue();
+			}
 			String phone = toInsert.get(Constants.COLUMN_PHONE).asText();
 			String website = toInsert.get(Constants.COLUMN_WEBSITE).asText();		
 			master.setName(name);
@@ -323,6 +355,7 @@ public class RManagerConcrete implements RManagerDao {
 		Query query = entityManager
 				.createNamedQuery("RestaurantAddress.findAllWithId");
 		query.setParameter("id", master.getId());
+		logger.info("master id ::::::: "+master.getId());
 		List<RestaurantAddress> listToUpdate=query.getResultList();
 		for (int i = 0; i < listToUpdate.size(); i++) {
 			listToUpdate.get(i).setActiveFlag(INACTIVE_FLAG);
@@ -572,9 +605,11 @@ public class RManagerConcrete implements RManagerDao {
 		Query query = entityManager
 				.createNamedQuery("RestaurantMaster.findOne");
 		query.setParameter("id", id);
+		logger.info("RestaurantMasterID ::::::"+id);
 		//query.setParameter("restaurantkey", restaurantkey);
 		List<RestaurantMaster> list=query.getResultList();
 		for (int i = 0; i < list.size(); i++) {
+			logger.info("RestaurantMasterID ::::::"+list.get(i));
 			return list.get(i);
 		}	
 		return null;

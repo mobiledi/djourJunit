@@ -1,0 +1,212 @@
+Get connection for route {}->http://localhost:8080
+Connecting to localhost:8080
+CookieSpec selected: best-match
+Auth cache not set in the context
+Target auth state: UNCHALLENGED
+Proxy auth state: UNCHALLENGED
+Attempt 1 to execute request
+Sending request: GET /d_jour_nosql/restservice/api/portal/getallrestaurants HTTP/1.1
+>> "GET /d_jour_nosql/restservice/api/portal/getallrestaurants HTTP/1.1[\r][\n]"
+>> "Accept: application/json[\r][\n]"
+>> "Host: localhost:8080[\r][\n]"
+>> "Connection: Keep-Alive[\r][\n]"
+>> "User-Agent: Apache-HttpClient/4.2.6 (java 1.5)[\r][\n]"
+>> "[\r][\n]"
+>> GET /d_jour_nosql/restservice/api/portal/getallrestaurants HTTP/1.1
+>> Accept: application/json
+>> Host: localhost:8080
+>> Connection: Keep-Alive
+>> User-Agent: Apache-HttpClient/4.2.6 (java 1.5)
+<< "HTTP/1.1 200 OK[\r][\n]"
+<< "Server: Apache-Coyote/1.1[\r][\n]"
+<< "Content-Type: application/json[\r][\n]"
+<< "Content-Length: 1140[\r][\n]"
+<< "Date: Tue, 04 Aug 2015 04:46:46 GMT[\r][\n]"
+<< "[\r][\n]"
+Receiving response: HTTP/1.1 200 OK
+<< HTTP/1.1 200 OK
+<< Server: Apache-Coyote/1.1
+<< Content-Type: application/json
+<< Content-Length: 1140
+<< Date: Tue, 04 Aug 2015 04:46:46 GMT
+Connection can be kept alive indefinitely
+response code : 200
+convertStrign :::::[{"id":13,"name":"ashish_managerRs","title":"ASHaa_RS","email":"ashish@gmail.com","banner_image":null,"phone":"111111","website":"www.ashaa.com","address_line1":"power grid colony","address_line2":"lodhaee shamshabad","city":"Agra","state":"uttar pradesh","zip":282001,"lat":27.1407174,"long":78.0309542,"weekday_opening_hour":8,"weekend_opening_hour":10,"weekday_opening_minutes":30,"weekend_opening_minutes":15,"weekday_closing_hour":9,"weekend_closing_hour":7,"weekday_closing_minutes":45,"weekend_closing_minutes":35,"org":false,"gf":false,"veg":true,"vgn":false},{"id":14,"name":"mradul_managerRs","title":"mradulKum_RS","email":"mradul@gmail.com","banner_image":null,"phone":"98084","website":"www.mradulkumar.com","address_line1":"power grid colony","address_line2":"lodhaee shamshabad","city":"Agra","state":"uttar pradesh","zip":282001,"lat":27.1407174,"long":78.0309542,"weekday_opening_hour":10,"weekend_opening_hour":9,"weekday_opening_minutes":10,"weekend_opening_minutes":9,"weekday_closing_hour":8,"weekend_closing_hour":7,"weekday_closing_minutes":8,"weekend_closing_minutes":35,"org":true,"gf":true,"veg":false,"vgn":true}]
+Get connection for route {}->http://localhost:8080
+Connecting to localhost:8080
+CookieSpec selected: best-match
+Auth cache not set in the context
+Target auth state: UNCHALLENGED
+Proxy auth state: UNCHALLENGED
+Attempt 1 to execute request
+Sending request: GET /d_jour_nosql/restservice/api/portal/getallrestaurants HTTP/1.1
+>> "GET /d_jour_nosql/restservice/api/portal/getallrestaurants HTTP/1.1[\r][\n]"
+>> "Accept: application/json[\r][\n]"
+>> "Host: localhost:8080[\r][\n]"
+>> "Connection: Keep-Alive[\r][\n]"
+>> "User-Agent: Apache-HttpClient/4.2.6 (java 1.5)[\r][\n]"
+>> "[\r][\n]"
+>> GET /d_jour_nosql/restservice/api/portal/getallrestaurants HTTP/1.1
+>> Accept: application/json
+>> Host: localhost:8080
+>> Connection: Keep-Alive
+>> User-Agent: Apache-HttpClient/4.2.6 (java 1.5)
+<< "HTTP/1.1 200 OK[\r][\n]"
+<< "Server: Apache-Coyote/1.1[\r][\n]"
+<< "Content-Type: application/json[\r][\n]"
+<< "Content-Length: 1140[\r][\n]"
+<< "Date: Tue, 04 Aug 2015 04:59:50 GMT[\r][\n]"
+<< "[\r][\n]"
+Receiving response: HTTP/1.1 200 OK
+<< HTTP/1.1 200 OK
+<< Server: Apache-Coyote/1.1
+<< Content-Type: application/json
+<< Content-Length: 1140
+<< Date: Tue, 04 Aug 2015 04:59:50 GMT
+Connection can be kept alive indefinitely
+response code : 200
+convertStrign :::::[{"id":13,"name":"ashish_managerRs","title":"ASHaa_RS","email":"ashish@gmail.com","banner_image":null,"phone":"111111","website":"www.ashaa.com","address_line1":"power grid colony","address_line2":"lodhaee shamshabad","city":"Agra","state":"uttar pradesh","zip":282001,"lat":27.1407174,"long":78.0309542,"weekday_opening_hour":8,"weekend_opening_hour":10,"weekday_opening_minutes":30,"weekend_opening_minutes":15,"weekday_closing_hour":9,"weekend_closing_hour":7,"weekday_closing_minutes":45,"weekend_closing_minutes":35,"org":false,"gf":false,"veg":true,"vgn":false},{"id":14,"name":"mradul_managerRs","title":"mradulKum_RS","email":"mradul@gmail.com","banner_image":null,"phone":"98084","website":"www.mradulkumar.com","address_line1":"power grid colony","address_line2":"lodhaee shamshabad","city":"Agra","state":"uttar pradesh","zip":282001,"lat":27.1407174,"long":78.0309542,"weekday_opening_hour":10,"weekend_opening_hour":9,"weekday_opening_minutes":10,"weekend_opening_minutes":9,"weekday_closing_hour":8,"weekend_closing_hour":7,"weekday_closing_minutes":8,"weekend_closing_minutes":35,"org":true,"gf":true,"veg":false,"vgn":true}]
+Get connection for route {}->http://localhost:8080
+Connecting to localhost:8080
+CookieSpec selected: best-match
+Auth cache not set in the context
+Target auth state: UNCHALLENGED
+Proxy auth state: UNCHALLENGED
+Attempt 1 to execute request
+Sending request: GET /d_jour_nosql/restservice/api/portal/getallrestaurants HTTP/1.1
+>> "GET /d_jour_nosql/restservice/api/portal/getallrestaurants HTTP/1.1[\r][\n]"
+>> "Accept: application/json[\r][\n]"
+>> "Host: localhost:8080[\r][\n]"
+>> "Connection: Keep-Alive[\r][\n]"
+>> "User-Agent: Apache-HttpClient/4.2.6 (java 1.5)[\r][\n]"
+>> "[\r][\n]"
+>> GET /d_jour_nosql/restservice/api/portal/getallrestaurants HTTP/1.1
+>> Accept: application/json
+>> Host: localhost:8080
+>> Connection: Keep-Alive
+>> User-Agent: Apache-HttpClient/4.2.6 (java 1.5)
+<< "HTTP/1.1 200 OK[\r][\n]"
+<< "Server: Apache-Coyote/1.1[\r][\n]"
+<< "Content-Type: application/json[\r][\n]"
+<< "Content-Length: 1140[\r][\n]"
+<< "Date: Tue, 04 Aug 2015 05:00:06 GMT[\r][\n]"
+<< "[\r][\n]"
+Receiving response: HTTP/1.1 200 OK
+<< HTTP/1.1 200 OK
+<< Server: Apache-Coyote/1.1
+<< Content-Type: application/json
+<< Content-Length: 1140
+<< Date: Tue, 04 Aug 2015 05:00:06 GMT
+Connection can be kept alive indefinitely
+response code : 200
+convertStrign :::::[{"id":13,"name":"ashish_managerRs","title":"ASHaa_RS","email":"ashish@gmail.com","banner_image":null,"phone":"111111","website":"www.ashaa.com","address_line1":"power grid colony","address_line2":"lodhaee shamshabad","city":"Agra","state":"uttar pradesh","zip":282001,"lat":27.1407174,"long":78.0309542,"weekday_opening_hour":8,"weekend_opening_hour":10,"weekday_opening_minutes":30,"weekend_opening_minutes":15,"weekday_closing_hour":9,"weekend_closing_hour":7,"weekday_closing_minutes":45,"weekend_closing_minutes":35,"org":false,"gf":false,"veg":true,"vgn":false},{"id":14,"name":"mradul_managerRs","title":"mradulKum_RS","email":"mradul@gmail.com","banner_image":null,"phone":"98084","website":"www.mradulkumar.com","address_line1":"power grid colony","address_line2":"lodhaee shamshabad","city":"Agra","state":"uttar pradesh","zip":282001,"lat":27.1407174,"long":78.0309542,"weekday_opening_hour":10,"weekend_opening_hour":9,"weekday_opening_minutes":10,"weekend_opening_minutes":9,"weekday_closing_hour":8,"weekend_closing_hour":7,"weekday_closing_minutes":8,"weekend_closing_minutes":35,"org":true,"gf":true,"veg":false,"vgn":true}]
+Get connection for route {}->http://localhost:8080
+Connecting to localhost:8080
+CookieSpec selected: best-match
+Auth cache not set in the context
+Target auth state: UNCHALLENGED
+Proxy auth state: UNCHALLENGED
+Attempt 1 to execute request
+Sending request: GET /d_jour_nosql/restservice/api/portal/getallrestaurants HTTP/1.1
+>> "GET /d_jour_nosql/restservice/api/portal/getallrestaurants HTTP/1.1[\r][\n]"
+>> "Accept: application/json[\r][\n]"
+>> "Host: localhost:8080[\r][\n]"
+>> "Connection: Keep-Alive[\r][\n]"
+>> "User-Agent: Apache-HttpClient/4.2.6 (java 1.5)[\r][\n]"
+>> "[\r][\n]"
+>> GET /d_jour_nosql/restservice/api/portal/getallrestaurants HTTP/1.1
+>> Accept: application/json
+>> Host: localhost:8080
+>> Connection: Keep-Alive
+>> User-Agent: Apache-HttpClient/4.2.6 (java 1.5)
+<< "HTTP/1.1 200 OK[\r][\n]"
+<< "Server: Apache-Coyote/1.1[\r][\n]"
+<< "Content-Type: application/json[\r][\n]"
+<< "Content-Length: 1140[\r][\n]"
+<< "Date: Tue, 04 Aug 2015 05:02:11 GMT[\r][\n]"
+<< "[\r][\n]"
+Receiving response: HTTP/1.1 200 OK
+<< HTTP/1.1 200 OK
+<< Server: Apache-Coyote/1.1
+<< Content-Type: application/json
+<< Content-Length: 1140
+<< Date: Tue, 04 Aug 2015 05:02:11 GMT
+Connection can be kept alive indefinitely
+response code : 200
+convertStrign :::::[{"id":13,"name":"ashish_managerRs","title":"ASHaa_RS","email":"ashish@gmail.com","banner_image":null,"phone":"111111","website":"www.ashaa.com","address_line1":"power grid colony","address_line2":"lodhaee shamshabad","city":"Agra","state":"uttar pradesh","zip":282001,"lat":27.1407174,"long":78.0309542,"weekday_opening_hour":8,"weekend_opening_hour":10,"weekday_opening_minutes":30,"weekend_opening_minutes":15,"weekday_closing_hour":9,"weekend_closing_hour":7,"weekday_closing_minutes":45,"weekend_closing_minutes":35,"org":false,"gf":false,"veg":true,"vgn":false},{"id":14,"name":"mradul_managerRs","title":"mradulKum_RS","email":"mradul@gmail.com","banner_image":null,"phone":"98084","website":"www.mradulkumar.com","address_line1":"power grid colony","address_line2":"lodhaee shamshabad","city":"Agra","state":"uttar pradesh","zip":282001,"lat":27.1407174,"long":78.0309542,"weekday_opening_hour":10,"weekend_opening_hour":9,"weekday_opening_minutes":10,"weekend_opening_minutes":9,"weekday_closing_hour":8,"weekend_closing_hour":7,"weekday_closing_minutes":8,"weekend_closing_minutes":35,"org":true,"gf":true,"veg":false,"vgn":true}]
+Get connection for route {}->http://localhost:8080
+Connecting to localhost:8080
+CookieSpec selected: best-match
+Auth cache not set in the context
+Target auth state: UNCHALLENGED
+Proxy auth state: UNCHALLENGED
+Attempt 1 to execute request
+Sending request: POST /d_jour_nosql/restservice/api/portal/updatenewrestaurant HTTP/1.1
+>> "POST /d_jour_nosql/restservice/api/portal/updatenewrestaurant HTTP/1.1[\r][\n]"
+>> "Accept: application/json[\r][\n]"
+>> "Content-type: application/json[\r][\n]"
+>> "Content-Length: 538[\r][\n]"
+>> "Content-Type: application/json[\r][\n]"
+>> "Host: localhost:8080[\r][\n]"
+>> "Connection: Keep-Alive[\r][\n]"
+>> "User-Agent: Apache-HttpClient/4.2.6 (java 1.5)[\r][\n]"
+>> "[\r][\n]"
+>> POST /d_jour_nosql/restservice/api/portal/updatenewrestaurant HTTP/1.1
+>> Accept: application/json
+>> Content-type: application/json
+>> Content-Length: 538
+>> Content-Type: application/json
+>> Host: localhost:8080
+>> Connection: Keep-Alive
+>> User-Agent: Apache-HttpClient/4.2.6 (java 1.5)
+>> "{"email":"mradul@gmail.com","master_id":14,"name":"mradul_managerRs","banner_image":"102","phone":333,"website":"www.mradulk.com","title":"mradulK_RS","address_line1":"power grid colony","address_line2":"lodhaee shamshabad","city":"Agra","state":"uttar pradesh","zip":282001,"weekday_opening_hour":8,"weekday_opening_minutes":30,"weekday_closing_hour":9,"weekday_closing_minutes":45,"weekend_opening_hour":10,"weekend_opening_minutes":15,"weekend_closing_hour":7,"weekend_closing_minutes":35,"org":false,"gf":false,"veg":true,"vgn":false}"
+<< "HTTP/1.1 201 Created[\r][\n]"
+<< "Server: Apache-Coyote/1.1[\r][\n]"
+<< "Content-Length: 0[\r][\n]"
+<< "Date: Tue, 04 Aug 2015 05:03:36 GMT[\r][\n]"
+<< "[\r][\n]"
+Receiving response: HTTP/1.1 201 Created
+<< HTTP/1.1 201 Created
+<< Server: Apache-Coyote/1.1
+<< Content-Length: 0
+<< Date: Tue, 04 Aug 2015 05:03:36 GMT
+Connection can be kept alive indefinitely
+response code : 201
+Get connection for route {}->http://localhost:8080
+Connecting to localhost:8080
+CookieSpec selected: best-match
+Auth cache not set in the context
+Target auth state: UNCHALLENGED
+Proxy auth state: UNCHALLENGED
+Attempt 1 to execute request
+Sending request: POST /d_jour_nosql/restservice/api/portal/registerrestaurant HTTP/1.1
+>> "POST /d_jour_nosql/restservice/api/portal/registerrestaurant HTTP/1.1[\r][\n]"
+>> "Accept: application/json[\r][\n]"
+>> "Content-type: application/json[\r][\n]"
+>> "Content-Length: 249[\r][\n]"
+>> "Content-Type: application/json[\r][\n]"
+>> "Host: localhost:8080[\r][\n]"
+>> "Connection: Keep-Alive[\r][\n]"
+>> "User-Agent: Apache-HttpClient/4.2.6 (java 1.5)[\r][\n]"
+>> "[\r][\n]"
+>> POST /d_jour_nosql/restservice/api/portal/registerrestaurant HTTP/1.1
+>> Accept: application/json
+>> Content-type: application/json
+>> Content-Length: 249
+>> Content-Type: application/json
+>> Host: localhost:8080
+>> Connection: Keep-Alive
+>> User-Agent: Apache-HttpClient/4.2.6 (java 1.5)
+>> "{"email":"ashish@gmail.com","name":"managerRs","banner_image":"109","phone":111111,"website":"www.ash.com","title":"ASHIH_RS","password":"00000","address_line1":"mataur","address_line2":"daurala","city":"meerut","state":"uttar pradesh","zip":250221}"
+<< "HTTP/1.1 201 Created[\r][\n]"
+<< "Server: Apache-Coyote/1.1[\r][\n]"
+<< "Content-Length: 0[\r][\n]"
+<< "Date: Tue, 04 Aug 2015 05:48:52 GMT[\r][\n]"
+<< "[\r][\n]"
+Receiving response: HTTP/1.1 201 Created
+<< HTTP/1.1 201 Created
+<< Server: Apache-Coyote/1.1
+<< Content-Length: 0
+<< Date: Tue, 04 Aug 2015 05:48:52 GMT
+Connection can be kept alive indefinitely
+response code : 201

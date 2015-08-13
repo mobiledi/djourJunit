@@ -1,6 +1,5 @@
 package com.mobiledi.utils;
 
-import java.sql.Timestamp;
 
 public final class Constants {
 	

@@ -7,6 +7,8 @@ import javax.persistence.*;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.hibernate.annotations.Type;
 
+
+
 import com.vividsolutions.jts.geom.Geometry;
 
 import java.sql.Timestamp;
@@ -44,8 +46,10 @@ public class RestaurantAddress implements Serializable {
 	@Column(name="create_date")
 	private Timestamp createDate;
 
-	@Column(columnDefinition = "Geometry", nullable = true)
 	@Type(type = "org.hibernate.spatial.GeometryType")
+	/*@Column(name = "lat_lng", nullable = true)*/
+	@Column(name = "lat_lng", columnDefinition = "Geometry", nullable = true)
+	/*@Type(type = "com.vividsolutions.jts.geom.Geometry")*/
 	private Geometry geom;
 
 	private double latitude;

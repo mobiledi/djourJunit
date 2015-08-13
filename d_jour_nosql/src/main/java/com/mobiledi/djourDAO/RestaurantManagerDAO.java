@@ -785,6 +785,7 @@ public class RestaurantManagerDAO {
 		types[3] = false;
 		
 		
+		@SuppressWarnings("unused")
 		String type_name[] = { Constants.ORGANIC, Constants.GLUTEN_FREE,
 				Constants.VEG, Constants.VEGAN };
 		
@@ -978,6 +979,7 @@ public class RestaurantManagerDAO {
 
 	}
 
+	@SuppressWarnings("unused")
 	private String randomString(int len) {
 		final String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 		Random rnd = new Random();
@@ -1025,6 +1027,7 @@ public class RestaurantManagerDAO {
 
 	}
 	
+	@SuppressWarnings("unused")
 	private static JsonNode merge(JsonNode mainNode, JsonNode updateNode) {
 
 	    Iterator<String> fieldNames = updateNode.getFieldNames();
@@ -1054,6 +1057,7 @@ public class RestaurantManagerDAO {
 		
 		 	//EntityManagerFactory emfactory = Persistence.createEntityManagerFactory( "d_jour_nosql" );
 	     // EntityManager entitymanager = emfactory.createEntityManager();
+		@SuppressWarnings("unchecked")
 		List<RestaurantMaster> results = entityManager.createNamedQuery("RestaurantMaster.findAll").getResultList();
 		for(int i=0;i<results.size();i++){
 			logger.info("Tag master name = " + results.get(i).getName());

@@ -32,7 +32,7 @@ public class RestaurantManagerRS {
 	
 	
 	@GET
-	@Consumes(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.TEXT_PLAIN)
 	@Path("/datahello/{name}")
 	public String hello(@PathParam("name") String name) {

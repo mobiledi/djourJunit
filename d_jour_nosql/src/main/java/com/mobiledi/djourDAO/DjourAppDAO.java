@@ -1,12 +1,12 @@
 package com.mobiledi.djourDAO;
 
-import java.net.UnknownHostException;
 import javax.ejb.Stateless;
 
 import org.codehaus.jackson.JsonNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
@@ -39,7 +39,9 @@ public class DjourAppDAO {
 		logger.info("New app User added: " + ((DBObject) JSON.parse(add.toString())).toString());
 		
 		collections=connectToDB(HOST, PORT, APP_USER_COLLECTION_NAME, DATABASE);
-		DBObject toInsert=(DBObject) JSON.parse(add.toString());		
+		DBObject toInsert=(DBObject) JSON.parse(add.toString());
+		/*BasicDBObject toInsert = new BasicDBObject("username", add.get("username").asText()).
+				append("password",add.get("password").asText());*/
 		collections.insert(toInsert);	
 		
 		closeConnection();
@@ -58,17 +60,13 @@ return true;
 
 */	
 
+	@SuppressWarnings("deprecation")
 	public DBCollection connectToDB(String host, int port,
 			String collectionName, String dbname) {
-		try {
-			//if(CLIENT==null)
-			CLIENT = new MongoClient(host, port);
-			DB db = CLIENT.getDB(dbname);
-			return db.getCollection(collectionName);
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-			return CLIENT.getDB(dbname).getCollection(collectionName);
-		}
+		//if(CLIENT==null)
+		CLIENT = new MongoClient(host, port);
+		DB db = CLIENT.getDB(dbname);
+		return db.getCollection(collectionName);
 
 	}
 	

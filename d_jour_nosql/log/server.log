@@ -1,0 +1,12 @@
+Get connection for route {}->http://localhost:8080
+Connecting to localhost:8080
+Connection 0.0.0.0:64716<->127.0.0.1:8080 shut down
+Releasing connection org.apache.http.impl.conn.ManagedClientConnectionImpl@71f80d51
+Get connection for route {}->http://localhost:8080
+Connecting to localhost:8080
+Connection 0.0.0.0:64775<->127.0.0.1:8080 shut down
+Releasing connection org.apache.http.impl.conn.ManagedClientConnectionImpl@36d5e82c
+Get connection for route {}->http://localhost:8080
+Connecting to localhost:8080
+Connection 0.0.0.0:64812<->127.0.0.1:8080 shut down
+Releasing connection org.apache.http.impl.conn.ManagedClientConnectionImpl@36d5e82c
